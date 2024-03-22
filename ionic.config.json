@@ -1,0 +1,7 @@
+{
+  "name": "vote-mobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
