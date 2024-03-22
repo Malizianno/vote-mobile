@@ -1,5 +1,13 @@
 import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import {
+  IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle,
+  IonContent, IonHeader, IonItem, IonLabel, IonList,
+  IonThumbnail, IonTitle, IonToolbar
+} from '@ionic/angular/standalone';
+import { map } from 'rxjs';
+import { Candidate } from '../@shared/model/candidate.model';
+import { Paging } from '../@shared/model/paging.model';
+import { CandidateService } from '../@shared/service/candidate.service';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 
 @Component({
@@ -7,10 +15,34 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent]
+  imports: [IonCard, IonHeader, IonToolbar, IonTitle, IonContent,
+    ExploreContainerComponent, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent,
+    IonList, IonItem, IonThumbnail, IonLabel,
+  ]
 })
 export class Tab2Page {
+  candidates: Candidate[] = [];
 
-  constructor() {}
+  filter: Candidate = new Candidate();
+  paging = new Paging();
+  totalCandidates = 0;
+
+  constructor(private candidatesService: CandidateService) {
+    this.reloadPage();
+  }
+
+  reloadPage() {
+    this.getFiltered().subscribe();
+  }
+
+  getFiltered() {
+    return this.candidatesService.getFiltered(this.filter, this.paging).pipe(map((res) => {
+      if (res) {
+        this.candidates = Candidate.fromArray(res.candidates);
+        this.totalCandidates = res.total;
+        console.log('candidates: ', this.candidates);
+      }
+    }));
+  }
 
 }
