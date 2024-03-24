@@ -20,7 +20,7 @@
 </ion-header>
 
 <ion-content class="top" [fullscreen]="true">
-  <ion-grid>
+  <ion-grid *ngIf="candidates.length > 0">
     <ion-row>
       <ion-col>
         <ion-card *ngFor="let candidate of candidates">
@@ -55,4 +55,6 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  <app-no-results *ngIf="candidates.length < 1"></app-no-results>
 </ion-content>

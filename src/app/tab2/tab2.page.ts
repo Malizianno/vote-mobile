@@ -22,6 +22,7 @@ import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
+import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
 
 @Component({
   selector: 'app-tab2',
@@ -30,7 +31,7 @@ import { PartyTypeEnum } from '../@shared/util/party-type.enum';
   standalone: true,
   imports: [IonInput, IonCol, IonRow, IonGrid, IonButton, IonCard, IonHeader, IonToolbar, IonTitle, IonContent,
     ExploreContainerComponent, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent,
-    IonList, IonItem, IonThumbnail, IonLabel, CommonModule, IonButton, IonNote, FormsModule
+    IonList, IonItem, IonThumbnail, IonLabel, CommonModule, IonButton, IonNote, FormsModule, NoResultsComponent
   ]
 })
 export class Tab2Page {
