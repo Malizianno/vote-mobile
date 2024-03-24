@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { LoginComponent } from '../login/login.component';
 
 export const routes: Routes = [
   {
@@ -30,8 +31,12 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'login',
+    loadComponent: () => import('../login/login.component').then((m) => m.LoginComponent),
+  },
+  {
     path: '',
-    redirectTo: '/tabs/tab1',
+    redirectTo: '/login',
     pathMatch: 'full',
   },
 ];

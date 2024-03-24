@@ -1,0 +1,42 @@
+<ion-content [fullscreen]="true">
+  <ion-grid class="login-grid">
+    <ion-row class="login-grid ion-align-items-center">
+      <ion-col>
+        <div class="card-container">
+          <ion-card>
+            <ion-card-header>
+              <ion-row>
+                <ion-col class="ion-text-center">{{ 'vot.e-mobile-v' + appVersion }}</ion-col>
+              </ion-row>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-row>
+                <ion-col>
+                  <ion-item>
+                    <ion-input type="username" label="Username" labelPlacement="floating" placeholder="Username" [(ngModel)]="dto.username"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+      
+              <ion-row>
+                <ion-col>
+                  <ion-item>
+                    <ion-input type="password" label="Parolă" labelPlacement="floating" placeholder="Parolă" [(ngModel)]="dto.password"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+      
+            <ion-row>
+              <ion-col class="ion-text-end">
+                <ion-button (click)="login()" color="dark" [disabled]="!canLogin()">
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-card>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

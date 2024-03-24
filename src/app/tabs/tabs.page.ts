@@ -1,7 +1,8 @@
 import { Component, EnvironmentInjector, inject } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
+import { IonContent, IonHeader, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { triangle, ellipse, square, people, banOutline, homeOutline } from 'ionicons/icons';
+import { banOutline, ellipse, homeOutline, people, square, triangle } from 'ionicons/icons';
 
 @Component({
   selector: 'app-tabs',
@@ -13,7 +14,11 @@ import { triangle, ellipse, square, people, banOutline, homeOutline } from 'ioni
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
 
-  constructor() {
+  constructor(private router: Router) {
     addIcons({ triangle, ellipse, square, people, banOutline, homeOutline });
+  }
+
+  goToTab2() {
+    this.router.navigate(['/tabs/tab2'], { replaceUrl: true });
   }
 }
