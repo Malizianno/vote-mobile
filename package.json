@@ -30,11 +30,10 @@
     "@capacitor/keyboard": "5.0.8",
     "@capacitor/preferences": "^5.0.7",
     "@capacitor/status-bar": "5.0.7",
-    "@ionic-native/core": "^5.36.0",
     "@ionic/angular": "^7.5.0",
     "@ionic/pwa-elements": "^3.2.2",
     "ionicons": "^7.2.1",
-    "rxjs": "~7.8.0",
+    "rxjs": "^7.8.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
   },

@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 log.txt
 
 package-lock.json
+/.nx
 
 /.sourcemaps
 /.versions
