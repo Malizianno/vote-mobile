@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AppConstants } from '../util/app-constants.util';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { LoginRequestDTO, LoginResponseDTO } from '../model/login.dto';
+import { Http, HttpOptions, HttpResponse } from '@capacitor-community/http';
+import { LoginRequestDTO } from '../model/login.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +9,21 @@ import { LoginRequestDTO, LoginResponseDTO } from '../model/login.dto';
 export class LoginService {
   private apiURL = AppConstants.BASE_URL + '/login';
 
-  constructor(private http: HttpClient) { }
+  login(login: LoginRequestDTO): Promise<HttpResponse> {
+    console.log('login request: ', login);
 
-  login(dto: LoginRequestDTO): Observable<LoginResponseDTO> {
-    return this.http.post<LoginResponseDTO>(this.apiURL + '/', dto, {});
-}
+    const options: HttpOptions = {
+      url: this.apiURL + '/',
+      data: {
+        username: login.username,
+        password: login.password,
+        role: 'ADMIN', // WIP: hardcoded for the moment
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    };
+
+    return Http.post(options);
+  }
 }

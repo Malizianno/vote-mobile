@@ -21,6 +21,7 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CredentialsService } from '../@shared/service/credentials.service';
+import { HttpResponse } from '@capacitor-community/http';
 
 @Component({
   selector: 'app-login',
@@ -44,13 +45,35 @@ export class LoginComponent {
   }
 
   login() {
-    this.service.login(this.dto).subscribe((res: LoginResponseDTO) => {
-      if (res?.token && res.username) {
-        console.log('res: ', res);
-        this.credentials.setCredentials(res, true);
-        this.router.navigate(['/tabs/tab1']);
-      }
+    this.service.login(this.dto).then((res: HttpResponse) => {
+      // WIP
+      // if (res?.token && res.username) {
+      //   console.log('res: ', res);
+      //   this.credentials.setCredentials(res, true);
+      //   this.router.navigate(['/tabs/tab1']);
+      // }
+      this.handleLoginResponse(res);
+    }, (err) => {
+      this.handleLoginError(err);
     });
+  }
+
+  handleLoginResponse(response: HttpResponse) {
+    console.log('got data: ', response);
+
+    if (response.status === 200) {
+      const responseData = response.data;
+
+      if (responseData?.username && responseData?.token && responseData?.role) {
+        this.credentials.setCredentials(responseData);
+      }
+
+      this.router.navigate(['/tabs/tab1']);
+    }
+  }
+
+  handleLoginError(err: string) {
+    console.log('got err: ', err);
   }
 
   onUsernameChange($event: any) {
