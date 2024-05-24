@@ -17,10 +17,11 @@ export class LoginService {
       data: {
         username: login.username,
         password: login.password,
-        role: 'ADMIN', // WIP: hardcoded for the moment
+        role: 'VOTANT',
       },
       headers: {
         'Content-Type': 'application/json',
+        apikey: 'mobileapikey'
       }
     };
 

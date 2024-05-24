@@ -13,33 +13,17 @@ export class GenericService {
         private router: Router,
     ) { }
 
-    // WIP: fix comments
     get headers(): HttpHeaders {
         const token = this.credentials.credentials?.token;
         const username = this.credentials.credentials?.username ? this.credentials.credentials.username : '';
-        const role = this.credentials.credentials?.role ? this.credentials.credentials.role.toString() : '';
-
-        // let returnable = new HttpHeaders();
-
-        // returnable.set('Content-Type', 'application/json');
-
-        // // if (this.credentials.isAuthenticated()) {
-        //     returnable
-        //         .set('Authorization', 'Bearer ' + token)
-        //         .set('principal', username)
-        //         .set('role', role);
-
-        // // }
-
-        // return returnable;
-
-        // console.log('is Auth: ', this.credentials.isAuthenticated());
+        // const role = this.credentials.credentials?.role ? this.credentials.credentials.role.toString() : '';
 
         return new HttpHeaders()
             .set('Content-Type', 'application/json')
             .set('Authorization', 'Bearer ' + token)
             .set('principal', username)
-            .set('role', role);
+            .set('role', 'VOTANT')
+            .set('apikey', 'mobileapikey');
     }
 
     handleHTTPErrors(err: HttpErrorResponse) {
