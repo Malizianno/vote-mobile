@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { banOutline, ellipse, homeOutline, people, square, triangle } from 'ionicons/icons';
+import { ElectionService } from '../@shared/service/election.service';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-tabs',
@@ -13,12 +15,28 @@ import { banOutline, ellipse, homeOutline, people, square, triangle } from 'ioni
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
+  electionEnabled: boolean;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private election: ElectionService,) {
     addIcons({ triangle, ellipse, square, people, banOutline, homeOutline });
+    this.reloadPage();
+  }
+
+  reloadPage() {
+    this.getElectionStatus().subscribe({
+      next: res => res,
+      error: err => this.election.handleHTTPErrors(err)
+    });
   }
 
   goToTab2() {
     this.router.navigate(['/tabs/tab2'], { replaceUrl: true });
+  }
+
+  getElectionStatus() {
+    return this.election.getStatus().pipe(map((res) => {
+      this.electionEnabled = res;
+      console.log('(tabs) electionEnabled: ', this.electionEnabled);
+    }));
   }
 }

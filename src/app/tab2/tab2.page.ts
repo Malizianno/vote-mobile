@@ -72,6 +72,7 @@ export class Tab2Page {
   }
 
   openMoreAbout() {
+    // WIP: open new page with more about the candidate
     console.log('clicked on more...');
   }
 

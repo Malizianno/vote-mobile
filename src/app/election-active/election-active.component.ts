@@ -8,6 +8,8 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ElectionActiveComponent implements OnInit {
   @Input() name?: string;
+  @Input() description?: string;
+  @Input() link?: string;
 
   constructor() { }
 
