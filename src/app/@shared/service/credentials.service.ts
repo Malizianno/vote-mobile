@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { LoginResponseDTO } from '../model/login.dto';
 
 const credentialsKey = 'credentials';
+const hasVotedKey = 'has_voted';
 
 /**
  * Provides storage for authentication credentials.
@@ -43,15 +44,27 @@ export class CredentialsService {
    * @param credentials The user credentials.
    * @param remember True to remember credentials across sessions.
    */
-  setCredentials(credentials?: LoginResponseDTO, remember?: boolean) {
+  setCredentials(credentials?: LoginResponseDTO) {
     this._credentials = credentials || null;
+    const hasVoted = credentials?.hasVoted;
 
     if (credentials) {
-      const storage = remember ? localStorage : sessionStorage;
-      storage.setItem(credentialsKey, JSON.stringify(credentials));
+      localStorage.setItem(credentialsKey, JSON.stringify(credentials));
+      localStorage.setItem(hasVotedKey, JSON.stringify(hasVoted));
     } else {
       sessionStorage.removeItem(credentialsKey);
+      sessionStorage.removeItem(hasVotedKey);
       localStorage.removeItem(credentialsKey);
+      localStorage.removeItem(hasVotedKey);
     }
+  }
+
+  setHasVoted(hasVoted: boolean) {
+    localStorage.setItem(hasVotedKey, JSON.stringify(hasVoted));
+  }
+
+  get hasVoted(): boolean {
+    const value = localStorage.getItem(hasVotedKey);
+    return (/true/i).test(value!);
   }
 }

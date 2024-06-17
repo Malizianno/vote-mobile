@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AppConstants } from '../util/app-constants.util';
-import { Http, HttpOptions, HttpResponse } from '@capacitor-community/http';
+import { HttpOptions, HttpResponse } from '@capacitor-community/http';
+import { CapacitorHttp } from '@capacitor/core';
 import { LoginRequestDTO } from '../model/login.dto';
 
 @Injectable({
@@ -17,7 +18,7 @@ export class LoginService {
       data: {
         username: login.username,
         password: login.password,
-        role: 'VOTANT',
+        role: login.role,
       },
       headers: {
         'Content-Type': 'application/json',
@@ -25,6 +26,6 @@ export class LoginService {
       }
     };
 
-    return Http.post(options);
+    return CapacitorHttp.post(options);
   }
 }

@@ -9,6 +9,7 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { ElectionService } from '../@shared/service/election.service';
+import { CredentialsService } from '../@shared/service/credentials.service';
 
 @Component({
   selector: 'app-tab3',
@@ -26,12 +27,16 @@ export class Tab3Page {
 
   selected = 0;
 
-  constructor(private candidatesService: CandidateService, private election: ElectionService) {
+  hasVoted = false;
+
+  constructor(private candidatesService: CandidateService, private election: ElectionService, private credentials: CredentialsService,) {
     addIcons({ checkmarkCircleOutline });
     this.reloadPage();
   }
 
   reloadPage() {
+    this.hasVoted = this.credentials.hasVoted;
+
     this.getFiltered().subscribe({
       next: res => res,
       error: err => this.candidatesService.handleHTTPErrors(err)
@@ -43,7 +48,6 @@ export class Tab3Page {
       if (res) {
         this.candidates = Candidate.fromArray(res.candidates);
         this.totalCandidates = res.total;
-        console.log('candidates: ', this.candidates);
       }
     }));
   }
@@ -53,8 +57,10 @@ export class Tab3Page {
   }
 
   vote(candidate: Candidate) {
-    this.election.vote(candidate).subscribe((res: boolean) =>{
-      console.log('candidate voted successfully: ', candidate, res);
+    this.election.vote(candidate).subscribe((res: boolean) => {
+      this.hasVoted = true;
+      this.selected = 0;
+      this.credentials.setHasVoted(true);
     });
   }
 }

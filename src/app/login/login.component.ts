@@ -41,17 +41,11 @@ export class LoginComponent {
     addIcons({ arrowForward });
 
     this.appVersion = environment.version;
-    this.dto.role = UserRole.ADMIN; // WIP: this should be VOTANT while you differentiate 'em
+    this.dto.role = UserRole.VOTANT;
   }
 
-  login() {
+  async login() {
     this.service.login(this.dto).then((res: HttpResponse) => {
-      // WIP
-      // if (res?.token && res.username) {
-      //   console.log('res: ', res);
-      //   this.credentials.setCredentials(res, true);
-      //   this.router.navigate(['/tabs/tab1']);
-      // }
       this.handleLoginResponse(res);
     }, (err) => {
       this.handleLoginError(err);

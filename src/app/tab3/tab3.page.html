@@ -2,8 +2,13 @@
   <ion-grid *ngIf="candidates.length > 0">
     <ion-row>
       <ion-col>
+        <ion-card class="text-warning" *ngIf="hasVoted">
+          <ion-card-header>
+            <ion-card-title>Ați exprimat deja 1 vot către unul dintre candidați!</ion-card-title>
+          </ion-card-header>
+        </ion-card>
 
-        <ion-card *ngFor="let candidate of candidates" [ngClass]="selected === candidate.id ? 'selected-border' : ''">
+        <ion-card *ngFor="let candidate of candidates" [ngClass]="selected === candidate.id ? 'selected-border' : ''" [disabled]="hasVoted">
           <ion-card-header (click)="setCandidateSelection(candidate.id)">
             <!-- WIP: <img alt="{{ candidate.firstName + '-' + candidate.lastName }}" src="{{ candidate.image }}" /> -->
             <ion-card-title>{{ candidate.firstName + ' ' + candidate.lastName }}</ion-card-title>

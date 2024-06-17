@@ -10,4 +10,5 @@ export class LoginResponseDTO {
     username!: string;
     token!: string;
     role!: UserRole;
+    hasVoted!: boolean;
 }
