@@ -1,0 +1,27 @@
+<ion-content [fullscreen]="true">
+  <ion-grid class="fullscreen-grid">
+    <ion-row class="fullscreen-grid ion-align-items-center">
+      <ion-col>
+        <swiper-container [pagination]="true" class="fullscreen-swiper"
+          (swiperslidechange)="swiperSlideChanged($event)">
+          <swiper-slide>
+            <ion-img src="../../assets/swiper/slide-1.jpeg" alt="slide1"></ion-img>
+          </swiper-slide>
+          <swiper-slide>
+            <ion-img src="../../assets/swiper/slide-2.jpeg" alt="slide2"></ion-img>
+          </swiper-slide>
+          <swiper-slide>
+            <ion-img src="../../assets/swiper/slide-3.jpeg" alt="slide3"></ion-img>
+            <ion-row>
+              <ion-col class="ion-text-end">
+                <ion-button (click)="openSignupDetails()" color="dark">
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </swiper-slide>
+        </swiper-container>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,7 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
-import { LoginComponent } from '../login/login.component';
 
 export const routes: Routes = [
   {
@@ -31,12 +29,20 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'landing',
+    loadComponent: () => import('../landing/landing.component').then((m) => m.LandingComponent),
+  },
+  {
     path: 'login',
     loadComponent: () => import('../login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'signup',
+    loadComponent: () => import('../signup/signup.component').then((m) => m.SignupComponent),
+  },
+  {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/landing',
     pathMatch: 'full',
   },
 ];

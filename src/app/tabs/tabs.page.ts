@@ -43,6 +43,6 @@ export class TabsPage {
 
   logout() {
     this.credentials.setCredentials();
-    this.router.navigate(['/login'], { replaceUrl: true });
+    this.router.navigate(['/landing'], { replaceUrl: true });
   }
 }

@@ -29,7 +29,7 @@ export class GenericService {
     handleHTTPErrors(err: HttpErrorResponse) {
         if (err && err.status === 401) {
             this.credentials.setCredentials();
-            this.router.navigate(['/login'], { replaceUrl: true });
+            this.router.navigate(['/landing'], { replaceUrl: true });
         }
     }
 }
