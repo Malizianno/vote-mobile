@@ -46,6 +46,6 @@ export class LandingComponent {
   }
 
   signup() {
-    this.router.navigate(['/signup'], { replaceUrl: true });
+    this.router.navigate(['/signup-info'], { replaceUrl: true });
   }
 }

@@ -24,6 +24,7 @@
     "@angular/platform-browser": "^17.0.2",
     "@angular/platform-browser-dynamic": "^17.0.2",
     "@angular/router": "^17.0.2",
+    "@capacitor-community/camera-preview": "^5.0.0",
     "@capacitor-community/http": "^1.4.1",
     "@capacitor/android": "5.7.4",
     "@capacitor/app": "5.0.7",
@@ -40,6 +41,7 @@
     "rxjs": "^7.8.1",
     "swiper": "^11.1.4",
     "tslib": "^2.3.0",
+    "vote-mobile": "file:",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {

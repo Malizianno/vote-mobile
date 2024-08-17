@@ -23,9 +23,9 @@ import { ElectionActiveComponent } from '../election-active/election-active.comp
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss'],
+  selector: 'app-signup-info',
+  templateUrl: './signup-info.component.html',
+  styleUrls: ['./signup-info.component.scss'],
   standalone: true,
   imports: [IonGrid, IonInput, IonButtons, IonCardContent, IonCardHeader, IonRow, IonCard, IonCol,
     IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent,
@@ -33,7 +33,7 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class SignupComponent {
+export class SignupInfoComponent {
   appVersion: string;
 
   constructor(private router: Router, private credentials: CredentialsService,) {
@@ -43,11 +43,10 @@ export class SignupComponent {
   }
 
   swiperSlideChanged($event: any) {
-    console.log('changed:', $event);
+    // console.log('changed:', $event);
   }
 
   openSignupDetails() {
-    // TODO: this should redirect to a signup screen where user loads his ID and it is recognised by facial recognition and saves esential data
-    this.router.navigate(['/login'], { replaceUrl: true });
+    this.router.navigate(['/signup-details'], { replaceUrl: true });
   }
 }

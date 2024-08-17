@@ -1,0 +1,22 @@
+<ion-content [fullscreen]="true" *ngIf="cameraActive" id="cameraPreview" class="camera-preview">
+</ion-content>
+
+<ion-content class="buttons">
+  <ion-fab class="ion-padding-bottom ion-padding-start" slot="fixed" vertical="bottom" horizontal="start">
+    <ion-fab-button color="white" (click)="startCameraPreview()">
+      <ion-icon name="checkmark-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  
+  <ion-fab class="ion-padding-bottom" slot="fixed" vertical="bottom" horizontal="center">
+    <ion-fab-button color="white" (click)="captureImage()">
+      <ion-icon name="camera"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  
+  <ion-fab class="ion-padding-bottom ion-padding-end" slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="white" (click)="stopCamera()">
+      <ion-icon name="stop-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

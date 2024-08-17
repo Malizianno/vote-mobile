@@ -1,0 +1,10 @@
+@import '../app.component.scss';
+
+.camera-preview {
+    --background: transparent;
+    z-index: -1;
+}
+
+.buttons {
+    z-index: 1;
+}
