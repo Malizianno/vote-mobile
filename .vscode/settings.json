@@ -3,5 +3,6 @@
     "@ionic/angular/common",
     "@ionic/angular"
   ],
-  "angular.enable-strict-mode-prompt": false
+  "angular.enable-strict-mode-prompt": false,
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
