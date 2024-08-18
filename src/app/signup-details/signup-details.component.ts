@@ -19,7 +19,7 @@ import {
   IonTitle, IonToolbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, camera, checkmarkOutline, stopOutline } from 'ionicons/icons';
+import { arrowForward, camera, checkmarkOutline, refresh, stopOutline } from 'ionicons/icons';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
@@ -41,7 +41,7 @@ export class SignupDetailsComponent {
   cameraActive = false;
 
   constructor(private router: Router, private credentials: CredentialsService,) {
-    addIcons({ arrowForward, camera, checkmarkOutline, stopOutline });
+    addIcons({ arrowForward, camera, checkmarkOutline, stopOutline, refresh });
 
     this.checkPermissions();
   }
@@ -61,13 +61,15 @@ export class SignupDetailsComponent {
           .then(permission => console.log('photos permission requested: ', permission),
             error => console.log('error: ', error));
       }
-    }, error => console.log('error: ', error));
+    }, error => console.log('error: ', error)).then(() => {
+      this.startCameraPreview();
+    })
   }
 
   startCameraPreview() {
     console.log('started camera preview... ');
-    // this.imagePreview = null;
-    // this.image = null;
+    this.imagePreview = null;
+    this.image = null;
 
     const options: CameraPreviewOptions = {
       parent: 'cameraPreview',
@@ -99,14 +101,20 @@ export class SignupDetailsComponent {
       quality: 90
     }
 
-    const result = await CameraPreview.capture(CameraPreviewPictureOptions);
+    await CameraPreview.capture(CameraPreviewPictureOptions).then(result => {
+      this.imagePreview = 'data:image/jpeg;base64,' + result.value;
+      this.image = result.value;
+  
+      console.log('imagePreview: ', this.imagePreview);
+      console.log('image: ', this.image);
+  
+      this.stopCamera();
+    });
+  }
 
-    this.imagePreview = 'data:image/jpeg;base64,' + result.value;
-    this.image = result.value;
+  processImage() {
+    console.log('image to process: \n', this.image);
 
-    console.log('imagePreview: ', this.imagePreview);
-    console.log('image: ', this.image);
-
-    this.stopCamera();
+    // WIP: OCR the data
   }
 }

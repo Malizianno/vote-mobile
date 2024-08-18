@@ -1,5 +1,9 @@
 @import '../app.component.scss';
 
+ion-item {
+    --background: transparent;
+}
+
 .camera-preview {
     --background: transparent;
     z-index: -1;
@@ -7,4 +11,20 @@
 
 .buttons {
     z-index: 1;
+}
+
+.border {
+    border: solid;
+}
+
+.row-height-80 {
+    height: 80%;
+}
+
+.row-height-40 {
+    height: 40%;
+}
+
+.rotate-img {
+    rotate: -90deg;
 }
