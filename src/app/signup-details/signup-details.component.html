@@ -21,15 +21,7 @@
 
 <div class="fullscreen-grid" *ngIf="!cameraActive">
   <ion-content [fullscreen]="true">
-    <ion-grid class="fullscreen-grid">
-      <ion-row class="fullscreen-grid ion-align-items-center">
-        <ion-col class="fullscreen-grid">
-          <ion-item> <!-- WIP: arrange image in screen -->
-            <img class="" [src]="imagePreview">
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    <img [src]="imagePreview" width="{{ screenWidth }}" height="{{ screenHeight * 0.8 }}" />
   </ion-content>
 
   <ion-fab class="ion-padding-bottom ion-padding-start" slot="fixed" vertical="bottom" horizontal="start">

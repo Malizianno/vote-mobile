@@ -23,7 +23,7 @@ import { arrowForward, camera, checkmarkOutline, refresh, stopOutline } from 'io
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-
+// import { Ocr, TextDetections } from '@capacitor-community/image-to-text';
 @Component({
   selector: 'app-signup-details',
   templateUrl: './signup-details.component.html',
@@ -40,10 +40,24 @@ export class SignupDetailsComponent {
   imagePreview: any; //For displaying on screen
   cameraActive = false;
 
+  screenHeight = 0;
+  screenWidth = 0;
+
   constructor(private router: Router, private credentials: CredentialsService,) {
     addIcons({ arrowForward, camera, checkmarkOutline, stopOutline, refresh });
 
     this.checkPermissions();
+
+    this.setLocalScreenSize();
+  }
+  
+  setLocalScreenSize() {
+    console.log('window: ', window);
+    console.log('screen height: ', window.screen.height);
+    console.log('screen width', window.screen.width);
+
+    this.screenWidth = window.screen.width;
+    this.screenHeight = window.screen.height;
   }
 
   checkPermissions() {
@@ -63,7 +77,7 @@ export class SignupDetailsComponent {
       }
     }, error => console.log('error: ', error)).then(() => {
       this.startCameraPreview();
-    })
+    });
   }
 
   startCameraPreview() {
@@ -98,23 +112,29 @@ export class SignupDetailsComponent {
 
   async captureImage() {
     const CameraPreviewPictureOptions: CameraPreviewPictureOptions = {
+      height: this.screenHeight * 0.8,
+      width: this.screenWidth,
       quality: 90
     }
 
     await CameraPreview.capture(CameraPreviewPictureOptions).then(result => {
       this.imagePreview = 'data:image/jpeg;base64,' + result.value;
       this.image = result.value;
-  
+
       console.log('imagePreview: ', this.imagePreview);
       console.log('image: ', this.image);
-  
+
       this.stopCamera();
     });
   }
 
-  processImage() {
-    console.log('image to process: \n', this.image);
+  async processImage() {
+    console.log('image to process: \n', this.image);  
 
-    // WIP: OCR the data
+    // const data: TextDetections = await Ocr.detectText({ filename: this.image });
+
+    // for (let detection of data.textDetections) {
+    //   console.log(detection.text);
+    // }
   }
 }
