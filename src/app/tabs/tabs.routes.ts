@@ -41,10 +41,6 @@ export const routes: Routes = [
     loadComponent: () => import('../signup-info/signup-info.component').then((m) => m.SignupInfoComponent),
   },
   {
-    path: 'signup-details',
-    loadComponent: () => import('../signup-details/signup-details.component').then((m) => m.SignupDetailsComponent),
-  },
-  {
     path: '',
     redirectTo: '/landing',
     pathMatch: 'full',

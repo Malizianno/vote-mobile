@@ -8,6 +8,9 @@ project(':capacitor-community-camera-preview').projectDir = new File('../node_mo
 include ':capacitor-community-http'
 project(':capacitor-community-http').projectDir = new File('../node_modules/@capacitor-community/http/android')
 
+include ':capacitor-community-image-to-text'
+project(':capacitor-community-image-to-text').projectDir = new File('../node_modules/@capacitor-community/image-to-text/android')
+
 include ':capacitor-mlkit-face-detection'
 project(':capacitor-mlkit-face-detection').projectDir = new File('../node_modules/@capacitor-mlkit/face-detection/android')
 
