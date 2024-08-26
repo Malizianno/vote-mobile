@@ -18,7 +18,7 @@ export class ElectionService extends GenericService {
     return this.http.get<Candidate>(this.apiURL + '/result', { headers: this.headers });
   }
 
-  vote(candidate: Candidate): Observable<boolean> {
-    return this.http.post<boolean>(this.apiURL + '/vote', candidate, { headers: this.headers });
+  vote(candidate: Candidate, userID: number | null): Observable<boolean> {
+    return this.http.post<boolean>(this.apiURL + '/vote', candidate, { params: { userID: userID! }, headers: this.headers });
   }
 }

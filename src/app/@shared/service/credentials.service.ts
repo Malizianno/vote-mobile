@@ -3,6 +3,7 @@ import { LoginResponseDTO } from '../model/login.dto';
 
 const credentialsKey = 'credentials';
 const hasVotedKey = 'has_voted';
+const userIDKey = 'id';
 
 /**
  * Provides storage for authentication credentials.
@@ -47,15 +48,19 @@ export class CredentialsService {
   setCredentials(credentials?: LoginResponseDTO) {
     this._credentials = credentials || null;
     const hasVoted = credentials?.hasVoted;
+    const userID = credentials?.id;
 
     if (credentials) {
       localStorage.setItem(credentialsKey, JSON.stringify(credentials));
       localStorage.setItem(hasVotedKey, JSON.stringify(hasVoted));
+      localStorage.setItem(userIDKey, JSON.stringify(userID));
     } else {
       sessionStorage.removeItem(credentialsKey);
       sessionStorage.removeItem(hasVotedKey);
+      sessionStorage.removeItem(userIDKey);
       localStorage.removeItem(credentialsKey);
       localStorage.removeItem(hasVotedKey);
+      localStorage.removeItem(userIDKey);
     }
   }
 
@@ -66,5 +71,10 @@ export class CredentialsService {
   get hasVoted(): boolean {
     const value = localStorage.getItem(hasVotedKey);
     return (/true/i).test(value!);
+  }
+
+  get userID(): number | null {
+    const value = localStorage.getItem(userIDKey);
+    return value === null ? null : +value;
   }
 }

@@ -11,4 +11,5 @@ export class LoginResponseDTO {
     token!: string;
     role!: UserRole;
     hasVoted!: boolean;
+    id!: number;
 }

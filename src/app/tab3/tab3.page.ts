@@ -57,7 +57,7 @@ export class Tab3Page {
   }
 
   vote(candidate: Candidate) {
-    this.election.vote(candidate).subscribe((res: boolean) => {
+    this.election.vote(candidate, this.credentials.userID).subscribe((res: boolean) => {
       this.hasVoted = true;
       this.selected = 0;
       this.credentials.setHasVoted(true);

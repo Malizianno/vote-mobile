@@ -5,6 +5,7 @@ export class User extends GenericModel {
     username!: string;
     password!: string;
     role!: UserRole;
+    hasVoted!: boolean;
 }
 
 export enum UserRole {
