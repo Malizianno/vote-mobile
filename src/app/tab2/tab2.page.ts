@@ -82,6 +82,13 @@ export class Tab2Page {
     this.content.scrollToTop(500);
   }
 
+  parseParty(party: string) {
+    if ('ALL' === party) {
+      return 'Toate';
+    }
+    return party;
+  }
+
   private debounceSubscription() {
     this.filterFirstNameBehavior.pipe(debounceTime(1000), distinctUntilChanged()).subscribe((res: string) => {
       if (res) { this.reloadPage(); }

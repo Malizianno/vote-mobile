@@ -13,7 +13,7 @@
 
     <ion-row class="ion-justify-content-start">
       <ion-col *ngFor="let party of parties">
-        <ion-chip size="small" color="dark" (click)="filterPartyBehavior.next($event.srcElement.innerText)">{{ party }}</ion-chip>
+        <ion-chip size="small" color="dark" (click)="filterPartyBehavior.next($event.srcElement.innerText)">{{ parseParty(party) }}</ion-chip>
       </ion-col>
     </ion-row>
   </ion-toolbar>
@@ -36,7 +36,7 @@
 
           <ion-row class="ion-text-end">
             <ion-col>
-              <ion-button fill="clear" (click)="openMoreAbout()">more</ion-button>
+              <ion-button fill="clear" (click)="openMoreAbout()">DETALII</ion-button>
             </ion-col>
           </ion-row>
         </ion-card>
@@ -44,7 +44,7 @@
     </ion-row>
     <ion-row *ngIf="candidates.length > 1">
       <ion-col class="ion-text-center">
-        <ion-button class="bottom" shape="round" color="dark" (click)="scrollToTop()">hai sus!</ion-button>
+        <ion-button class="bottom" shape="round" color="dark" (click)="scrollToTop()">Du-te sus</ion-button>
       </ion-col>
     </ion-row>
 
