@@ -8,7 +8,7 @@ import { GenericService } from './generic.service';
   providedIn: 'root',
 })
 export class ElectionService extends GenericService {
-  private apiURL = AppConstants.BASE_URL + '/election';
+  private apiURL = AppConstants.BASE_URL + '/election/helper';
 
   getStatus(): Observable<boolean> {
     return this.http.get<boolean>(this.apiURL + '/status', { headers: this.headers });
