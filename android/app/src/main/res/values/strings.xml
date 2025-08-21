@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">vot.e</string>
-    <string name="title_activity_main">vote-mobile</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="title_activity_main">vot.e</string>
+    <string name="package_name">ro.cristiansterie.vote.mobile</string>
+    <string name="custom_url_scheme">ro.cristiansterie.vote.mobile</string>
 </resources>
