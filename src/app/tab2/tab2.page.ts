@@ -31,6 +31,7 @@ import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
   selector: 'app-tab2',
@@ -82,20 +83,20 @@ export class Tab2Page {
   private refreshSub: Subscription;
 
   ionViewWillEnter() {
-    console.log('ionViewWillEnter - tab2');
+    // console.log('ionViewWillEnter - tab2');
     this.reloadPage();
-    this.refreshSub = interval(5000).subscribe(() => this.reloadPage()); // every 5s
+    this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() => this.reloadPage()); // every <AppCOnstants.REFRESH_TIME_MS> s
   }
 
   ionViewWillLeave() {
-    console.log('ionViewWillLeave - tab2');
+    // console.log('ionViewWillLeave - tab2');
     if (this.refreshSub) {
       this.refreshSub.unsubscribe(); // stop refreshing when tab is left
     }
   }
 
   constructor(private candidatesService: CandidateService) {
-    this.reloadPage();
+    // this.reloadPage();
     this.debounceSubscription();
   }
 

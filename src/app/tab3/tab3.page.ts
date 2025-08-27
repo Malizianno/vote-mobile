@@ -10,6 +10,7 @@ import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { ElectionService } from '../@shared/service/election.service';
 import { CredentialsService } from '../@shared/service/credentials.service';
+import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
   selector: 'app-tab3',
@@ -32,13 +33,13 @@ export class Tab3Page {
   private refreshSub: Subscription;
   
     ionViewWillEnter() {
-      console.log('ionViewWillEnter - tab3');
+      // console.log('ionViewWillEnter - tab3');
       this.reloadPage();
-      this.refreshSub = interval(5000).subscribe(() => this.reloadPage()); // every 5s
+      this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() => this.reloadPage()); // every <AppCOnstants.REFRESH_TIME_MS> s
     }
   
     ionViewWillLeave() {
-      console.log('ionViewWillLeave - tab3');
+      // console.log('ionViewWillLeave - tab3');
       if (this.refreshSub) {
         this.refreshSub.unsubscribe(); // stop refreshing when tab is left
       }
@@ -46,7 +47,7 @@ export class Tab3Page {
 
   constructor(private candidatesService: CandidateService, private election: ElectionService, private credentials: CredentialsService,) {
     addIcons({ checkmarkCircleOutline });
-    this.reloadPage();
+    // this.reloadPage();
   }
 
   reloadPage() {

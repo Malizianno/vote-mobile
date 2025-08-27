@@ -10,6 +10,7 @@ import { ElectionActiveComponent } from '../election-active/election-active.comp
 import { ElectionService } from '../@shared/service/election.service';
 import { interval, map, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
   selector: 'app-tab1',
@@ -32,20 +33,20 @@ export class Tab1Page {
   private refreshSub: Subscription;
 
   ionViewWillEnter() {
-    console.log('ionViewWillEnter - tab1');
+    // console.log('ionViewWillEnter - tab1');
     this.reloadPage();
-    this.refreshSub = interval(5000).subscribe(() => this.reloadPage()); // every 5s
+    this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() => this.reloadPage()); // every every <AppCOnstants.REFRESH_TIME_MS> s
   }
 
   ionViewWillLeave() {
-    console.log('ionViewWillLeave - tab1');
+    // console.log('ionViewWillLeave - tab1');
     if (this.refreshSub) {
       this.refreshSub.unsubscribe(); // stop refreshing when tab is left
     }
   }
 
   constructor(private election: ElectionService) {
-    this.reloadPage();
+    // this.reloadPage();
   }
 
   reloadPage() {
