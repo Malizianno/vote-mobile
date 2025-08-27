@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
@@ -65,7 +65,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     NoResultsComponent,
   ],
 })
-export class Tab2Page {
+export class Tab2Page implements OnDestroy {
   candidates: Candidate[] = [];
 
   filter: Candidate = new Candidate();
@@ -100,6 +100,10 @@ export class Tab2Page {
     this.debounceSubscription();
   }
 
+  ngOnDestroy(): void {
+    this.refreshSub.unsubscribe();
+  }
+
   reloadPage() {
     this.getFiltered().subscribe({
       next: (res) => res,
@@ -110,7 +114,7 @@ export class Tab2Page {
   getFiltered() {
     return this.candidatesService.getFiltered(this.filter, this.paging).pipe(
       map((res) => {
-        if (res) {
+        if (res && this.candidates != res.candidates) {
           this.candidates = Candidate.fromArray(res.candidates);
           this.totalCandidates = res.total;
           console.log('candidates: ', this.candidates);

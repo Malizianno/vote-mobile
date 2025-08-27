@@ -1,25 +1,53 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { IonButton, IonCardSubtitle, IonCardTitle, IonCardContent, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { Component, OnDestroy } from '@angular/core';
+import {
+  IonButton,
+  IonCardContent,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonHeader,
+  IonIcon,
+  IonRow,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { checkmarkCircleOutline } from 'ionicons/icons';
 import { interval, map, Subscription } from 'rxjs';
 import { Candidate } from '../@shared/model/candidate.model';
 import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline } from 'ionicons/icons';
-import { ElectionService } from '../@shared/service/election.service';
 import { CredentialsService } from '../@shared/service/credentials.service';
+import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
+import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss'],
   standalone: true,
-  imports: [IonGrid, IonHeader, IonToolbar, IonTitle, IonCardTitle, IonCardSubtitle, IonCardContent, IonContent, ExploreContainerComponent, CommonModule, IonIcon, IonButton, IonRow, IonCol],
+  imports: [
+    IonGrid,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCardContent,
+    IonContent,
+    ExploreContainerComponent,
+    CommonModule,
+    IonIcon,
+    IonButton,
+    IonRow,
+    IonCol,
+  ],
 })
-export class Tab3Page {
+export class Tab3Page implements OnDestroy {
   candidates: Candidate[] = [];
 
   filter: Candidate = new Candidate();
@@ -31,41 +59,53 @@ export class Tab3Page {
   hasVoted = false;
 
   private refreshSub: Subscription;
-  
-    ionViewWillEnter() {
-      // console.log('ionViewWillEnter - tab3');
-      this.reloadPage();
-      this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() => this.reloadPage()); // every <AppCOnstants.REFRESH_TIME_MS> s
-    }
-  
-    ionViewWillLeave() {
-      // console.log('ionViewWillLeave - tab3');
-      if (this.refreshSub) {
-        this.refreshSub.unsubscribe(); // stop refreshing when tab is left
-      }
-    }
 
-  constructor(private candidatesService: CandidateService, private election: ElectionService, private credentials: CredentialsService,) {
+  ionViewWillEnter() {
+    // console.log('ionViewWillEnter - tab3');
+    this.reloadPage();
+    this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() =>
+      this.reloadPage()
+    ); // every <AppCOnstants.REFRESH_TIME_MS> s
+  }
+
+  ionViewWillLeave() {
+    // console.log('ionViewWillLeave - tab3');
+    if (this.refreshSub) {
+      this.refreshSub.unsubscribe(); // stop refreshing when tab is left
+    }
+  }
+
+  constructor(
+    private candidatesService: CandidateService,
+    private election: ElectionService,
+    private credentials: CredentialsService
+  ) {
     addIcons({ checkmarkCircleOutline });
     // this.reloadPage();
+  }
+
+  ngOnDestroy(): void {
+    this.refreshSub.unsubscribe();
   }
 
   reloadPage() {
     this.hasVoted = this.credentials.hasVoted;
 
     this.getFiltered().subscribe({
-      next: res => res,
-      error: err => this.candidatesService.handleHTTPErrors(err)
+      next: (res) => res,
+      error: (err) => this.candidatesService.handleHTTPErrors(err),
     });
   }
 
   getFiltered() {
-    return this.candidatesService.getFiltered(this.filter, this.paging).pipe(map((res) => {
-      if (res) {
-        this.candidates = Candidate.fromArray(res.candidates);
-        this.totalCandidates = res.total;
-      }
-    }));
+    return this.candidatesService.getFiltered(this.filter, this.paging).pipe(
+      map((res) => {
+        if (res && this.candidates != res.candidates) {
+          this.candidates = Candidate.fromArray(res.candidates);
+          this.totalCandidates = res.total;
+        }
+      })
+    );
   }
 
   setCandidateSelection(idToSelect: number) {
@@ -73,10 +113,12 @@ export class Tab3Page {
   }
 
   vote(candidate: Candidate) {
-    this.election.vote(candidate, this.credentials.userID).subscribe((res: boolean) => {
-      this.hasVoted = true;
-      this.selected = 0;
-      this.credentials.setHasVoted(true);
-    });
+    this.election
+      .vote(candidate, this.credentials.userID)
+      .subscribe((res: boolean) => {
+        this.hasVoted = true;
+        this.selected = 0;
+        this.credentials.setHasVoted(true);
+      });
   }
 }

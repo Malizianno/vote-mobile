@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -27,7 +27,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     CommonModule,
   ],
 })
-export class Tab1Page {
+export class Tab1Page implements OnDestroy {
   electionEnabled = false;
 
   private refreshSub: Subscription;
@@ -35,7 +35,9 @@ export class Tab1Page {
   ionViewWillEnter() {
     // console.log('ionViewWillEnter - tab1');
     this.reloadPage();
-    this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() => this.reloadPage()); // every every <AppCOnstants.REFRESH_TIME_MS> s
+    this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() =>
+      this.reloadPage()
+    ); // every every <AppCOnstants.REFRESH_TIME_MS> s
   }
 
   ionViewWillLeave() {
@@ -47,6 +49,10 @@ export class Tab1Page {
 
   constructor(private election: ElectionService) {
     // this.reloadPage();
+  }
+
+  ngOnDestroy(): void {
+    this.refreshSub.unsubscribe();
   }
 
   reloadPage() {
