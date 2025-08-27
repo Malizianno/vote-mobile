@@ -1,19 +1,14 @@
-<!-- <ion-content [fullscreen]="true">
-  <ion-grid class="fullscreen-grid">
-
-    <ion-row *ngIf="infoActive" class="fullscreen-grid ion-align-items-center">
-      <ion-col> </ion-col>
-    </ion-row>
-
-  </ion-grid>
-</ion-content> -->
-
-
 <ion-header>
   <ion-toolbar>
     <ion-title>Profile</ion-title>
   </ion-toolbar>
 </ion-header>
+
+<ion-fab vertical="top" horizontal="end" slot="fixed">
+  <ion-fab-button color="white" class="fab-bordered">
+    <ion-icon (click)="close()" name="close-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
 
 <ion-content class="ion-padding">
   <ion-card>

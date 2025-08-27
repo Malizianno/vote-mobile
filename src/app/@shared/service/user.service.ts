@@ -11,9 +11,12 @@ export class UserService extends GenericService {
   private apiURL = AppConstants.BASE_URL + '/users';
   private profileURL = this.apiURL + '/profile/';
 
-  save(user: User): Observable<User> {
+  save(user: User, updateType: string): Observable<User> {
     return this.http.post<User>(this.apiURL + '/save', user, {
       headers: this.headers,
+      params: {
+        updateType
+      }
     });
   }
 

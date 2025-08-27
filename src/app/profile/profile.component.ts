@@ -21,7 +21,11 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, checkmarkCircleOutline, refresh } from 'ionicons/icons';
+import {
+  arrowForward,
+  checkmarkCircleOutline,
+  refresh,
+  add, closeOutline } from 'ionicons/icons';
 import { LoginResponseDTO } from '../@shared/model/login.dto';
 import { User } from '../@shared/model/user.model';
 import { CredentialsService } from '../@shared/service/credentials.service';
@@ -29,6 +33,7 @@ import { UserService } from '../@shared/service/user.service';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { UserUpdateActionEnum } from '../@shared/util/user-update-action.enum';
 
 @Component({
   selector: 'app-profile',
@@ -69,14 +74,13 @@ export class ProfileComponent {
     private credentials: CredentialsService,
     private users: UserService
   ) {
-    addIcons({ arrowForward, refresh, checkmarkCircleOutline });
+    addIcons({closeOutline,add,arrowForward,refresh,checkmarkCircleOutline});
 
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, () => {
         // console.log('Hardware back button pressed');
 
-        // go to tab1 when back button is pressed
-        this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
+        this.close();
       });
     });
 
@@ -87,6 +91,11 @@ export class ProfileComponent {
     this.memmoryUser = this.credentials.credentials!;
 
     this.getProfile(this.memmoryUser.id);
+  }
+
+  close() {
+    // go to tab1 when back button/close is pressed
+    this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
   }
 
   getProfile(id: number) {
@@ -102,14 +111,17 @@ export class ProfileComponent {
   }
 
   saveProfile() {
-    this.users.save(this.user).subscribe({
+    this.user.hasVoted = !!this.user.hasVoted; // to trigger change detection
+    this.user.password = this.memmoryUser.token; // keep the same password if not changed
+
+    this.users.save(this.user, UserUpdateActionEnum[UserUpdateActionEnum.PROFILE_UPDATE].toString()).subscribe({
       next: (res: User) => {
-        this.user = res;
+        // this.user = res;
         console.log('user profile updated: ', this.user);
         this.credentials.setCredentials(this.memmoryUser);
-        alert('Profile updated successfully!');
+        this.close();
       },
-      error: (err: HttpErrorResponse) => {    
+      error: (err: HttpErrorResponse) => {
         this.users.handleHTTPErrors(err);
       },
     });

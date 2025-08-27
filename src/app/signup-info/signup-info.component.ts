@@ -25,6 +25,7 @@ import { User, UserRole } from '../@shared/model/user.model';
 import { UserService } from '../@shared/service/user.service';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { UserUpdateActionEnum } from '../@shared/util/user-update-action.enum';
 
 @Component({
   selector: 'app-signup-info',
@@ -140,7 +141,7 @@ export class SignupInfoComponent {
 
     console.log('created user: ', user);
 
-    this.userService.save(user).subscribe((res: User) => {
+    this.userService.save(user, UserUpdateActionEnum[UserUpdateActionEnum.USER_UPDATE].toString()).subscribe((res: User) => {
       if (res && res.id) {
         console.log('user saved successfully!', res);
         this.router.navigate(['/login'], { replaceUrl: true });
