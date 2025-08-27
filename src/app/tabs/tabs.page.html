@@ -10,8 +10,8 @@
     <ion-button color="white">vot.e</ion-button>
   </ion-fab-button>
   <ion-fab-list side="bottom">
-    <ion-fab-button disabled class="fab-bordered">
-      <ion-icon name="person"></ion-icon>
+    <ion-fab-button class="fab-bordered">
+      <ion-icon (click)="goToProfile()" name="person"></ion-icon>
     </ion-fab-button>
     <ion-fab-button class="fab-bordered">
       <ion-icon (click)="logout()" name="exit"></ion-icon>

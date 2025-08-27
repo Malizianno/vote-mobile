@@ -41,6 +41,10 @@ export class TabsPage {
     }));
   }
 
+  goToProfile() {
+    this.router.navigate(['/profile'], { replaceUrl: true });
+  }
+
   logout() {
     this.credentials.setCredentials();
     this.router.navigate(['/landing'], { replaceUrl: true });

@@ -9,8 +9,17 @@ import { GenericService } from './generic.service';
 })
 export class UserService extends GenericService {
   private apiURL = AppConstants.BASE_URL + '/users';
+  private profileURL = this.apiURL + '/profile/';
 
   save(user: User): Observable<User> {
-    return this.http.post<User>(this.apiURL + '/save', user, { headers: this.headers });
+    return this.http.post<User>(this.apiURL + '/save', user, {
+      headers: this.headers,
+    });
+  }
+
+  // profile //
+
+  get(id: number): Observable<User> {
+    return this.http.get<User>(this.profileURL + id, { headers: this.headers });
   }
 }

@@ -30,15 +30,25 @@ export const routes: Routes = [
   },
   {
     path: 'landing',
-    loadComponent: () => import('../landing/landing.component').then((m) => m.LandingComponent),
+    loadComponent: () =>
+      import('../landing/landing.component').then((m) => m.LandingComponent),
   },
   {
     path: 'login',
-    loadComponent: () => import('../login/login.component').then((m) => m.LoginComponent),
+    loadComponent: () =>
+      import('../login/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('../profile/profile.component').then((m) => m.ProfileComponent),
   },
   {
     path: 'signup-info',
-    loadComponent: () => import('../signup-info/signup-info.component').then((m) => m.SignupInfoComponent),
+    loadComponent: () =>
+      import('../signup-info/signup-info.component').then(
+        (m) => m.SignupInfoComponent
+      ),
   },
   {
     path: '',
