@@ -6,14 +6,14 @@
 </ion-header>
 
 <ion-fab slot="fixed" vertical="top" horizontal="end" [edge]="false">
-  <ion-fab-button color="white">
+  <ion-fab-button color="white" class="fab-bordered">
     <ion-button color="white">vot.e</ion-button>
   </ion-fab-button>
   <ion-fab-list side="bottom">
-    <ion-fab-button disabled>
+    <ion-fab-button disabled class="fab-bordered">
       <ion-icon name="person"></ion-icon>
     </ion-fab-button>
-    <ion-fab-button>
+    <ion-fab-button class="fab-bordered">
       <ion-icon (click)="logout()" name="exit"></ion-icon>
     </ion-fab-button>
   </ion-fab-list>
