@@ -111,7 +111,7 @@ export class ProfileComponent {
   }
 
   saveProfile() {
-    this.user.hasVoted = !!this.user.hasVoted; // to trigger change detection
+    // this.user.hasVoted = !!this.user.hasVoted; // to trigger change detection
     this.user.password = this.memmoryUser.token; // keep the same password if not changed
 
     this.users.save(this.user, UserUpdateActionEnum[UserUpdateActionEnum.PROFILE_UPDATE].toString()).subscribe({

@@ -28,12 +28,7 @@
 
       <ion-item>
         <ion-label position="stacked">Role</ion-label>
-        <ion-input [(ngModel)]="user.role" type="email"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">hasVoted</ion-label>
-        <ion-input [(ngModel)]="user.hasVoted" type="tel"></ion-input>
+        <ion-input [(ngModel)]="user.role" type="text"></ion-input>
       </ion-item>
 
       <ion-button expand="block" (click)="saveProfile()">Save</ion-button>
