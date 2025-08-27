@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { IonButton, IonCardSubtitle, IonCardTitle, IonCardContent, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { map } from 'rxjs';
+import { interval, map, Subscription } from 'rxjs';
 import { Candidate } from '../@shared/model/candidate.model';
 import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
@@ -28,6 +28,21 @@ export class Tab3Page {
   selected = 0;
 
   hasVoted = false;
+
+  private refreshSub: Subscription;
+  
+    ionViewWillEnter() {
+      console.log('ionViewWillEnter - tab3');
+      this.reloadPage();
+      this.refreshSub = interval(5000).subscribe(() => this.reloadPage()); // every 5s
+    }
+  
+    ionViewWillLeave() {
+      console.log('ionViewWillLeave - tab3');
+      if (this.refreshSub) {
+        this.refreshSub.unsubscribe(); // stop refreshing when tab is left
+      }
+    }
 
   constructor(private candidatesService: CandidateService, private election: ElectionService, private credentials: CredentialsService,) {
     addIcons({ checkmarkCircleOutline });

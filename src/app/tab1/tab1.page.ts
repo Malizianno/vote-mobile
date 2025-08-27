@@ -1,9 +1,14 @@
-import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import { Component, OnInit } from '@angular/core';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+} from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ElectionService } from '../@shared/service/election.service';
-import { map } from 'rxjs';
+import { interval, map, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,10 +16,33 @@ import { CommonModule } from '@angular/common';
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent, ElectionActiveComponent, CommonModule],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    ExploreContainerComponent,
+    ElectionActiveComponent,
+    CommonModule,
+  ],
 })
 export class Tab1Page {
   electionEnabled = false;
+
+  private refreshSub: Subscription;
+
+  ionViewWillEnter() {
+    console.log('ionViewWillEnter - tab1');
+    this.reloadPage();
+    this.refreshSub = interval(5000).subscribe(() => this.reloadPage()); // every 5s
+  }
+
+  ionViewWillLeave() {
+    console.log('ionViewWillLeave - tab1');
+    if (this.refreshSub) {
+      this.refreshSub.unsubscribe(); // stop refreshing when tab is left
+    }
+  }
 
   constructor(private election: ElectionService) {
     this.reloadPage();
@@ -22,15 +50,17 @@ export class Tab1Page {
 
   reloadPage() {
     this.getElectionStatus().subscribe({
-      next: res => res,
-      error: err => this.election.handleHTTPErrors(err)
+      next: (res) => res,
+      error: (err) => this.election.handleHTTPErrors(err),
     });
   }
 
   getElectionStatus() {
-    return this.election.getStatus().pipe(map((res) => {
-      this.electionEnabled = res;
-      console.log('(tab1) electionEnabled: ', this.electionEnabled);
-    }));
+    return this.election.getStatus().pipe(
+      map((res) => {
+        this.electionEnabled = res;
+        console.log('(tab1) electionEnabled: ', this.electionEnabled);
+      })
+    );
   }
 }
