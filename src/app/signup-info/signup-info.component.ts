@@ -3,9 +3,15 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Ocr } from '@capacitor-community/image-to-text';
-import { Camera, CameraResultType, CameraSource, ImageOptions } from '@capacitor/camera';
 import {
-  IonButton, IonButtons,
+  Camera,
+  CameraResultType,
+  CameraSource,
+  ImageOptions,
+} from '@capacitor/camera';
+import {
+  IonButton,
+  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -14,46 +20,65 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
-  IonInput, IonItem,
+  IonInput,
+  IonItem,
   IonRow,
-  IonTitle, IonToolbar
+  IonTitle,
+  IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForward, checkmarkCircleOutline, refresh } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
-import { User, UserProfile, UserRole } from '../@shared/model/user.model';
+import {
+  UserGender,
+  UserNationality,
+  UserProfile,
+} from '../@shared/model/user.model';
 import { UserService } from '../@shared/service/user.service';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-import { UserUpdateActionEnum } from '../@shared/util/user-update-action.enum';
 
 @Component({
   selector: 'app-signup-info',
   templateUrl: './signup-info.component.html',
   styleUrls: ['./signup-info.component.scss'],
   standalone: true,
-  imports: [IonGrid, IonInput, IonButtons, IonCardContent, IonCardHeader, IonRow, IonCard, IonCol,
-    IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent,
-    ElectionActiveComponent, IonButton, IonItem, IonIcon, FormsModule, IonGrid, CommonModule,
+  imports: [
+    IonGrid,
+    IonInput,
+    IonButtons,
+    IonCardContent,
+    IonCardHeader,
+    IonRow,
+    IonCard,
+    IonCol,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    ExploreContainerComponent,
+    ElectionActiveComponent,
+    IonButton,
+    IonItem,
+    IonIcon,
+    FormsModule,
+    IonGrid,
+    CommonModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SignupInfoComponent {
   appVersion: string;
-  infoActive = true;
 
-  image: any; //Base64 to save
-  imagePreview: any; //For displaying on screen
+  image: any; // URI to OCR
+  imagePreview: any; //For displaying on screen ??
+  imageBase64: any; // For sending to backend
 
   readText: any[] = [];
 
-  firstName: string;
-  lastName: string;
-  cnp: string;
-  idValid: boolean = false;
   canVote: boolean = false;
 
-  constructor(private router: Router, private userService: UserService,) {
+  constructor(private router: Router, private userService: UserService) {
     addIcons({ arrowForward, refresh, checkmarkCircleOutline });
 
     this.appVersion = environment.version;
@@ -63,94 +88,157 @@ export class SignupInfoComponent {
     // console.log('changed:', $event);
   }
 
-  updateCnpManually(newValue: string) {
-    this.cnp = newValue;
-
-    this.formatCanVote();
-  }
-
-  formatRelevantData() {
+  formatRelevantData(): UserProfile {
     if (this.readText.length < 1) {
-      return;
+      return new UserProfile();
     }
 
-    this.formatName();
-    this.fromatCNP();
-    this.formatCanVote();
-    this.formatIsValid();
+    let userProfile = new UserProfile();
+
+    userProfile.idImage = this.imageBase64;
+    userProfile.cnp = this.getFormattedCNP();
+    userProfile.firstname = this.getFormattedFirstname();
+    userProfile.lastname = this.getFormattedLastname();
+    userProfile.idSeries = this.getFormattedIDSeries();
+    userProfile.idNumber = +this.getFormattedIDNumber();
+    userProfile.nationality = this.getFormattedNationality();
+    userProfile.gender = this.getFormattedGender();
+    userProfile.birthAddress = this.getFormattedBirthAddress();
+    userProfile.residenceAddress = this.getFormattedResidenceAddress();
+    userProfile.validityStartDate = this.getFormattedStartValidityDate();
+    userProfile.validityEndDate = this.getFormattedEndValidityDate();
+
+    this.formatCanVote(userProfile.cnp.toString());
+
+    return userProfile;
   }
 
-  // name (firstName + lastName)
-  formatName() {
-    const nameIdx = this.readText.findIndex(value => value.text.trim().startsWith("IDROU"));
-    let nameUnformatted: string = this.readText[nameIdx].text;
-    let nameFormatted = nameUnformatted.trim().substring(5).split("<");
+  // firstName
+  getFormattedFirstname() {
+    const nameIdx = this.readText.findIndex((value) =>
+      value.text.trim().startsWith('Prenume')
+    );
+    let nameUnformatted: string = this.readText[nameIdx + 1].text;
 
-    this.lastName = nameFormatted[0].trim();
-    this.firstName = '';
+    return nameUnformatted.trim();
+  }
 
-    for (let i = 1; i < nameFormatted.length - 1; i++) {
-      this.firstName = this.firstName + ' ' + nameFormatted[i].trim();
-    }
+  getFormattedLastname() {
+    const nameIdx = this.readText.findIndex((value) =>
+      value.text.trim().startsWith('Nume')
+    );
+    let nameUnformatted: string = this.readText[nameIdx + 1].text;
+
+    return nameUnformatted.trim();
   }
 
   // CNP
-  fromatCNP() {
-    let cnpIdx = this.readText.findIndex(value => value.text.startsWith("CNP") || value.text.startsWith("CHP"));
-    this.cnp = this.readText[cnpIdx].text.substring(cnpIdx).trim();
+  getFormattedCNP(): number {
+    let cnpIdx = this.readText.findIndex(
+      (value) => value.text.startsWith('CNP') || value.text.startsWith('CHP')
+    );
+    return +this.readText[cnpIdx].text.substring(cnpIdx - 1).trim();
+  }
+
+  // ID series
+  getFormattedIDSeries(): string {
+    const seriesIdx = this.readText.findIndex((value) =>
+      value.text.trim().startsWith('SERIA')
+    );
+    let seriesUnformatted: string = this.readText[seriesIdx].text;
+    return seriesUnformatted.trim().substring(5, 8).trim();
+  }
+
+  // ID number
+  getFormattedIDNumber(): string {
+    const numberIdx = this.readText.findIndex((value) =>
+      value.text.trim().startsWith('SERIA')
+    );
+    let numberUnformatted: string = this.readText[numberIdx].text;
+    return numberUnformatted
+      .trim()
+      .substring(11, numberUnformatted.length)
+      .trim();
+  }
+
+  // nationality
+  getFormattedNationality(): UserNationality {
+    const natIdx = this.readText.findIndex((value) =>
+      value.text.trim().startsWith('Cetatenie')
+    );
+    let natUnformatted: string = this.readText[natIdx + 1].text;
+
+    return natUnformatted.trim().includes('Română')
+      ? UserNationality.ROMANIAN
+      : UserNationality.FOREIGNER;
+  }
+
+  // birth address
+  getFormattedBirthAddress(): string {
+    const addrIdx = this.readText.findIndex((value) =>
+      value.text.trim().includes('nastere')
+    );
+    let addrUnformatted: string = this.readText[addrIdx + 1].text;
+    return addrUnformatted.trim();
+  }
+
+  // residence address
+  getFormattedResidenceAddress(): string {
+    const addrIdx = this.readText.findIndex((value) =>
+      value.text.trim().includes('addres')
+    );
+    let addrUnformatted: string = this.readText[addrIdx + 1].text;
+    return addrUnformatted.trim();
+  }
+
+  // gender
+  getFormattedGender(): UserGender {
+    const genderIdx = this.readText.findIndex((value) =>
+      value.text.trim().startsWith('Sex')
+    );
+    let genderUnformatted: string = this.readText[genderIdx + 1].text;
+    return genderUnformatted.trim() === 'M'
+      ? UserGender.MALE
+      : genderUnformatted.trim() === 'F'
+      ? UserGender.FEMALE
+      : UserGender.OTHER;
+  }
+
+  // validity dates
+  getFormattedValidityDates(): string[] {
+    const valIdx = this.readText.findIndex(
+      (value) =>
+        value.text.trim().startsWith('Valabilitate') ||
+        value.text.trim().includes('Validity')
+    );
+    let valUnformatted: string = this.readText[valIdx + 1].text;
+    return valUnformatted.trim().split('-');
+  }
+
+  getFormattedStartValidityDate(): number {
+    return +new Date(this.getFormattedValidityDates()[0].trim());
+  }
+
+  getFormattedEndValidityDate(): number {
+    return +new Date(this.getFormattedValidityDates()[1].trim());
   }
 
   // canVote
-  formatCanVote() {
-    if (this.cnp.substring(0, 1) === '1' || this.cnp.substring(0, 1) === '2') {
-      if (1900 + +this.cnp.substring(1, 3) + 17 < +new Date().getFullYear()) {
+  formatCanVote(cnp: string) {
+    if (cnp.substring(0, 1) === '1' || cnp.substring(0, 1) === '2') {
+      if (1900 + +cnp.substring(1, 3) + 17 < +new Date().getFullYear()) {
         this.canVote = true;
       }
     }
 
-    if (this.cnp.substring(0, 1) === '5' || this.cnp.substring(0, 1) === '6') {
-      if (+this.cnp.substring(1, 3) + 17 < +new Date().getFullYear().toString().substring(2, 4)) {
+    if (cnp.substring(0, 1) === '5' || cnp.substring(0, 1) === '6') {
+      if (
+        +cnp.substring(1, 3) + 17 <
+        +new Date().getFullYear().toString().substring(2, 4)
+      ) {
         this.canVote = true;
       }
     }
-  }
-
-  // isValid
-  formatIsValid() {
-    const validIdx = this.readText.findIndex(value => value.text.trim().startsWith("Valabilitate"));
-    let dates: string[] = this.readText[validIdx + 1].text.split('-');
-
-    if (+dates[1].substring(6) > new Date().getFullYear()) {
-      this.idValid = true;
-    }
-  }
-
-  canSaveUser(): boolean {
-    return !!this.cnp && this.cnp.length === 13 &&
-      !!this.lastName && this.lastName.length > 0 &&
-      !!this.firstName && this.firstName.length > 0;
-  }
-
-  saveUser() {
-    const user = new UserProfile();
-
-    user.username = this.generateUsername().toLowerCase();
-    user.password = this.cnp.substring(this.cnp.length - 6);
-    user.role = UserRole.VOTANT;
-    user.hasVoted = false;
-
-    // XXX: complete all data to OCR and save to DB now ;)
-
-    console.log('created user: ', user);
-
-    this.userService.saveProfile(user).subscribe((res: User) => {
-      if (res && res.id) {
-        console.log('user saved successfully!', res);
-        this.router.navigate(['/login'], { replaceUrl: true });
-      } else {
-        console.log('error from BE: ', res);
-      }
-    });
   }
 
   async captureImage() {
@@ -161,45 +249,51 @@ export class SignupInfoComponent {
       source: CameraSource.Camera,
     };
 
-    await Camera.getPhoto(options).then(photo => {
+    const photo = await Camera.getPhoto(options).then((photo) => {
       // console.log('photo: ', photo);
       this.imagePreview = photo.webPath;
       this.image = photo.path;
 
-      this.infoActive = false;
-      this.processImage();
+      // Get JPEG file from URI
+      const response = fetch(photo.webPath!);
+      response.then((response) => {
+        response.blob().then((blob) => {
+          const jpegFile = new File([blob], 'photo.jpg', {
+            type: 'image/jpeg',
+          });
+
+          // Convert JPEG Blob to base64
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64String = reader.result as string;
+            this.imageBase64 = base64String;
+            // console.log('Base64:', base64String);
+          };
+          reader.readAsDataURL(jpegFile);
+
+          this.processImage();
+        });
+      });
     });
   }
 
   async processImage() {
     // console.log('image to process: \n', this.image);
 
-    await Ocr.detectText({ filename: this.image }).then(data => {
+    await Ocr.detectText({ filename: this.image }).then((data) => {
       this.readText = data.textDetections;
 
-      this.formatRelevantData();
+      // console.log('readText: \n', this.readText);
+
+      const user = this.formatRelevantData();
+
+      // redirect to profile page
+      this.router.navigate(['/profile'], {
+        replaceUrl: true,
+        state: {
+          user: user,
+        },
+      });
     });
-  }
-
-  // lastName + .[firstName]. birthday from CNP
-  private generateUsername(): string {
-    // add lastName
-    let username = this.lastName;
-    console.log(this.firstName.split(' '));
-
-    // add all firstNames
-    const allFirstNames: string[] = this.firstName.split(' ');
-    for (let idx in allFirstNames) {
-      console.log('name: ', allFirstNames[idx]);
-
-      if (!!allFirstNames[idx] && allFirstNames[idx].length > 0) {
-        username = username + '.' + allFirstNames[idx];
-      }
-    }
-
-    // add birthday
-    username = username + '.' + this.cnp.substring(1, 7);
-
-    return username;
   }
 }

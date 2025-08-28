@@ -12,13 +12,22 @@
 
 <ion-content class="ion-padding">
   <ion-card *ngIf="loadedData">
-    <ion-card-header>
+    <ion-card-header class="center-header">
       <img *ngIf="userAvatar" [src]="userAvatar" alt="User Avatar ALT" />
-      <img *ngIf="!userAvatar" src="../../assets/default_avatar.png" width="200" height="200" alt="User Avatar DEFAULT ALT" />
+      <img
+        *ngIf="!userAvatar"
+        src="../../assets/default_avatar.png"
+        width="200"
+        height="200"
+        alt="User Avatar DEFAULT ALT"
+      />
+      <ion-button shape="round" color="dark" (click)="captureImage()">
+        <ion-icon slot="icon-only" name="refresh"></ion-icon>
+      </ion-button>
     </ion-card-header>
 
     <ion-card-content>
-       <ion-item>
+      <ion-item>
         <ion-input
           disabled
           label="cnp"
@@ -118,7 +127,9 @@
         ></ion-input>
       </ion-item>
 
-      <ion-button expand="block" color="dark" (click)="saveProfile()">Save</ion-button>
+      <ion-button expand="block" color="dark" (click)="saveProfile()"
+        >Save</ion-button
+      >
     </ion-card-content>
   </ion-card>
   <ion-card *ngIf="!loadedData">

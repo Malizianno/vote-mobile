@@ -1,18 +1,30 @@
 <ion-content [fullscreen]="true">
   <ion-grid class="fullscreen-grid">
     <!-- EXPLICATION -->
-    <ion-row *ngIf="infoActive" class="fullscreen-grid ion-align-items-center">
+    <ion-row class="fullscreen-grid ion-align-items-center">
       <ion-col>
-        <swiper-container [pagination]="true" class="fullscreen-swiper"
-          (swiperslidechange)="swiperSlideChanged($event)">
+        <swiper-container
+          [pagination]="true"
+          class="fullscreen-swiper"
+          (swiperslidechange)="swiperSlideChanged($event)"
+        >
           <swiper-slide>
-            <ion-img src="../../assets/swiper/slide-1.jpeg" alt="slide1"></ion-img>
+            <ion-img
+              src="../../assets/swiper/slide-1.jpeg"
+              alt="slide1"
+            ></ion-img>
           </swiper-slide>
           <swiper-slide>
-            <ion-img src="../../assets/swiper/slide-2.jpeg" alt="slide2"></ion-img>
+            <ion-img
+              src="../../assets/swiper/slide-2.jpeg"
+              alt="slide2"
+            ></ion-img>
           </swiper-slide>
           <swiper-slide>
-            <ion-img src="../../assets/swiper/slide-3.jpeg" alt="slide3"></ion-img>
+            <ion-img
+              src="../../assets/swiper/slide-3.jpeg"
+              alt="slide3"
+            ></ion-img>
             <ion-row>
               <ion-col class="ion-text-end">
                 <ion-button (click)="captureImage()" color="dark">
@@ -22,48 +34,6 @@
             </ion-row>
           </swiper-slide>
         </swiper-container>
-      </ion-col>
-    </ion-row>
-
-    <!-- RESULT -->
-    <ion-row *ngIf="!infoActive" class="fullscreen-grid ion-align-items-center">
-      <ion-col>
-        <ion-item><img [src]="imagePreview" /></ion-item>
-        <ion-item>
-          <ion-grid>
-            <ion-row class="ion-justify-content-between">
-              <ion-col size="3">
-                <ion-button shape="round" color="dark" (click)="captureImage()">
-                  <ion-icon slot="icon-only" name="refresh"></ion-icon>
-                </ion-button>
-              </ion-col>
-              <ion-col *ngIf="canSaveUser()" class="ion-text-end" size="3">
-                <ion-button shape="round" color="dark" (click)="saveUser()">
-                  <ion-icon slot="icon-only" name="checkmark-circle-outline"></ion-icon>
-                </ion-button>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-        <ion-item>
-          <ion-list>
-            <ion-item>
-              <ion-input label="Nume" labelPlacement="stacked" value="{{ lastName }}" disabled></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Prenume" labelPlacement="stacked" value="{{ firstName }}" disabled></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="CNP" labelPlacement="stacked" value="{{ cnp }}" (change)="updateCnpManually($event.target.value)"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Act valid" labelPlacement="stacked" value="{{ idValid ? 'da' : 'nu' }}" disabled></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Poate vota" labelPlacement="stacked" value="{{ canVote ? 'da' : 'nu' }}" disabled></ion-input>
-            </ion-item>
-          </ion-list>
-        </ion-item>
       </ion-col>
     </ion-row>
   </ion-grid>

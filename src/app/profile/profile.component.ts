@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import {
@@ -15,6 +16,7 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
+  IonImg,
   IonInput,
   IonItem,
   IonRow,
@@ -22,7 +24,6 @@ import {
   IonSelectOption,
   IonTitle,
   IonToolbar,
-  IonImg,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -41,10 +42,8 @@ import {
 } from '../@shared/model/user.model';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { UserService } from '../@shared/service/user.service';
-import { UserUpdateActionEnum } from '../@shared/util/user-update-action.enum';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-profile',
@@ -120,16 +119,39 @@ export class ProfileComponent {
   init() {
     this.memmoryUser = this.credentials.credentials!;
 
-    this.getProfile(this.memmoryUser.id);
+    if (this.memmoryUser) {
+      this.getProfile(this.memmoryUser.id);
+    } else {
+      this.user = this.router.getCurrentNavigation()?.extras.state?.['user'];
+      this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
+        this.user.idImage
+      ) as string;
+    }
+
+    console.log('user opened: ', this.user);
   }
 
+  // let the app choose what the screen is after closure
   close() {
+    if (this.user && this.user.id > 0) {
+      this.closeToDashboard();
+    } else {
+      this.closeToLogin();
+    }
+  }
+
+  closeToDashboard() {
     // go to tab1 when back button/close is pressed
     this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
   }
 
+  closeToLogin() {
+    // go to login page after OCRing the data from the ID card
+    this.router.navigate(['/login'], { replaceUrl: true });
+  }
+
   get loadedData(): boolean {
-    return this.user && this.user.id > 0;
+    return this.user && this.user.cnp > 0;
   }
 
   getProfile(id: number) {
@@ -137,7 +159,9 @@ export class ProfileComponent {
       next: (res: UserProfile) => {
         this.user = res;
         console.log('user profile: ', this.user);
-        this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(this.user.idImage) as string;
+        this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
+          this.user.idImage
+        ) as string;
         console.log('user avatar', this.userAvatar);
       },
       error: (err: HttpErrorResponse) => {
@@ -147,9 +171,6 @@ export class ProfileComponent {
   }
 
   saveProfile() {
-    // this.user.hasVoted = !!this.user.hasVoted; // to trigger change detection
-    this.user.password = this.memmoryUser.token; // keep the same password if not changed
-
     this.users.saveProfile(this.user).subscribe({
       next: (res: User) => {
         // this.user = res;
@@ -161,16 +182,5 @@ export class ProfileComponent {
         this.users.handleHTTPErrors(err);
       },
     });
-  }
-
-  private createImageFromBlob(blob: Blob) {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      this.userAvatar = reader.result as string;
-      console.log('user avatar', this.userAvatar);
-    };
-    
-    reader.readAsDataURL(blob);
   }
 }
