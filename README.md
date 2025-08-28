@@ -14,5 +14,6 @@ This app is the mobile app used by the end-users while voting. This app shows th
 
 ### v1.1.0 - implemented USER authentication.
 ### v1.0.0 - basic Ionic application + ADMIN authentication and overall authorization.
+### v1.4.0 - added profile screen + registering new users (+OCR)
 
 All rights reserved to Cristian Sterie
