@@ -8,6 +8,29 @@ export class User extends GenericModel {
     hasVoted!: boolean;
 }
 
+export class UserProfile extends User {
+    firstname!: string;
+    lastname!: string;
+    gender!: UserGender;
+    idSeries!: string;
+    idNumber!: number;
+    cnp!: number;
+    nationality!: UserNationality;
+    birthAddress!: string;
+    residenceAddress!: string;
+    validityStartDate!: number;
+    validityEndDate!: number;
+    idImage!: string; // base64
+}
+
 export enum UserRole {
     ADMIN, VOTANT,
+}
+
+export  enum UserGender {
+    MALE, FEMALE, OTHER,
+}
+
+export enum UserNationality {
+    ROMANIAN, FOREIGNER,
 }

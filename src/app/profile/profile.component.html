@@ -11,27 +11,119 @@
 </ion-fab>
 
 <ion-content class="ion-padding">
-  <ion-card>
+  <ion-card *ngIf="loadedData">
     <ion-card-header>
-      <ion-avatar slot="start">
-        <img src="" alt="User Avatar" />
-      </ion-avatar>
-      <ion-card-title>{{ user.username }}</ion-card-title>
-      <ion-card-subtitle>{{ user.role }}</ion-card-subtitle>
+      <img *ngIf="userAvatar" [src]="userAvatar" alt="User Avatar ALT" />
+      <img *ngIf="!userAvatar" src="../../assets/default_avatar.png" width="200" height="200" alt="User Avatar DEFAULT ALT" />
     </ion-card-header>
 
     <ion-card-content>
-      <ion-item>
-        <ion-label position="stacked">Username</ion-label>
-        <ion-input [(ngModel)]="user.username"></ion-input>
+       <ion-item>
+        <ion-input
+          disabled
+          label="cnp"
+          labelPlacement="floating"
+          [(ngModel)]="user.cnp"
+        ></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Role</ion-label>
-        <ion-input [(ngModel)]="user.role" type="text"></ion-input>
+        <ion-input
+          label="firstname"
+          labelPlacement="floating"
+          [(ngModel)]="user.firstname"
+        ></ion-input>
       </ion-item>
 
-      <ion-button expand="block" (click)="saveProfile()">Save</ion-button>
+      <ion-item>
+        <ion-input
+          label="lastname"
+          labelPlacement="floating"
+          [(ngModel)]="user.lastname"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-select
+          label="gender"
+          labelPlacement="floating"
+          [(ngModel)]="user.gender"
+        >
+          <ion-select-option *ngFor="let gender of genders" [value]="gender">
+            {{ gender }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="id series"
+          labelPlacement="floating"
+          [(ngModel)]="user.idSeries"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="id number"
+          labelPlacement="floating"
+          [(ngModel)]="user.idNumber"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-select
+          label="nationality"
+          labelPlacement="floating"
+          [(ngModel)]="user.nationality"
+        >
+          <ion-select-option
+            *ngFor="let nationality of nationalities"
+            [value]="nationality"
+          >
+            {{ nationality }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="birth address"
+          labelPlacement="floating"
+          [(ngModel)]="user.birthAddress"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="residence address"
+          labelPlacement="floating"
+          [(ngModel)]="user.residenceAddress"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="valid from"
+          labelPlacement="floating"
+          [(ngModel)]="user.validityStartDate"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="valid until"
+          labelPlacement="floating"
+          [(ngModel)]="user.validityEndDate"
+        ></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" color="dark" (click)="saveProfile()">Save</ion-button>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="!loadedData">
+    <ion-card-content>
+      <ion-spinner name="crescent"></ion-spinner>
     </ion-card-content>
   </ion-card>
 </ion-content>

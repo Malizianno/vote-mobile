@@ -21,7 +21,7 @@ import {
 import { addIcons } from 'ionicons';
 import { arrowForward, checkmarkCircleOutline, refresh } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
-import { User, UserRole } from '../@shared/model/user.model';
+import { User, UserProfile, UserRole } from '../@shared/model/user.model';
 import { UserService } from '../@shared/service/user.service';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
@@ -132,16 +132,18 @@ export class SignupInfoComponent {
   }
 
   saveUser() {
-    const user = new User();
+    const user = new UserProfile();
 
     user.username = this.generateUsername().toLowerCase();
     user.password = this.cnp.substring(this.cnp.length - 6);
     user.role = UserRole.VOTANT;
     user.hasVoted = false;
 
+    // XXX: complete all data to OCR and save to DB now ;)
+
     console.log('created user: ', user);
 
-    this.userService.save(user, UserUpdateActionEnum[UserUpdateActionEnum.USER_UPDATE].toString()).subscribe((res: User) => {
+    this.userService.saveProfile(user).subscribe((res: User) => {
       if (res && res.id) {
         console.log('user saved successfully!', res);
         this.router.navigate(['/login'], { replaceUrl: true });
