@@ -1,16 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-} from '@ionic/angular/standalone';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-import { ElectionActiveComponent } from '../election-active/election-active.component';
-import { ElectionService } from '../@shared/service/election.service';
-import { interval, map, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { Component, OnDestroy } from '@angular/core';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
+import { interval, map, Subscription } from 'rxjs';
+import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
+import { ElectionActiveComponent } from '../election-active/election-active.component';
+import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 
 @Component({
   selector: 'app-tab1',
@@ -25,6 +26,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     ExploreContainerComponent,
     ElectionActiveComponent,
     CommonModule,
+    TranslateModule,
   ],
 })
 export class Tab1Page implements OnDestroy {

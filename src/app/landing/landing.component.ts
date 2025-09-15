@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonButton, IonButtons,
+  IonButton,
+  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -11,10 +12,13 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
-  IonInput, IonItem,
+  IonInput,
+  IonItem,
   IonRow,
-  IonTitle, IonToolbar
+  IonTitle,
+  IonToolbar,
 } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { arrowForward } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
@@ -27,15 +31,33 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
   standalone: true,
-  imports: [IonGrid, IonInput, IonButtons, IonCardContent, IonCardHeader, IonRow, IonCard, IonCol,
-    IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent,
-    ElectionActiveComponent, IonButton, IonItem, IonIcon, FormsModule, IonGrid
+  imports: [
+    IonGrid,
+    IonInput,
+    IonButtons,
+    IonCardContent,
+    IonCardHeader,
+    IonRow,
+    IonCard,
+    IonCol,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    ExploreContainerComponent,
+    ElectionActiveComponent,
+    IonButton,
+    IonItem,
+    IonIcon,
+    FormsModule,
+    IonGrid,
+    TranslateModule,
   ],
 })
 export class LandingComponent {
   appVersion: string;
 
-  constructor(private router: Router, private credentials: CredentialsService,) {
+  constructor(private router: Router, private credentials: CredentialsService) {
     addIcons({ arrowForward });
 
     this.appVersion = environment.version;

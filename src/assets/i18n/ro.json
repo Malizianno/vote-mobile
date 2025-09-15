@@ -1,0 +1,50 @@
+{
+    "landing": {
+        "login": "Pornire",
+        "signup": "Înregistrare"
+    },
+    "login": {
+        "warning-message": "Această pagină va fi înlocuită cu un ecran cu camera!",
+        "username": "Utilizator",
+        "password": "Parolă"
+    },
+    "tabs": {
+        "home": "Acasă",
+        "candidates": "Candidați",
+        "vote": "Votează"
+    },
+    "home": {
+        "active-title": "Sesiune activă",
+        "inactive-title": "Sesiune inactivă",
+        "active-message": "Sesiunea electorală este activă. Rezultatul va fi disponibil în acest ecran după finalizarea sesiunii electorale. Puteți să votați",
+        "inactive-message": "Momentan nu este activă nicio sesiune electorală. Puteți vizualiza candidații de la sesiunea anterioară"
+    },
+    "candidates": {
+        "go-up": "Sus",
+        "more": "Detalii"
+    },
+    "vote": {
+        "alert": "Ați exprimat deja 1 vot către unul dintre candidați!",
+        "vote": "Votează"
+    },
+    "profile": {
+        "title": "Profil",
+        "cnp": "CNP",
+        "firstname": "Prenume",
+        "lastname": "Nume",
+        "gender": "Sex",
+        "id-series": "Serie document",
+        "id-number": "Număr document",
+        "nationality": "Naționalitate",
+        "birth-address": "Loc naștere",
+        "residence-address": "Adresă Domiciliu",
+        "valid-from": "Valabilitate de la",
+        "valid-until": "Valabilitate până la",
+        "save": "Salvează"
+    },
+    "components": {
+        "election-active": {
+            "here": "aici"
+        }
+    }
+}

@@ -33,6 +33,7 @@ import { CandidateService } from '../@shared/service/candidate.service';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { AppConstants } from '../@shared/util/app-constants.util';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tab2',
@@ -65,6 +66,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     FormsModule,
     NoResultsComponent,
     IonChip,
+    TranslateModule,
   ],
 })
 export class Tab2Page implements OnDestroy {

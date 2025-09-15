@@ -2,7 +2,7 @@
   <ion-grid class="fullscreen-grid">
     <ion-row class="fullscreen-grid ion-align-items-center">
       <ion-col>
-        <div>THIS PAGE WILL BE REPLACED BY ACTUAL LOGIN WITH CAMERA OPTIONS !</div>
+        <div>{{ 'login.warning-message' | translate }}</div>
         <div class="card-container">
           <ion-card>
             <ion-card-header>
@@ -14,7 +14,7 @@
               <ion-row>
                 <ion-col>
                   <ion-item>
-                    <ion-input type="username" label="Username" labelPlacement="floating" placeholder="Username" [(ngModel)]="dto.username"></ion-input>
+                    <ion-input type="username" label="{{ 'login.username' | translate }}" labelPlacement="floating" placeholder="{{ 'login.username' | translate }}" [(ngModel)]="dto.username"></ion-input>
                   </ion-item>
                 </ion-col>
               </ion-row>
@@ -22,7 +22,7 @@
               <ion-row>
                 <ion-col>
                   <ion-item>
-                    <ion-input type="password" label="Parolă" labelPlacement="floating" placeholder="Parolă" [(ngModel)]="dto.password"></ion-input>
+                    <ion-input type="password" label="{{ 'login.password' | translate }}" labelPlacement="floating" placeholder="{{ 'login.password' | translate }}" [(ngModel)]="dto.password"></ion-input>
                   </ion-item>
                 </ion-col>
               </ion-row>

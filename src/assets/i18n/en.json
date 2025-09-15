@@ -1,0 +1,50 @@
+{
+    "landing": {
+        "login": "Login",
+        "signup": "Signup"
+    },
+    "login": {
+        "warning-message": "THIS PAGE WILL BE REPLACED BY ACTUAL LOGIN WITH CAMERA OPTIONS!",
+        "username": "Username",
+        "password": "Password"
+    },
+    "tabs": {
+        "home": "Home",
+        "candidates": "Candidates",
+        "vote": "Vote"
+    },
+    "home": {
+        "active-title": "Elections ON",
+        "inactive-title": "Elections OFF",
+        "active-message": "Elections are ON. Results will be available here after it has finished. You can vote",
+        "inactive-message": "Currently no elections active. You can check out the candidates from previous election"
+    },
+    "candidates": {
+        "go-up": "Go Up",
+        "more": "More"
+    },
+    "vote": {
+        "alert": "You have already voted!",
+        "vote": "Vote"
+    },
+    "profile": {
+        "title": "Profile",
+        "cnp": "CNP",
+        "firstname": "First Name",
+        "lastname": "Last Name",
+        "gender": "Gender",
+        "id-series": "ID Series",
+        "id-number": "ID No",
+        "nationality": "Nationality",
+        "birth-address": "Birth address",
+        "residence-address": "Residence Address",
+        "valid-from": "Valid From",
+        "valid-until": "Valid Until",
+        "save": "Save"
+    },
+    "components": {
+        "election-active": {
+            "here": "here"
+        }
+    }
+}

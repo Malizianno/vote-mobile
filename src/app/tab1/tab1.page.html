@@ -1,9 +1,9 @@
 <ion-content [fullscreen]="true">
-  <app-election-active *ngIf="!electionEnabled" name="Sesiune inactivă"
-    description="Momentan nu este activă nicio sesiune electorală. Puteți vizualiza candidații de la sesiunea anterioară"
+  <app-election-active *ngIf="!electionEnabled" name="{{ 'home.inactive-title' | translate }}"
+    description="{{ 'home.inactive-message' | translate }}"
     link="/tabs/tab2"></app-election-active>
 
-  <app-election-active *ngIf="electionEnabled" name="Sesiune activă"
-    description="Sesiunea electorală este activă. Rezultatul va fi disponibil în acest ecran după finalizarea sesiunii electorale. Puteți să votați"
+  <app-election-active *ngIf="electionEnabled" name="{{ 'home.active-title' | translate }}"
+    description="{{ 'home.active-message' | translate }}"
     link="/tabs/tab3"></app-election-active>
 </ion-content>

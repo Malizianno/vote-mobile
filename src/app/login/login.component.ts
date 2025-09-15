@@ -1,43 +1,72 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpResponse } from '@capacitor-community/http';
 import {
-  IonButton, IonButtons,
+  IonButton,
+  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCol,
-  IonContent, IonHeader,
+  IonContent,
+  IonGrid,
+  IonHeader,
   IonIcon,
-  IonInput, IonItem,
+  IonInput,
+  IonItem,
   IonRow,
-  IonTitle, IonToolbar, IonGrid } from '@ionic/angular/standalone';
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { arrowForward } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
-import { LoginRequestDTO, LoginResponseDTO } from '../@shared/model/login.dto';
+import { LoginRequestDTO } from '../@shared/model/login.dto';
 import { UserRole } from '../@shared/model/user.model';
+import { CredentialsService } from '../@shared/service/credentials.service';
 import { LoginService } from '../@shared/service/login.service';
 import { ElectionActiveComponent } from '../election-active/election-active.component';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { CredentialsService } from '../@shared/service/credentials.service';
-import { HttpResponse } from '@capacitor-community/http';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [IonGrid, IonInput, IonButtons, IonCardContent, IonCardHeader, IonRow, IonCard, IonCol,
-    IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent,
-    ElectionActiveComponent, IonButton, IonItem, IonIcon, FormsModule, IonGrid
+  imports: [
+    IonGrid,
+    IonInput,
+    IonButtons,
+    IonCardContent,
+    IonCardHeader,
+    IonRow,
+    IonCard,
+    IonCol,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    ExploreContainerComponent,
+    ElectionActiveComponent,
+    IonButton,
+    IonItem,
+    IonIcon,
+    FormsModule,
+    IonGrid,
+    TranslateModule,
   ],
 })
 export class LoginComponent {
   appVersion: string;
   dto = new LoginRequestDTO();
 
-  constructor(private service: LoginService, private router: Router, private credentials: CredentialsService, ) {
+  constructor(
+    private service: LoginService,
+    private router: Router,
+    private credentials: CredentialsService
+  ) {
     addIcons({ arrowForward });
 
     this.appVersion = environment.version;
@@ -45,11 +74,14 @@ export class LoginComponent {
   }
 
   async login() {
-    this.service.login(this.dto).then((res: HttpResponse) => {
-      this.handleLoginResponse(res);
-    }, (err) => {
-      this.handleLoginError(err);
-    });
+    this.service.login(this.dto).then(
+      (res: HttpResponse) => {
+        this.handleLoginResponse(res);
+      },
+      (err) => {
+        this.handleLoginError(err);
+      }
+    );
   }
 
   handleLoginResponse(response: HttpResponse) {

@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import {
   IonButton,
+  IonCard,
   IonCardContent,
+  IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
   IonCol,
@@ -10,13 +12,12 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
+  IonNote,
   IonRow,
   IonTitle,
   IonToolbar,
-  IonCardHeader,
-  IonCard,
-  IonNote,
 } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { interval, map, Subscription } from 'rxjs';
@@ -51,6 +52,7 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
     IonRow,
     IonCol,
     IonNote,
+    TranslateModule,
   ],
 })
 export class Tab3Page implements OnDestroy {

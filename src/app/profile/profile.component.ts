@@ -25,6 +25,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   add,
@@ -74,6 +75,7 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
     IonGrid,
     IonImg,
     CommonModule,
+    TranslateModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

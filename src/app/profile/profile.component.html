@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Profile</ion-title>
+    <ion-title>{{ 'profile.title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -30,7 +30,7 @@
       <ion-item>
         <ion-input
           disabled
-          label="cnp"
+          label="{{ 'profile.cnp' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.cnp"
         ></ion-input>
@@ -38,7 +38,7 @@
 
       <ion-item>
         <ion-input
-          label="firstname"
+          label="{{ 'profile.firstname' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.firstname"
         ></ion-input>
@@ -46,7 +46,7 @@
 
       <ion-item>
         <ion-input
-          label="lastname"
+          label="{{ 'profile.lastname' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.lastname"
         ></ion-input>
@@ -54,7 +54,7 @@
 
       <ion-item>
         <ion-select
-          label="gender"
+          label="{{ 'profile.gender' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.gender"
         >
@@ -66,7 +66,7 @@
 
       <ion-item>
         <ion-input
-          label="id series"
+          label="{{ 'profile.id-series' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.idSeries"
         ></ion-input>
@@ -74,7 +74,7 @@
 
       <ion-item>
         <ion-input
-          label="id number"
+          label="{{ 'profile.id-number' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.idNumber"
         ></ion-input>
@@ -82,7 +82,7 @@
 
       <ion-item>
         <ion-select
-          label="nationality"
+          label="{{ 'profile.nationality' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.nationality"
         >
@@ -97,7 +97,7 @@
 
       <ion-item>
         <ion-input
-          label="birth address"
+          label="{{ 'profile.birth-address' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.birthAddress"
         ></ion-input>
@@ -105,7 +105,7 @@
 
       <ion-item>
         <ion-input
-          label="residence address"
+          label="{{ 'profile.residence-address' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.residenceAddress"
         ></ion-input>
@@ -113,7 +113,7 @@
 
       <ion-item>
         <ion-input
-          label="valid from"
+          label="{{ 'profile.valid-from' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.validityStartDate"
         ></ion-input>
@@ -121,14 +121,14 @@
 
       <ion-item>
         <ion-input
-          label="valid until"
+          label="{{ 'profile.valid-until' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="user.validityEndDate"
         ></ion-input>
       </ion-item>
 
       <ion-button expand="block" color="dark" (click)="saveProfile()"
-        >Save</ion-button
+        >{{ 'profile.save' | translate }}</ion-button
       >
     </ion-card-content>
   </ion-card>
