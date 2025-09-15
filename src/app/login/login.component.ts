@@ -27,8 +27,8 @@ import { LoginRequestDTO } from '../@shared/model/login.dto';
 import { UserRole } from '../@shared/model/user.model';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { LoginService } from '../@shared/service/login.service';
-import { ElectionActiveComponent } from '../election-active/election-active.component';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
+import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 
 @Component({
   selector: 'app-login',

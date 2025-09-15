@@ -27,7 +27,7 @@ import { CandidateService } from '../@shared/service/candidate.service';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 
 @Component({
   selector: 'app-tab3',

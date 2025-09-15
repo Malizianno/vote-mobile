@@ -35,8 +35,8 @@ import {
   UserProfile,
 } from '../@shared/model/user.model';
 import { UserService } from '../@shared/service/user.service';
-import { ElectionActiveComponent } from '../election-active/election-active.component';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
+import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 
 @Component({
   selector: 'app-signup-info',

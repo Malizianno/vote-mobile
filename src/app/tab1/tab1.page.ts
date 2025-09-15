@@ -10,8 +10,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { interval, map, Subscription } from 'rxjs';
 import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
-import { ElectionActiveComponent } from '../election-active/election-active.component';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
+import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 
 @Component({
   selector: 'app-tab1',

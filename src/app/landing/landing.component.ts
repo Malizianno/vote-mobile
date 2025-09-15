@@ -23,8 +23,8 @@ import { addIcons } from 'ionicons';
 import { arrowForward } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
 import { CredentialsService } from '../@shared/service/credentials.service';
-import { ElectionActiveComponent } from '../election-active/election-active.component';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
+import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 
 @Component({
   selector: 'app-landing',

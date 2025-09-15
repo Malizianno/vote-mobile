@@ -31,7 +31,7 @@ import { Candidate } from '../@shared/model/candidate.model';
 import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { TranslateModule } from '@ngx-translate/core';
 
