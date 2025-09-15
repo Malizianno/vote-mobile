@@ -43,6 +43,9 @@
         "save": "Salvează"
     },
     "components": {
+        "no-results": {
+            "message": "Nu au fost găsite rezultate!"
+        },
         "election-active": {
             "here": "aici"
         }

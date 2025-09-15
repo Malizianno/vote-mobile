@@ -43,6 +43,9 @@
         "save": "Save"
     },
     "components": {
+         "no-results": {
+            "message": "No results found!"
+        },
         "election-active": {
             "here": "here"
         }
