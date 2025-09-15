@@ -34,6 +34,7 @@ import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
+import { ToastService } from '../@shared/service/toast.service';
 
 @Component({
   selector: 'app-candidates',
@@ -97,7 +98,10 @@ export class CandidatesPage implements OnDestroy {
     }
   }
 
-  constructor(private candidatesService: CandidateService) {
+  constructor(
+    private candidatesService: CandidateService,
+    private toast: ToastService
+  ) {
     this.reloadPage();
   }
 
@@ -118,6 +122,8 @@ export class CandidatesPage implements OnDestroy {
         if (res && this.candidates != res.candidates) {
           this.candidates = Candidate.fromArray(res.candidates);
           this.totalCandidates = res.total;
+
+          this.toast.show('Candidates loaded successfully!');
           console.log('candidates: ', this.candidates);
         }
       })
