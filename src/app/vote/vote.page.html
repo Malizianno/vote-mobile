@@ -1,4 +1,10 @@
-<ion-content class="top" [fullscreen]="true">
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'vote.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
   <ion-grid *ngIf="candidates.length > 0">
     <ion-row>
       <ion-col>

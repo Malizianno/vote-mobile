@@ -20,10 +20,12 @@
         "inactive-message": "Currently no elections active. You can check out the candidates from previous election"
     },
     "candidates": {
+        "candidates": "Candidates",
         "go-up": "Go Up",
         "more": "More"
     },
     "vote": {
+        "title": "Vote",
         "alert": "You have already voted!",
         "vote": "Vote",
         "confirm-vote": "Voted successfully!"

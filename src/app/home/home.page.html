@@ -1,9 +1,24 @@
-<ion-content [fullscreen]="true">
-  <app-election-active *ngIf="!electionEnabled" name="{{ 'home.inactive-title' | translate }}"
-    description="{{ 'home.inactive-message' | translate }}"
-    link="/tabs/candidates"></app-election-active>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title *ngIf="!electionEnabled"
+      >{{ 'home.inactive-title' | translate }}</ion-title
+    >
+    <ion-title *ngIf="electionEnabled"
+      >{{ 'home.active-title' | translate }}</ion-title
+    >
+  </ion-toolbar>
+</ion-header>
 
-  <app-election-active *ngIf="electionEnabled" name="{{ 'home.active-title' | translate }}"
+<ion-content [fullscreen]="true">
+  <app-election-active
+    *ngIf="!electionEnabled"
+    description="{{ 'home.inactive-message' | translate }}"
+    link="/tabs/candidates"
+  ></app-election-active>
+
+  <app-election-active
+    *ngIf="electionEnabled"
     description="{{ 'home.active-message' | translate }}"
-    link="/tabs/vote"></app-election-active>
+    link="/tabs/vote"
+  ></app-election-active>
 </ion-content>

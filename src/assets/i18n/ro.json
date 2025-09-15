@@ -20,10 +20,12 @@
         "inactive-message": "Momentan nu este activă nicio sesiune electorală. Puteți vizualiza candidații de la sesiunea anterioară"
     },
     "candidates": {
+        "title": "Candidați",
         "go-up": "Sus",
         "more": "Detalii"
     },
     "vote": {
+        "title": "Votează",
         "alert": "Ați exprimat deja 1 vot către unul dintre candidați!",
         "vote": "Votează",
         "confirm-vote": "Ai votat cu succes!"
