@@ -17,7 +17,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { interval, map, Subscription } from 'rxjs';
@@ -28,6 +28,7 @@ import { CandidateService } from '../@shared/service/candidate.service';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
+import { ToastService } from '../@shared/service/toast.service';
 
 @Component({
   selector: 'app-vote',
@@ -86,7 +87,9 @@ export class VotePage implements OnDestroy {
   constructor(
     private candidatesService: CandidateService,
     private election: ElectionService,
-    private credentials: CredentialsService
+    private credentials: CredentialsService,
+    private toast: ToastService,
+    private translate: TranslateService,
   ) {
     addIcons({ checkmarkCircleOutline });
     // this.reloadPage();
@@ -124,6 +127,8 @@ export class VotePage implements OnDestroy {
     this.election
       .vote(candidate, this.credentials.userID)
       .subscribe((res: boolean) => {
+        this.toast.show(this.translate.instant('vote.confirm-vote'));
+
         this.hasVoted = true;
         this.selected = 0;
         this.credentials.setHasVoted(true);

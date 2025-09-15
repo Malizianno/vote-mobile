@@ -25,7 +25,8 @@
     },
     "vote": {
         "alert": "You have already voted!",
-        "vote": "Vote"
+        "vote": "Vote",
+        "confirm-vote": "Voted successfully!"
     },
     "profile": {
         "title": "Profile",
@@ -40,7 +41,8 @@
         "residence-address": "Residence Address",
         "valid-from": "Valid From",
         "valid-until": "Valid Until",
-        "save": "Save"
+        "save": "Save",
+        "saved": "Profile successfully saved!"
     },
     "components": {
          "no-results": {

@@ -13,8 +13,8 @@ export class ToastService {
     const toast = await this.toast.create({
       message,
       duration: 3000,
-      position: 'top',
-      color: 'success',
+      position: 'bottom',
+      color: 'dark',
     });
     await toast.present();
   }

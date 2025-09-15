@@ -25,7 +25,8 @@
     },
     "vote": {
         "alert": "Ați exprimat deja 1 vot către unul dintre candidați!",
-        "vote": "Votează"
+        "vote": "Votează",
+        "confirm-vote": "Ai votat cu succes!"
     },
     "profile": {
         "title": "Profil",
@@ -40,7 +41,8 @@
         "residence-address": "Adresă Domiciliu",
         "valid-from": "Valabilitate de la",
         "valid-until": "Valabilitate până la",
-        "save": "Salvează"
+        "save": "Salvează",
+        "saved": "Profil salvat cu success!"
     },
     "components": {
         "no-results": {

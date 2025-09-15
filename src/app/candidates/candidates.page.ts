@@ -123,8 +123,8 @@ export class CandidatesPage implements OnDestroy {
           this.candidates = Candidate.fromArray(res.candidates);
           this.totalCandidates = res.total;
 
-          this.toast.show('Candidates loaded successfully!');
-          console.log('candidates: ', this.candidates);
+          // this.toast.show('Candidates loaded successfully!');
+          // console.log('candidates: ', this.candidates);
         }
       })
     );

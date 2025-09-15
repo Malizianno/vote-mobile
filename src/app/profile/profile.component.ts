@@ -25,7 +25,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   add,
@@ -45,6 +45,7 @@ import { CredentialsService } from '../@shared/service/credentials.service';
 import { UserService } from '../@shared/service/user.service';
 import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
 import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
+import { ToastService } from '../@shared/service/toast.service';
 
 @Component({
   selector: 'app-profile',
@@ -97,7 +98,9 @@ export class ProfileComponent {
     private router: Router,
     private credentials: CredentialsService,
     private users: UserService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private toast: ToastService,
+    private translate: TranslateService,
   ) {
     addIcons({
       closeOutline,
@@ -175,8 +178,9 @@ export class ProfileComponent {
   saveProfile() {
     this.users.saveProfile(this.user).subscribe({
       next: (res: User) => {
-        // this.user = res;
-        console.log('user profile updated: ', this.user);
+        this.toast.show(this.translate.instant('profile.saved'));
+        console.log('user profile updated: ', res);
+
         this.credentials.setCredentials(this.memmoryUser);
         this.close();
       },
