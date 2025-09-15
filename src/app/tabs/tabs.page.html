@@ -1,7 +1,5 @@
 <ion-fab slot="fixed" vertical="top" horizontal="end" [edge]="false">
-  <ion-fab-button color="white" class="fab-bordered">
-    <ion-button color="white">vot.e</ion-button>
-  </ion-fab-button>
+  <ion-fab-button color="white" class="fab-bordered"> vot.e </ion-fab-button>
   <ion-fab-list side="bottom">
     <ion-fab-button class="fab-bordered">
       <ion-icon (click)="goToProfile()" name="person"></ion-icon>
@@ -24,7 +22,11 @@
       <ion-label>{{ 'tabs.candidates' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="vote" href="/tabs/vote" disabled="{{!electionEnabled}}">
+    <ion-tab-button
+      tab="vote"
+      href="/tabs/vote"
+      disabled="{{!electionEnabled}}"
+    >
       <ion-icon aria-hidden="true" name="ban-outline"></ion-icon>
       <ion-label>{{ 'tabs.vote' | translate }}</ion-label>
     </ion-tab-button>

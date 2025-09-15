@@ -29,11 +29,15 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   add,
+  exit,
   arrowForward,
   checkmarkCircleOutline,
-  closeOutline,
+  close,
   refresh,
+  arrowForwardCircle,
 } from 'ionicons/icons';
+import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
+import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 import { LoginResponseDTO } from '../@shared/model/login.dto';
 import {
   User,
@@ -42,10 +46,8 @@ import {
   UserProfile,
 } from '../@shared/model/user.model';
 import { CredentialsService } from '../@shared/service/credentials.service';
-import { UserService } from '../@shared/service/user.service';
-import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
-import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 import { ToastService } from '../@shared/service/toast.service';
+import { UserService } from '../@shared/service/user.service';
 
 @Component({
   selector: 'app-profile',
@@ -100,15 +102,9 @@ export class ProfileComponent {
     private users: UserService,
     private sanitizer: DomSanitizer,
     private toast: ToastService,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {
-    addIcons({
-      closeOutline,
-      add,
-      arrowForward,
-      refresh,
-      checkmarkCircleOutline,
-    });
+    addIcons({ close, exit, arrowForward, arrowForwardCircle, refresh, add, checkmarkCircleOutline });
 
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, () => {

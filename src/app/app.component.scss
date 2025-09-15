@@ -10,3 +10,22 @@
 .c-toast {
     opacity: 0.85; /* Adjust between 0 (transparent) and 1 (fully opaque) */
 }
+
+.fab-bordered {
+  --background: #505050;
+  --color: white;
+  --border-color: white;
+  --border-style: solid;
+  --border-width: 2px;
+  background-color: #505050 !important;
+  opacity: 1;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1rem;
+  z-index: 9999;
+  box-shadow: none;
+}
+
+.fab-bordered ion-fab-button {
+  margin: 4px 0;
+}
