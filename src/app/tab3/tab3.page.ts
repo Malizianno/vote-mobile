@@ -13,6 +13,9 @@ import {
   IonRow,
   IonTitle,
   IonToolbar,
+  IonCardHeader,
+  IonCard,
+  IonNote,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
@@ -31,6 +34,8 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
   styleUrls: ['tab3.page.scss'],
   standalone: true,
   imports: [
+    IonCard,
+    IonCardHeader,
     IonGrid,
     IonHeader,
     IonToolbar,
@@ -45,6 +50,7 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
     IonButton,
     IonRow,
     IonCol,
+    IonNote,
   ],
 })
 export class Tab3Page implements OnDestroy {

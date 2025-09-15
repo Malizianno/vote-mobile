@@ -183,4 +183,8 @@ export class ProfileComponent {
       },
     });
   }
+
+  captureImage() {
+    // WIP: should be implemented to take you to reshoot the photo
+  }
 }

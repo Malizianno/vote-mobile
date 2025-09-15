@@ -1,22 +1,4 @@
 <ion-header class="top" [translucent]="true">
-  <ion-toolbar>
-    <ion-row>
-      <ion-col class="ion-padding-horizontal">
-        <ion-input type="text" label="Prenume" labelPlacement="floating" placeholder="Prenume"
-          (ionInput)="filterFirstNameBehavior.next($event)" [(ngModel)]="filter.firstName"></ion-input>
-      </ion-col>
-      <ion-col class="ion-padding-horizontal">
-        <ion-input type="text" label="Nume" labelPlacement="floating" placeholder="Nume"
-          (ionInput)="filterLastNameBehavior.next($event)" [(ngModel)]="filter.lastName"></ion-input>
-      </ion-col>
-    </ion-row>
-
-    <ion-row class="ion-justify-content-start">
-      <ion-col *ngFor="let party of parties">
-        <ion-chip size="small" color="dark" (click)="filterPartyBehavior.next($event.srcElement.innerText)">{{ parseParty(party) }}</ion-chip>
-      </ion-col>
-    </ion-row>
-  </ion-toolbar>
 </ion-header>
 
 <ion-content class="top" [fullscreen]="true">

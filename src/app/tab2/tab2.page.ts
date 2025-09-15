@@ -23,6 +23,7 @@ import {
   IonThumbnail,
   IonTitle,
   IonToolbar,
+  IonChip,
 } from '@ionic/angular/standalone';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
@@ -63,6 +64,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     IonNote,
     FormsModule,
     NoResultsComponent,
+    IonChip,
   ],
 })
 export class Tab2Page implements OnDestroy {
@@ -74,10 +76,6 @@ export class Tab2Page implements OnDestroy {
 
   parties = Object.keys(PartyTypeEnum).filter((v) => isNaN(Number(v)));
 
-  filterFirstNameBehavior = new BehaviorSubject('');
-  filterLastNameBehavior = new BehaviorSubject('');
-  filterPartyBehavior = new BehaviorSubject('');
-
   @ViewChild(IonContent) content: IonContent;
 
   private refreshSub: Subscription;
@@ -85,7 +83,9 @@ export class Tab2Page implements OnDestroy {
   ionViewWillEnter() {
     // console.log('ionViewWillEnter - tab2');
     this.reloadPage();
-    this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() => this.reloadPage()); // every <AppCOnstants.REFRESH_TIME_MS> s
+    this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() =>
+      this.reloadPage()
+    ); // every <AppCOnstants.REFRESH_TIME_MS> s
   }
 
   ionViewWillLeave() {
@@ -96,8 +96,7 @@ export class Tab2Page implements OnDestroy {
   }
 
   constructor(private candidatesService: CandidateService) {
-    // this.reloadPage();
-    this.debounceSubscription();
+    this.reloadPage();
   }
 
   ngOnDestroy(): void {
@@ -139,32 +138,5 @@ export class Tab2Page implements OnDestroy {
       return 'Toate';
     }
     return party;
-  }
-
-  private debounceSubscription() {
-    this.filterFirstNameBehavior
-      .pipe(debounceTime(1000), distinctUntilChanged())
-      .subscribe((res: string) => {
-        if (res) {
-          this.reloadPage();
-        }
-      });
-
-    this.filterLastNameBehavior
-      .pipe(debounceTime(1000), distinctUntilChanged())
-      .subscribe((res: string) => {
-        if (res) {
-          this.reloadPage();
-        }
-      });
-
-    this.filterPartyBehavior.subscribe((res: string) => {
-      if (res) {
-        const idx = this.parties.indexOf(res);
-        this.filter.party = idx;
-
-        this.reloadPage();
-      }
-    });
   }
 }
