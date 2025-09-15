@@ -35,6 +35,7 @@ import { CandidateService } from '../@shared/service/candidate.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
 import { ToastService } from '../@shared/service/toast.service';
+import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-candidates',
@@ -68,6 +69,7 @@ import { ToastService } from '../@shared/service/toast.service';
     NoResultsComponent,
     IonChip,
     TranslateModule,
+    LanguageSwitcherComponent,
   ],
 })
 export class CandidatesPage implements OnDestroy {

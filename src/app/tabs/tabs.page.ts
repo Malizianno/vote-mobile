@@ -32,6 +32,7 @@ import { ElectionService } from '../@shared/service/election.service';
 import { map } from 'rxjs';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-tabs',
@@ -54,6 +55,7 @@ import { TranslateModule } from '@ngx-translate/core';
     IonTitle,
     IonContent,
     TranslateModule,
+    LanguageSwitcherComponent,
   ],
 })
 export class TabsPage {

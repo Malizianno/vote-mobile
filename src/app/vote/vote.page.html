@@ -1,6 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{ 'vote.title' | translate }}</ion-title>
+    <ion-title slot="start">{{ 'vote.title' | translate }}</ion-title>
+
+    <app-language-switcher></app-language-switcher>
   </ion-toolbar>
 </ion-header>
 

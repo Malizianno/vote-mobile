@@ -12,6 +12,7 @@ import { ElectionActiveComponent } from '../@shared/components/election-active/e
 import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
+import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-home',
@@ -27,6 +28,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     ElectionActiveComponent,
     CommonModule,
     TranslateModule,
+    LanguageSwitcherComponent,
   ],
 })
 export class HomePage implements OnDestroy {

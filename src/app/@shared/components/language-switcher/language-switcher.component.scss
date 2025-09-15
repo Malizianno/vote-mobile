@@ -1,0 +1,11 @@
+@import "../../../app.component.scss";
+
+.no-click-effect {
+  --background-activated: transparent;
+  --background-activated-opacity: 0;
+  --ripple-color: transparent;
+  --background-focused: transparent;
+  --background-focused-opacity: 0;
+  --background-hover: transparent;
+  --background-hover-opacity: 0;
+}

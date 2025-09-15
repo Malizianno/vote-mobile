@@ -1,11 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title *ngIf="!electionEnabled"
+    <ion-title slot="start" *ngIf="!electionEnabled"
       >{{ 'home.inactive-title' | translate }}</ion-title
     >
-    <ion-title *ngIf="electionEnabled"
+    <ion-title slot="start" *ngIf="electionEnabled"
       >{{ 'home.active-title' | translate }}</ion-title
     >
+
+    <app-language-switcher></app-language-switcher>
   </ion-toolbar>
 </ion-header>
 
