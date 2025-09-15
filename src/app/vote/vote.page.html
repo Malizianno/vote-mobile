@@ -39,4 +39,6 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  <app-no-results *ngIf="candidates.length < 1"></app-no-results>
 </ion-content>

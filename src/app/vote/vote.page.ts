@@ -29,6 +29,7 @@ import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { ToastService } from '../@shared/service/toast.service';
+import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
 
 @Component({
   selector: 'app-vote',
@@ -54,6 +55,7 @@ import { ToastService } from '../@shared/service/toast.service';
     IonCol,
     IonNote,
     TranslateModule,
+    NoResultsComponent,
   ],
 })
 export class VotePage implements OnDestroy {
