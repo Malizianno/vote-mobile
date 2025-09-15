@@ -1,8 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, ViewChild } from '@angular/core';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
-
-import { FormsModule } from '@angular/forms';
+import { Component, OnDestroy } from '@angular/core';
 import {
   IonButton,
   IonCard,
@@ -14,76 +11,65 @@ import {
   IonContent,
   IonGrid,
   IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
+  IonIcon,
   IonNote,
   IonRow,
-  IonThumbnail,
   IonTitle,
   IonToolbar,
-  IonChip,
 } from '@ionic/angular/standalone';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs';
-import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { addIcons } from 'ionicons';
+import { checkmarkCircleOutline } from 'ionicons/icons';
+import { interval, map, Subscription } from 'rxjs';
+import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 import { Candidate } from '../@shared/model/candidate.model';
 import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
-import { PartyTypeEnum } from '../@shared/util/party-type.enum';
-import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
+import { CredentialsService } from '../@shared/service/credentials.service';
+import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
-import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss'],
+  selector: 'app-vote',
+  templateUrl: 'vote.page.html',
+  styleUrls: ['vote.page.scss'],
   standalone: true,
   imports: [
-    IonInput,
-    IonCol,
-    IonRow,
-    IonGrid,
-    IonButton,
     IonCard,
+    IonCardHeader,
+    IonGrid,
     IonHeader,
     IonToolbar,
     IonTitle,
-    IonContent,
-    ExploreContainerComponent,
-    IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
     IonCardContent,
-    IonList,
-    IonItem,
-    IonThumbnail,
-    IonLabel,
+    IonContent,
+    ExploreContainerComponent,
     CommonModule,
+    IonIcon,
     IonButton,
+    IonRow,
+    IonCol,
     IonNote,
-    FormsModule,
-    NoResultsComponent,
-    IonChip,
     TranslateModule,
   ],
 })
-export class Tab2Page implements OnDestroy {
+export class VotePage implements OnDestroy {
   candidates: Candidate[] = [];
 
   filter: Candidate = new Candidate();
   paging = new Paging();
   totalCandidates = 0;
 
-  parties = Object.keys(PartyTypeEnum).filter((v) => isNaN(Number(v)));
+  selected = 0;
 
-  @ViewChild(IonContent) content: IonContent;
+  hasVoted = false;
 
   private refreshSub: Subscription;
 
   ionViewWillEnter() {
-    // console.log('ionViewWillEnter - tab2');
+    // console.log('ionViewWillEnter - vote');
     this.reloadPage();
     this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() =>
       this.reloadPage()
@@ -91,14 +77,19 @@ export class Tab2Page implements OnDestroy {
   }
 
   ionViewWillLeave() {
-    // console.log('ionViewWillLeave - tab2');
+    // console.log('ionViewWillLeave - vote');
     if (this.refreshSub) {
       this.refreshSub.unsubscribe(); // stop refreshing when tab is left
     }
   }
 
-  constructor(private candidatesService: CandidateService) {
-    this.reloadPage();
+  constructor(
+    private candidatesService: CandidateService,
+    private election: ElectionService,
+    private credentials: CredentialsService
+  ) {
+    addIcons({ checkmarkCircleOutline });
+    // this.reloadPage();
   }
 
   ngOnDestroy(): void {
@@ -106,6 +97,8 @@ export class Tab2Page implements OnDestroy {
   }
 
   reloadPage() {
+    this.hasVoted = this.credentials.hasVoted;
+
     this.getFiltered().subscribe({
       next: (res) => res,
       error: (err) => this.candidatesService.handleHTTPErrors(err),
@@ -118,27 +111,22 @@ export class Tab2Page implements OnDestroy {
         if (res && this.candidates != res.candidates) {
           this.candidates = Candidate.fromArray(res.candidates);
           this.totalCandidates = res.total;
-          console.log('candidates: ', this.candidates);
         }
       })
     );
   }
 
-  openMoreAbout() {
-    // WIP: open new page with more about the candidate
-    console.log('clicked on more...');
+  setCandidateSelection(idToSelect: number) {
+    this.selected = idToSelect;
   }
 
-  scrollToTop() {
-    // Passing a duration to the method makes it so the scroll slowly
-    // goes to the top instead of instantly
-    this.content.scrollToTop(500);
-  }
-
-  parseParty(party: string) {
-    if ('ALL' === party) {
-      return 'Toate';
-    }
-    return party;
+  vote(candidate: Candidate) {
+    this.election
+      .vote(candidate, this.credentials.userID)
+      .subscribe((res: boolean) => {
+        this.hasVoted = true;
+        this.selected = 0;
+        this.credentials.setHasVoted(true);
+      });
   }
 }

@@ -8,15 +8,15 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { interval, map, Subscription } from 'rxjs';
-import { ElectionService } from '../@shared/service/election.service';
-import { AppConstants } from '../@shared/util/app-constants.util';
 import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
 import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
+import { ElectionService } from '../@shared/service/election.service';
+import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
-  selector: 'app-tab1',
-  templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss'],
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
   standalone: true,
   imports: [
     IonHeader,
@@ -29,13 +29,13 @@ import { ExploreContainerComponent } from '../@shared/components/explore-contain
     TranslateModule,
   ],
 })
-export class Tab1Page implements OnDestroy {
+export class HomePage implements OnDestroy {
   electionEnabled = false;
 
   private refreshSub: Subscription;
 
   ionViewWillEnter() {
-    // console.log('ionViewWillEnter - tab1');
+    // console.log('ionViewWillEnter - home');
     this.reloadPage();
     this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() =>
       this.reloadPage()
@@ -43,7 +43,7 @@ export class Tab1Page implements OnDestroy {
   }
 
   ionViewWillLeave() {
-    // console.log('ionViewWillLeave - tab1');
+    // console.log('ionViewWillLeave - home');
     if (this.refreshSub) {
       this.refreshSub.unsubscribe(); // stop refreshing when tab is left
     }
@@ -68,7 +68,7 @@ export class Tab1Page implements OnDestroy {
     return this.election.getStatus().pipe(
       map((res) => {
         this.electionEnabled = res;
-        console.log('(tab1) electionEnabled: ', this.electionEnabled);
+        console.log('(home) electionEnabled: ', this.electionEnabled);
       })
     );
   }

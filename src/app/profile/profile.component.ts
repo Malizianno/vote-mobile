@@ -143,8 +143,8 @@ export class ProfileComponent {
   }
 
   closeToDashboard() {
-    // go to tab1 when back button/close is pressed
-    this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
+    // go to home tab when back button/close is pressed
+    this.router.navigate(['/tabs/home'], { replaceUrl: true });
   }
 
   closeToLogin() {
