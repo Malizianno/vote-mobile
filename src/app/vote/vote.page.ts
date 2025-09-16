@@ -21,16 +21,15 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { interval, map, Subscription } from 'rxjs';
-import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
+import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
+import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
 import { Candidate } from '../@shared/model/candidate.model';
 import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
-import { AppConstants } from '../@shared/util/app-constants.util';
 import { ToastService } from '../@shared/service/toast.service';
-import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
-import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
+import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
   selector: 'app-vote',
@@ -48,7 +47,6 @@ import { LanguageSwitcherComponent } from '../@shared/components/language-switch
     IonCardSubtitle,
     IonCardContent,
     IonContent,
-    ExploreContainerComponent,
     CommonModule,
     IonIcon,
     IonButton,
@@ -93,7 +91,7 @@ export class VotePage implements OnDestroy {
     private election: ElectionService,
     private credentials: CredentialsService,
     private toast: ToastService,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {
     addIcons({ checkmarkCircleOutline });
     // this.reloadPage();

@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ElectionActiveComponent } from './election-active.component';
+import { HomeElementComponent } from './home-element.component';
 
-describe('ElectionActiveComponent', () => {
-  let component: ElectionActiveComponent;
-  let fixture: ComponentFixture<ElectionActiveComponent>;
+describe('HomeElementComponent', () => {
+  let component: HomeElementComponent;
+  let fixture: ComponentFixture<HomeElementComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ElectionActiveComponent ],
-      imports: [IonicModule.forRoot()]
+      declarations: [HomeElementComponent],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ElectionActiveComponent);
+    fixture = TestBed.createComponent(HomeElementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

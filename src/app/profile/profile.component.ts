@@ -29,15 +29,13 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   add,
-  exit,
   arrowForward,
+  arrowForwardCircle,
   checkmarkCircleOutline,
   close,
+  exit,
   refresh,
-  arrowForwardCircle,
 } from 'ionicons/icons';
-import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
-import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 import { LoginResponseDTO } from '../@shared/model/login.dto';
 import {
   User,
@@ -69,8 +67,6 @@ import { UserService } from '../@shared/service/user.service';
     IonContent,
     IonSelect,
     IonSelectOption,
-    ExploreContainerComponent,
-    ElectionActiveComponent,
     IonButton,
     IonItem,
     IonIcon,
@@ -104,7 +100,15 @@ export class ProfileComponent {
     private toast: ToastService,
     private translate: TranslateService
   ) {
-    addIcons({ close, exit, arrowForward, arrowForwardCircle, refresh, add, checkmarkCircleOutline });
+    addIcons({
+      close,
+      exit,
+      arrowForward,
+      arrowForwardCircle,
+      refresh,
+      add,
+      checkmarkCircleOutline,
+    });
 
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, () => {

@@ -1,0 +1,29 @@
+<ion-card class="news-card">
+  <ion-item lines="none">
+    <ion-grid>
+      <ion-row>
+        <ion-col class="ion-text-start">
+          <h2>{{ news.title }}</h2>
+        </ion-col>
+        <ion-col class="ion-text-end">
+          <span>{{ news.timestamp | date: 'short' }}</span>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-item>
+
+  <ion-card-content>
+    <ion-grid>
+      <ion-row>
+        <p>{{ news.description }}</p>
+      </ion-row>
+      <ion-row>
+        <ion-col class="ion-text-end">
+          <ion-button fill="clear" size="small" (click)="openDetails(news)">
+            <ion-icon name="chevron-down-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>

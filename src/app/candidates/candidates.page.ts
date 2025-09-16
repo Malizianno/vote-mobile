@@ -27,15 +27,15 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { map } from 'rxjs';
-import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
+import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
 import { Candidate } from '../@shared/model/candidate.model';
 import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
+import { ToastService } from '../@shared/service/toast.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
-import { ToastService } from '../@shared/service/toast.service';
-import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
+import { CandidateElementComponent } from "../@shared/components/candidate-element/candidate-element.component";
 
 @Component({
   selector: 'app-candidates',
@@ -53,7 +53,6 @@ import { LanguageSwitcherComponent } from '../@shared/components/language-switch
     IonToolbar,
     IonTitle,
     IonContent,
-    ExploreContainerComponent,
     IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
@@ -70,7 +69,8 @@ import { LanguageSwitcherComponent } from '../@shared/components/language-switch
     IonChip,
     TranslateModule,
     LanguageSwitcherComponent,
-  ],
+    CandidateElementComponent
+],
 })
 export class CandidatesPage implements OnDestroy {
   candidates: Candidate[] = [];

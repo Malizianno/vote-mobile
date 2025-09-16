@@ -1,0 +1,15 @@
+<ion-card class="news-card">
+  <ion-item lines="none">
+    <ion-thumbnail slot="start">
+      <img [src]="candidate.image" alt="photo" />
+    </ion-thumbnail>
+    <ion-label>
+      <h2>{{ candidate.firstName + " " + candidate.lastName }}</h2>
+      <p>{{ candidate.party }}</p>
+    </ion-label>
+  </ion-item>
+
+  <ion-card-content>
+    <p>{{ candidate.description }}</p>
+  </ion-card-content>
+</ion-card>

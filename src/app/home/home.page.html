@@ -12,15 +12,19 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <app-election-active
-    *ngIf="!electionEnabled"
-    description="{{ 'home.inactive-message' | translate }}"
-    link="/tabs/candidates"
-  ></app-election-active>
-
-  <app-election-active
-    *ngIf="electionEnabled"
-    description="{{ 'home.active-message' | translate }}"
-    link="/tabs/vote"
-  ></app-election-active>
+  <app-home-element
+    [news]="{title: 'Voturi', timestamp: 1758050000000, description: 'Voturile au atins 20%!'}"
+  ></app-home-element>
+  <app-home-element
+    [news]="{title: 'Știri', timestamp: 1758041000000, description: 'Ziarul de Bistrița a anunțat deja câștigătorii zilei... uuu... sexi...'}"
+  ></app-home-element>
+  <app-home-element
+    [news]="{title: 'Voturi', timestamp: 1758040000000, description: 'Voturile au atins 10%!'}"
+  ></app-home-element>
+  <app-home-element
+    [news]="{title: 'Voturi', timestamp: 1758039900000, description: 'Voturile au atins 5%!'}"
+  ></app-home-element>
+  <app-home-element
+    [news]="{title: 'Alegeri 2025', timestamp: 1758039600000, description: 'Alegerile au început, în pula mea!'}"
+  ></app-home-element>
 </ion-content>

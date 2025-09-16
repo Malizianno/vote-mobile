@@ -35,8 +35,6 @@ import {
   UserProfile,
 } from '../@shared/model/user.model';
 import { UserService } from '../@shared/service/user.service';
-import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
-import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
 
 @Component({
   selector: 'app-signup-info',
@@ -56,8 +54,6 @@ import { ExploreContainerComponent } from '../@shared/components/explore-contain
     IonToolbar,
     IonTitle,
     IonContent,
-    ExploreContainerComponent,
-    ElectionActiveComponent,
     IonButton,
     IonItem,
     IonIcon,
