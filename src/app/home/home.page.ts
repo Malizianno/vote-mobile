@@ -8,11 +8,11 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { interval, map, Subscription } from 'rxjs';
-import { ElectionActiveComponent } from '../@shared/components/election-active/election-active.component';
-import { ExploreContainerComponent } from '../@shared/components/explore-container/explore-container.component';
+import { HomeElementComponent } from '../@shared/components/home-element/home-element.component';
+import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
+import { ElectionCampaignDTO } from '../@shared/model/campaign.model';
 import { ElectionService } from '../@shared/service/election.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
-import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-home',
@@ -24,11 +24,10 @@ import { LanguageSwitcherComponent } from '../@shared/components/language-switch
     IonToolbar,
     IonTitle,
     IonContent,
-    ExploreContainerComponent,
-    ElectionActiveComponent,
     CommonModule,
     TranslateModule,
     LanguageSwitcherComponent,
+    HomeElementComponent,
   ],
 })
 export class HomePage implements OnDestroy {
@@ -68,9 +67,9 @@ export class HomePage implements OnDestroy {
 
   getElectionStatus() {
     return this.election.getStatus().pipe(
-      map((res) => {
-        this.electionEnabled = res;
-        console.log('(home) electionEnabled: ', this.electionEnabled);
+      map((res: ElectionCampaignDTO) => {
+        this.electionEnabled = res.enabled;
+        console.log('(home) electionEnabled: ', res);
       })
     );
   }

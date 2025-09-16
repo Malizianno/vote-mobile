@@ -26,13 +26,13 @@ import {
   triangle,
   person,
   exit,
-  closeOutline,
-} from 'ionicons/icons';
+  closeOutline, today } from 'ionicons/icons';
 import { ElectionService } from '../@shared/service/election.service';
 import { map } from 'rxjs';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
+import { ElectionCampaignDTO } from '../@shared/model/campaign.model';
 
 @Component({
   selector: 'app-tabs',
@@ -67,17 +67,7 @@ export class TabsPage {
     private election: ElectionService,
     private credentials: CredentialsService
   ) {
-    addIcons({
-      person,
-      closeOutline,
-      homeOutline,
-      people,
-      banOutline,
-      triangle,
-      ellipse,
-      square,
-      exit,
-    });
+    addIcons({person,exit,homeOutline,people,today,closeOutline,banOutline,triangle,ellipse,square,});
     this.reloadPage();
   }
 
@@ -94,9 +84,9 @@ export class TabsPage {
 
   getElectionStatus() {
     return this.election.getStatus().pipe(
-      map((res) => {
-        this.electionEnabled = res;
-        console.log('(tabs) electionEnabled: ', this.electionEnabled);
+      map((res: ElectionCampaignDTO) => {
+        this.electionEnabled = res.enabled;
+        console.log('(tabs) electionEnabled: ', res);
       })
     );
   }
