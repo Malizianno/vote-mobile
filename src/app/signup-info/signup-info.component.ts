@@ -34,7 +34,6 @@ import {
   UserNationality,
   UserProfile,
 } from '../@shared/model/user.model';
-import { UserService } from '../@shared/service/user.service';
 
 @Component({
   selector: 'app-signup-info',
@@ -74,7 +73,7 @@ export class SignupInfoComponent {
 
   canVote: boolean = false;
 
-  constructor(private router: Router, private userService: UserService) {
+  constructor(private router: Router) {
     addIcons({ arrowForward, refresh, checkmarkCircleOutline });
 
     this.appVersion = environment.version;
