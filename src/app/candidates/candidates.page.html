@@ -1,42 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title slot="start">{{ 'candidates.title' | translate }}</ion-title>
-
     <app-language-switcher></app-language-switcher>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-grid *ngIf="candidates.length > 0">
-    <!-- <ion-row>
-      <ion-col>
-        <ion-card *ngFor="let candidate of candidates">
-          <img
-            alt="{{ candidate.firstName + '-' + candidate.lastName }}"
-            src="{{ candidate.image }}"
-          />
-          <ion-card-header>
-            <ion-card-title
-              >{{ candidate.firstName + ' ' + candidate.lastName
-              }}</ion-card-title
-            >
-            <ion-card-subtitle>{{ candidate.party }}</ion-card-subtitle>
-          </ion-card-header>
-
-          <ion-card-content>
-            <ion-label>{{ candidate.description }}</ion-label>
-          </ion-card-content>
-
-          <ion-row class="ion-text-end">
-            <ion-col>
-              <ion-button fill="clear" (click)="openMoreAbout()"
-                >{{ 'candidates.more' | translate }}</ion-button
-              >
-            </ion-col>
-          </ion-row>
-        </ion-card>
-      </ion-col>
-    </ion-row> -->
     <ion-item *ngFor="let candidate of candidates">
       <app-candidate-element [candidate]="candidate"></app-candidate-element>
     </ion-item>
@@ -49,13 +19,6 @@
           (click)="scrollToTop()"
           >{{ 'candidates.go-up' | translate }}</ion-button
         >
-      </ion-col>
-    </ion-row>
-
-    <!-- EMPTY SPACE :))) -->
-    <ion-row *ngFor="let idx of [1, 2, 3, 4, 5]" [hidden]="true">
-      <ion-col>
-        <ion-note></ion-note>
       </ion-col>
     </ion-row>
   </ion-grid>
