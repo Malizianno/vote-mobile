@@ -18,36 +18,44 @@
 
         <ion-card
           *ngFor="let candidate of candidates"
-          [ngClass]="selected === candidate.id ? 'selected-border' : ''"
+          [ngClass]="(selected === candidate.id ? 'selected-border' : 'border-lighter') + ' rounded-border'"
           [disabled]="hasVoted"
         >
           <ion-card-header (click)="setCandidateSelection(candidate.id)">
-            <ion-card-title
-              >{{ candidate.firstName + ' ' + candidate.lastName
-              }}</ion-card-title
-            >
-            <ion-card-subtitle>{{ candidate.party }}</ion-card-subtitle>
+            <div class="card-row">
+              <ion-thumbnail slot="end">
+                <img
+                  src="{{candidate.image}}"
+                  alt="Profile"
+                  class="profile-image"
+                />
+              </ion-thumbnail>
+              &nbsp;&nbsp;
+
+              <div class="card-titles">
+                <ion-card-title
+                  >{{ candidate.firstName + ' ' + candidate.lastName
+                  }}</ion-card-title
+                >
+                <ion-card-subtitle>{{ candidate.party }}</ion-card-subtitle>
+              </div>
+            </div>
+
             <ion-row class="ion-text-center">
               <ion-col>
                 <ion-button
+                  color="dark"
                   fill="clear"
                   *ngIf="selected === candidate.id"
                   (click)="openConfirmModal(candidate)"
                 >
-                  <ion-icon name="checkmark-circle-outline"></ion-icon>{{
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>&nbsp;{{
                   'vote.vote' | translate }}
                 </ion-button>
               </ion-col>
             </ion-row>
           </ion-card-header>
         </ion-card>
-      </ion-col>
-    </ion-row>
-
-    <!-- EMPTY SPACE :))) -->
-    <ion-row *ngFor="let idx of [1, 2, 3, 4, 5]" [hidden]="true">
-      <ion-col>
-        <ion-note></ion-note>
       </ion-col>
     </ion-row>
   </ion-grid>

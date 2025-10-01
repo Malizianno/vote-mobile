@@ -18,6 +18,7 @@ import {
   IonToolbar,
   IonModal,
   IonButtons,
+  IonThumbnail,
   ModalController,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -60,6 +61,7 @@ import { ModalConfirmVoteComponent } from './modal-confirm-vote/modal-confirm-vo
     IonCol,
     IonNote,
     IonModal,
+    IonThumbnail,
     TranslateModule,
     NoResultsComponent,
     LanguageSwitcherComponent,
@@ -133,6 +135,11 @@ export class VotePage implements OnDestroy {
   }
 
   setCandidateSelection(idToSelect: number) {
+    if (this.selected === idToSelect) {
+      this.selected = -1; // unselect
+      return;
+    }
+
     this.selected = idToSelect;
   }
 
