@@ -1,4 +1,7 @@
 {
+    "btn": {
+        "back": "Back"
+    },
     "landing": {
         "login": "Login",
         "signup": "Signup"
@@ -28,7 +31,10 @@
         "title": "Vote",
         "alert": "You have already voted!",
         "vote": "Vote",
-        "confirm-vote": "Voted successfully!"
+        "confirm-vote": "Voted successfully!",
+        "confirm-title": "Vote confirmation",
+        "confirm-message": "Are you sure you want to vote for",
+        "confirm-submessage": "This action cannot be undone."
     },
     "profile": {
         "title": "Profile",

@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-grid *ngIf="candidates.length > 0">
+  <ion-grid *ngIf="candidates.length > 0 && !isModalOpen">
     <ion-row>
       <ion-col>
         <ion-card class="text-warning" *ngIf="hasVoted">
@@ -16,20 +16,31 @@
           </ion-card-header>
         </ion-card>
 
-        <ion-card *ngFor="let candidate of candidates" [ngClass]="selected === candidate.id ? 'selected-border' : ''" [disabled]="hasVoted">
+        <ion-card
+          *ngFor="let candidate of candidates"
+          [ngClass]="selected === candidate.id ? 'selected-border' : ''"
+          [disabled]="hasVoted"
+        >
           <ion-card-header (click)="setCandidateSelection(candidate.id)">
-            <ion-card-title>{{ candidate.firstName + ' ' + candidate.lastName }}</ion-card-title>
+            <ion-card-title
+              >{{ candidate.firstName + ' ' + candidate.lastName
+              }}</ion-card-title
+            >
             <ion-card-subtitle>{{ candidate.party }}</ion-card-subtitle>
             <ion-row class="ion-text-center">
               <ion-col>
-                <ion-button fill="clear" *ngIf="selected === candidate.id" (click)="vote(candidate)">
-                  <ion-icon name="checkmark-circle-outline"></ion-icon>{{ 'vote.vote' | translate }}
+                <ion-button
+                  fill="clear"
+                  *ngIf="selected === candidate.id"
+                  (click)="openConfirmModal(candidate)"
+                >
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>{{
+                  'vote.vote' | translate }}
                 </ion-button>
               </ion-col>
             </ion-row>
           </ion-card-header>
         </ion-card>
-
       </ion-col>
     </ion-row>
 

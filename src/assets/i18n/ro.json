@@ -1,4 +1,7 @@
 {
+    "btn": {
+        "back": "Înapoi"
+    },
     "landing": {
         "login": "Pornire",
         "signup": "Înregistrare"
@@ -28,7 +31,10 @@
         "title": "Votează",
         "alert": "Ați exprimat deja 1 vot către unul dintre candidați!",
         "vote": "Votează",
-        "confirm-vote": "Ai votat cu succes!"
+        "confirm-vote": "Ai votat cu succes!",
+        "confirm-title": "Confirmare vot",
+        "confirm-message": "Ești sigur că vrei să votezi pentru",
+        "confirm-submessage": "Această acțiune este ireversibilă."
     },
     "profile": {
         "title": "Profil",

@@ -16,6 +16,9 @@ import {
   IonRow,
   IonTitle,
   IonToolbar,
+  IonModal,
+  IonButtons,
+  ModalController,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -30,6 +33,7 @@ import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
+import { ModalConfirmVoteComponent } from './modal-confirm-vote/modal-confirm-vote.component';
 
 @Component({
   selector: 'app-vote',
@@ -37,6 +41,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
   styleUrls: ['vote.page.scss'],
   standalone: true,
   imports: [
+    IonButtons,
     IonCard,
     IonCardHeader,
     IonGrid,
@@ -50,9 +55,11 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     CommonModule,
     IonIcon,
     IonButton,
+    IonButtons,
     IonRow,
     IonCol,
     IonNote,
+    IonModal,
     TranslateModule,
     NoResultsComponent,
     LanguageSwitcherComponent,
@@ -67,7 +74,10 @@ export class VotePage implements OnDestroy {
 
   selected = 0;
 
+  selectedCandidate: Candidate;
+
   hasVoted = false;
+  isModalOpen = false;
 
   private refreshSub: Subscription;
 
@@ -91,7 +101,8 @@ export class VotePage implements OnDestroy {
     private election: ElectionService,
     private credentials: CredentialsService,
     private toast: ToastService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modalCtrl: ModalController
   ) {
     addIcons({ checkmarkCircleOutline });
     // this.reloadPage();
@@ -123,6 +134,26 @@ export class VotePage implements OnDestroy {
 
   setCandidateSelection(idToSelect: number) {
     this.selected = idToSelect;
+  }
+
+  async openConfirmModal(candidate: Candidate) {
+    const modal = await this.modalCtrl.create({
+      component: ModalConfirmVoteComponent,
+      componentProps: { candidate: candidate },
+      cssClass: 'modal-vote-confirm',
+      breakpoints: [0, 0.75],
+      initialBreakpoint: 0.75,
+      showBackdrop: true,
+      backdropDismiss: true,
+    });
+
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm') {
+      this.vote(data);
+    }
   }
 
   vote(candidate: Candidate) {

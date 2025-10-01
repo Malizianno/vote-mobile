@@ -1,0 +1,55 @@
+@import "../../app.component.scss";
+
+ion-modal.modal-vote-confirm {
+  content: "";
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); // Safari support
+  background: rgba(0, 0, 0, 0.3); // semi-transparent dark overlay
+  z-index: -1;
+  transition: backdrop-filter 0.3s ease, background 0.3s ease;
+}
+
+.modal-vote-confirm-content {
+  border-style: solid;
+  border-color: white;
+  border-radius: 48px; // You can go higher for more curvature
+  overflow: hidden;
+
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.rounded-long-fixed-button {
+  --border-radius: 24px;
+  --background: linear-gradient(to right, #4e8cff, #6ac1ff);
+  --color: white;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+
+  position: fixed;
+  bottom: 30vh;
+  left: 16px;
+  right: 16px;
+  z-index: 100;
+}
+
+.rounded-long-fixed-button:hover {
+  transform: scale(1.02);
+}
+
+.fixed-submessage {
+  position: fixed;
+  bottom: 25vh;
+  left: 16px;
+  right: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  z-index: 100;
+}

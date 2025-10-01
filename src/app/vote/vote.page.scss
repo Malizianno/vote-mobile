@@ -1,6 +1,7 @@
-@import '../app.component.scss';
+@import "../app.component.scss";
+@import "../../global.scss";
 
 .selected-border {
-    border-style: solid;
-    border-color: white;
+  border-style: solid;
+  border-color: white;
 }
