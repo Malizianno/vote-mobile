@@ -12,18 +12,19 @@
 
 <ion-tabs>
   <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="home" href="/tabs/home">
+    <ion-tab-button tab="home" class="dark-tab-btn" href="/tabs/home">
       <ion-icon aria-hidden="true" name="home-outline"></ion-icon>
       <ion-label>{{ 'tabs.home' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="candidates" href="/tabs/candidates">
+    <ion-tab-button tab="candidates" class="dark-tab-btn" href="/tabs/candidates">
       <ion-icon aria-hidden="true" name="people"></ion-icon>
       <ion-label>{{ 'tabs.candidates' | translate }}</ion-label>
     </ion-tab-button>
 
     <ion-tab-button
       tab="vote"
+      class="dark-tab-btn"
       href="/tabs/vote"
       disabled="{{!electionEnabled}}"
     >

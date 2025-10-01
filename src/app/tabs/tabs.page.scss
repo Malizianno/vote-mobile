@@ -1,1 +1,13 @@
-@import '../app.component.scss';
+@import "../app.component.scss";
+
+.dark-tab-btn {
+  --background: #1e1e1e;
+  --color: #ffffff99;
+  --color-selected: #ffffff;
+  transition: border-top 0.3s ease;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark-tab-btn.tab-selected {
+  border-top: 2px solid white;
+}
