@@ -6,7 +6,16 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-grid *ngIf="candidates.length > 0">
+  <div class="swiper" #swiperRef>
+    <div class="swiper-wrapper">
+      <div class="swiper-slide" *ngFor="let candidate of candidates">
+        <img [src]="candidate.image" alt="carousel image" />
+      </div>
+    </div>
+  </div>
+  <div class="swiper-pagination"></div>
+
+  <!-- <ion-grid *ngIf="candidates.length > 0">
     <ion-item *ngFor="let candidate of candidates">
       <app-candidate-element [candidate]="candidate"></app-candidate-element>
     </ion-item>
@@ -21,7 +30,7 @@
         >
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
 
   <app-no-results *ngIf="candidates.length < 1"></app-no-results>
 </ion-content>

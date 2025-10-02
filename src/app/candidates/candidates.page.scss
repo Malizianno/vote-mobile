@@ -3,3 +3,76 @@
 .top {
     top: 50px;
 }
+
+.swiper {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 50vh; // half of the viewport height
+}
+
+.swiper-wrapper {
+  width: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.swiper-slide img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  z-index: 1;
+  position: relative;
+  display: block;
+}
+
+.swiper-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10%;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(to bottom, black, transparent);
+}
+
+.swiper-slide::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  pointer-events: none;
+  background: linear-gradient(to top, black, transparent);
+  z-index: 2;
+}
+
+.swiper-pagination {
+  margin-top: 12px;
+  position: static;
+  display: flex;
+  justify-content: center;
+}
+
+:host ::ng-deep .swiper-pagination-bullet {
+  background-color: #ccc; // light grey
+  opacity: 0.5;
+}
+
+:host ::ng-deep .swiper-pagination-bullet-active {
+  background-color: #fff; // pure white
+  opacity: 1;
+  transform: scale(1.2);
+}

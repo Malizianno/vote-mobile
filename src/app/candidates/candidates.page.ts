@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnChanges,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
@@ -35,7 +42,13 @@ import { CandidateService } from '../@shared/service/candidate.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
-import { CandidateElementComponent } from "../@shared/components/candidate-element/candidate-element.component";
+import { CandidateElementComponent } from '../@shared/components/candidate-element/candidate-element.component';
+import { Swiper } from 'swiper';
+import { Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+
+Swiper.use([Pagination]);
 
 @Component({
   selector: 'app-candidates',
@@ -69,21 +82,25 @@ import { CandidateElementComponent } from "../@shared/components/candidate-eleme
     IonChip,
     TranslateModule,
     LanguageSwitcherComponent,
-    CandidateElementComponent
-],
+    CandidateElementComponent,
+  ],
 })
-export class CandidatesPage implements OnDestroy {
+export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
+  @ViewChild(IonContent) content: IonContent;
+  @ViewChild('swiperRef') swiperRef!: ElementRef;
+
   candidates: Candidate[] = [];
+
+  selected = 0;
 
   filter: Candidate = new Candidate();
   paging = new Paging();
   totalCandidates = 0;
 
   parties = Object.keys(PartyTypeEnum).filter((v) => isNaN(Number(v)));
-
-  @ViewChild(IonContent) content: IonContent;
-
   private refreshSub: Subscription;
+
+  swiper!: Swiper;
 
   ionViewWillEnter() {
     // console.log('ionViewWillEnter - candidates');
@@ -111,6 +128,29 @@ export class CandidatesPage implements OnDestroy {
     this.refreshSub.unsubscribe();
   }
 
+  ngAfterViewInit() {
+    this.swiper = new Swiper(this.swiperRef.nativeElement, {
+      slidesPerView: 1,
+      pagination: { el: '.swiper-pagination', clickable: true },
+      on: {
+        slideChange: () => {
+          this.selected = this.swiper.activeIndex;
+          console.log('swiper data got ', this.swiper);
+        },
+      },
+    });
+  }
+
+  ngOnChanges() {
+    this.reloadSwiper();
+  }
+
+  reloadSwiper() {
+    if (this.swiper && this.swiper.enabled) {
+      this.swiper.update();
+    }
+  }
+
   reloadPage() {
     this.getFiltered().subscribe({
       next: (res) => res,
@@ -125,6 +165,7 @@ export class CandidatesPage implements OnDestroy {
           this.candidates = Candidate.fromArray(res.candidates);
           this.totalCandidates = res.total;
 
+          this.reloadSwiper();
           // this.toast.show('Candidates loaded successfully!');
           // console.log('candidates: ', this.candidates);
         }
