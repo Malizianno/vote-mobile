@@ -91,7 +91,7 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
 
   candidates: Candidate[] = [];
 
-  selected = 0;
+  selected: Candidate;
 
   filter: Candidate = new Candidate();
   paging = new Paging();
@@ -107,7 +107,7 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
     this.reloadPage();
     this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() =>
       this.reloadPage()
-    ); // every <AppCOnstants.REFRESH_TIME_MS> s
+    ); // every <AppConstants.REFRESH_TIME_MS> s
   }
 
   ionViewWillLeave() {
@@ -119,7 +119,6 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
 
   constructor(
     private candidatesService: CandidateService,
-    private toast: ToastService
   ) {
     this.reloadPage();
   }
@@ -134,8 +133,8 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
       pagination: { el: '.swiper-pagination', clickable: true },
       on: {
         slideChange: () => {
-          this.selected = this.swiper.activeIndex;
           console.log('swiper data got ', this.swiper);
+          this.setSelected(this.swiper.activeIndex);
         },
       },
     });
@@ -165,23 +164,12 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
           this.candidates = Candidate.fromArray(res.candidates);
           this.totalCandidates = res.total;
 
+          this.setSelected(0);
           this.reloadSwiper();
-          // this.toast.show('Candidates loaded successfully!');
           // console.log('candidates: ', this.candidates);
         }
       })
     );
-  }
-
-  openMoreAbout() {
-    // WIP: open new page with more about the candidate
-    console.log('clicked on more...');
-  }
-
-  scrollToTop() {
-    // Passing a duration to the method makes it so the scroll slowly
-    // goes to the top instead of instantly
-    this.content.scrollToTop(500);
   }
 
   parseParty(party: string) {
@@ -189,5 +177,12 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
       return 'Toate';
     }
     return party;
+  }
+
+  setSelected(idx: number) {
+    if (idx > -1 && this.candidates && idx < this.candidates.length) {
+      this.selected = this.candidates[idx];
+      // console.log('selected candidate: ', this.selected);
+    }
   }
 }

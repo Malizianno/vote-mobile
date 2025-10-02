@@ -15,22 +15,31 @@
   </div>
   <div class="swiper-pagination"></div>
 
-  <!-- <ion-grid *ngIf="candidates.length > 0">
-    <ion-item *ngFor="let candidate of candidates">
-      <app-candidate-element [candidate]="candidate"></app-candidate-element>
-    </ion-item>
-    <ion-row *ngIf="candidates.length > 1">
-      <ion-col class="ion-text-center">
-        <ion-button
-          class="bottom"
-          shape="round"
-          color="dark"
-          (click)="scrollToTop()"
-          >{{ 'candidates.go-up' | translate }}</ion-button
-        >
+  <ion-grid class="card-grid">
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="info-card">
+          <ion-card-content
+            >{{ selected.firstName + ' ' + selected.lastName
+            }}</ion-card-content
+          >
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="info-card">
+          <ion-card-content>{{ selected.party }}</ion-card-content>
+        </ion-card>
       </ion-col>
     </ion-row>
-  </ion-grid> -->
+
+    <ion-row class="center-row">
+      <ion-col size="12">
+        <ion-card class="info-card full-card">
+          <ion-card-content>{{ selected.description }}</ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <app-no-results *ngIf="candidates.length < 1"></app-no-results>
 </ion-content>
