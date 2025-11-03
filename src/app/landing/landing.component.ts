@@ -32,4 +32,8 @@ export class LandingComponent implements OnInit {
   signup() {
     this.router.navigate(['/signup-info'], { replaceUrl: true });
   }
+
+  register() {
+    this.router.navigate(['/register'], { replaceUrl: true });
+  }
 }

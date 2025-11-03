@@ -4,7 +4,8 @@
     },
     "landing": {
         "login": "Login",
-        "signup": "Signup"
+        "signup": "Signup",
+        "register": "Register"
     },
     "login": {
         "warning-message": "THIS PAGE WILL BE REPLACED BY ACTUAL LOGIN WITH CAMERA OPTIONS!",

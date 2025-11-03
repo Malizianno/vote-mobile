@@ -4,7 +4,8 @@
     },
     "landing": {
         "login": "Conectare",
-        "signup": "Înregistrare"
+        "signup": "Înregistrare",
+        "register": "Înregistrare"
     },
     "login": {
         "warning-message": "Această pagină va fi înlocuită cu un ecran cu camera!",
