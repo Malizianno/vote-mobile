@@ -1,1 +1,75 @@
-@import '../app.component.scss';
+@import "../app.component.scss";
+
+.splash-content {
+  --background: #121212;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Logo starts large and centered, then shrinks and moves up */
+.logo-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: moveLogoUpShrink 1.5s ease-out forwards;
+}
+
+.logo {
+  width: 240px; // Start larger
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Buttons fade in after logo animation, centered both axes */
+.button-group {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+  animation: fadeInButtons 0.8s ease-in forwards;
+  animation-delay: 1.5s;
+}
+
+.version-label {
+  position: absolute;
+  bottom: 16px; // Adjust spacing from bottom
+  left: 50%;
+  transform: translateX(-50%);
+  color: #aaaaaa;
+  font-size: 14px;
+  opacity: 0;
+  animation: fadeInButtons 0.8s ease-in forwards;
+  animation-delay: 1.5s;
+}
+
+ion-button {
+  width: 200px;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Animations */
+@keyframes moveLogoUpShrink {
+  0% {
+    top: 50%;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    top: 100px;
+    transform: translate(-50%, 0) scale(0.7); // Shrinks to ~160px
+  }
+}
+
+@keyframes fadeInButtons {
+  to {
+    opacity: 1;
+  }
+}

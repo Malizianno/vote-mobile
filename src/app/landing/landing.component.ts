@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -48,11 +48,18 @@ import { CredentialsService } from '../@shared/service/credentials.service';
     TranslateModule,
   ],
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit {
   appVersion: string;
+  startAnimation = false;
 
   constructor(private router: Router, private credentials: CredentialsService) {
     this.appVersion = environment.version;
+  }
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.startAnimation = true;
+    }, 500); // Delay before animation starts
+
   }
 
   login() {
