@@ -100,6 +100,8 @@ export class RegisterComponent {
     this.runOCR(base64);
   }
 
+  // WIP: 431 (Request Header Fields Too Large)
+  // avoid sending via the URL, try to send a blob to Tesseract directly
   async runOCR(imageDataUrl: string | null) {
     if (!imageDataUrl) {
       this.extractedText = 'No image data available.';
