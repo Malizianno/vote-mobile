@@ -51,7 +51,8 @@
         "valid-from": "Valid From",
         "valid-until": "Valid Until",
         "save": "Save",
-        "saved": "Profile successfully saved!"
+        "saved": "Profile successfully saved!",
+        "registered": "Profile successfully registered!"
     },
     "components": {
          "no-results": {

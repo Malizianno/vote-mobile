@@ -44,6 +44,7 @@ import {
   UserProfile,
 } from '../@shared/model/user.model';
 import { CredentialsService } from '../@shared/service/credentials.service';
+import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { UserService } from '../@shared/service/user.service';
 
@@ -82,6 +83,8 @@ export class ProfileComponent {
   user: UserProfile = new UserProfile();
   memmoryUser: LoginResponseDTO;
 
+  isRegisteringRN: boolean = false;
+
   userAvatar: string;
 
   nationalities = Object.values(UserNationality).filter(
@@ -98,7 +101,8 @@ export class ProfileComponent {
     private users: UserService,
     private sanitizer: DomSanitizer,
     private toast: ToastService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private shared: SharedService
   ) {
     addIcons({
       close,
@@ -127,9 +131,11 @@ export class ProfileComponent {
     if (this.memmoryUser) {
       this.getProfile(this.memmoryUser.id);
     } else {
-      this.user = this.router.getCurrentNavigation()?.extras.state?.['user'];
+      this.isRegisteringRN = true;
+
+      this.user = this.router.getCurrentNavigation()?.extras.state?.['profile'];
       this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
-        this.user.idImage
+        this.shared.getImage()!
       ) as string;
     }
 
@@ -176,18 +182,31 @@ export class ProfileComponent {
   }
 
   saveProfile() {
-    this.users.saveProfile(this.user).subscribe({
-      next: (res: User) => {
-        this.toast.show(this.translate.instant('profile.saved'));
-        console.log('user profile updated: ', res);
+    if (this.isRegisteringRN) {
+      this.users.registerProfile(this.user).subscribe({
+        next: (res: User) => {
+          this.toast.show(this.translate.instant('profile.registered'));
+          console.log('user profile registered: ', res);
+          this.router.navigate(['/login'], { replaceUrl: true });
+        },
+        error: (err: HttpErrorResponse) => {
+          this.users.handleHTTPErrors(err);
+        },
+      });
+    } else {
+      this.users.saveProfile(this.user).subscribe({
+        next: (res: User) => {
+          this.toast.show(this.translate.instant('profile.saved'));
+          console.log('user profile updated: ', res);
 
-        this.credentials.setCredentials(this.memmoryUser);
-        this.close();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.users.handleHTTPErrors(err);
-      },
-    });
+          this.credentials.setCredentials(this.memmoryUser);
+          this.close();
+        },
+        error: (err: HttpErrorResponse) => {
+          this.users.handleHTTPErrors(err);
+        },
+      });
+    }
   }
 
   captureImage() {

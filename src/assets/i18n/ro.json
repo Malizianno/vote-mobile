@@ -51,7 +51,8 @@
         "valid-from": "Valabilitate de la",
         "valid-until": "Valabilitate până la",
         "save": "Salvează",
-        "saved": "Profil salvat cu success!"
+        "saved": "Profil salvat cu success!",
+        "registered": "Profil înregistrat cu success!"
     },
     "components": {
         "no-results": {

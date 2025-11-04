@@ -1,7 +1,12 @@
 import { Component, EnvironmentInjector, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  IonButton,
+  IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
+  IonFabList,
   IonHeader,
   IonIcon,
   IonLabel,
@@ -10,29 +15,26 @@ import {
   IonTabs,
   IonTitle,
   IonToolbar,
-  IonButton,
-  IonButtons,
-  IonFab,
-  IonFabButton,
-  IonFabList,
 } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   banOutline,
+  closeOutline,
   ellipse,
+  exit,
   homeOutline,
   people,
-  square,
-  triangle,
   person,
-  exit,
-  closeOutline, today } from 'ionicons/icons';
-import { ElectionService } from '../@shared/service/election.service';
+  square,
+  today,
+  triangle,
+} from 'ionicons/icons';
 import { map } from 'rxjs';
-import { CredentialsService } from '../@shared/service/credentials.service';
-import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 import { ElectionCampaignDTO } from '../@shared/model/campaign.model';
+import { CredentialsService } from '../@shared/service/credentials.service';
+import { ElectionService } from '../@shared/service/election.service';
 
 @Component({
   selector: 'app-tabs',
@@ -67,7 +69,18 @@ export class TabsPage {
     private election: ElectionService,
     private credentials: CredentialsService
   ) {
-    addIcons({person,exit,homeOutline,people,today,closeOutline,banOutline,triangle,ellipse,square,});
+    addIcons({
+      person,
+      exit,
+      homeOutline,
+      people,
+      today,
+      closeOutline,
+      banOutline,
+      triangle,
+      ellipse,
+      square,
+    });
     this.reloadPage();
   }
 

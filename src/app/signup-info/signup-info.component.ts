@@ -98,7 +98,6 @@ export class SignupInfoComponent {
     userProfile.idNumber = +this.getFormattedIDNumber();
     userProfile.nationality = this.getFormattedNationality();
     userProfile.gender = this.getFormattedGender();
-    userProfile.birthAddress = this.getFormattedBirthAddress();
     userProfile.residenceAddress = this.getFormattedResidenceAddress();
     userProfile.validityStartDate = this.getFormattedStartValidityDate();
     userProfile.validityEndDate = this.getFormattedEndValidityDate();

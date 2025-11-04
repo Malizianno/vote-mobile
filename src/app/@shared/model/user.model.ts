@@ -16,11 +16,11 @@ export class UserProfile extends User {
     idNumber!: number;
     cnp!: number;
     nationality!: UserNationality;
-    birthAddress!: string;
     residenceAddress!: string;
     validityStartDate!: number;
     validityEndDate!: number;
     idImage!: string; // base64
+    faceImage!: string; // base64
 }
 
 export enum UserRole {

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   CameraPreview,
   CameraPreviewOptions,
@@ -34,10 +35,17 @@ import {
 } from 'ionicons/icons';
 import Tesseract from 'tesseract.js';
 import { __values } from 'tslib';
+import {
+  UserGender,
+  UserNationality,
+  UserProfile,
+} from '../@shared/model/user.model';
+import { SharedService } from '../@shared/service/shared.service';
 
 // XXX: TESTING: Ensure camera stops when navigating away (livereload issue)
 window.addEventListener('beforeunload', () => {
   CameraPreview.stop().catch(() => {});
+  ScreenOrientation.unlock();
 });
 @Component({
   selector: 'app-register',
@@ -70,12 +78,14 @@ export class RegisterComponent {
   private BASE64_PREFIX = 'data:image/jpeg;base64,';
 
   isPhotoTaken = false;
-  isValid = false;
+  isIDValid = false;
+  isOCRDone = false;
 
   imageDataUrl: string | undefined;
   extractedText: string;
+  profile: UserProfile;
 
-  constructor() {
+  constructor(private router: Router, private shared: SharedService) {
     addIcons({
       checkmark,
       camera,
@@ -196,6 +206,11 @@ export class RegisterComponent {
         cropHeight // destination
       );
 
+      // add the cropped image to the global imageURL
+      const base64 = canvas.toDataURL('image/jpeg');
+      // .replace('data:image/jpeg;base64,', '');
+      this.imageDataUrl = base64;
+
       // convert to grayscale
       const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
@@ -234,10 +249,12 @@ export class RegisterComponent {
   }
 
   parseExtractedText(text: string) {
-    const lines = text
+    let lines = text
       .split('\n')
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
+
+    lines = this.trimTrailingShortLines(lines);
 
     const cnp = lines
       .find((line) => /\b\d{13}\b/.test(line))
@@ -269,7 +286,7 @@ export class RegisterComponent {
     );
     const address = lines.slice(addressStart + 1, addressStart + 3).join(' ');
 
-    this.isValid =
+    this.isIDValid =
       !!nume &&
       !!prenume &&
       !!cnp &&
@@ -278,6 +295,36 @@ export class RegisterComponent {
       !!numar &&
       isValid &&
       address.length > 10;
+
+      if (this.isIDValid) {
+        this.isOCRDone = true;
+        // create available profile object
+        this.profile = new UserProfile();
+        this.profile.cnp = +cnp!;
+        this.profile.firstname = prenume;
+        this.profile.lastname = nume;
+        this.profile.gender =
+          sex === 'M'
+            ? UserGender.MALE
+            : sex === 'F'
+            ? UserGender.FEMALE
+            : UserGender.OTHER;
+        this.profile.idSeries = serie;
+        this.profile.idNumber = +numar;
+        this.profile.nationality = cetatenie?.match(/rom/i)
+          ? UserNationality.ROMANIAN
+          : UserNationality.FOREIGNER;
+        this.profile.residenceAddress = address;
+        this.profile.validityStartDate = this.parseDate_ddMMyy(
+          validityArray[0]
+        )!.getTime();
+        this.profile.validityEndDate = this.parseDate_ddMMyy(
+          validityArray[1]
+        )!.getTime();
+        // WIP: Images could be set here if needed
+        this.profile.idImage = this.imageDataUrl!;
+        // this.profile.faceImage = this.imageDataUrl!.replace(this.BASE64_PREFIX, '');
+      }
 
     console.log('Parsed Data + validation:', {
       cnp,
@@ -291,7 +338,7 @@ export class RegisterComponent {
       validitate,
       validCNP: this.validateCNP(cnp || ''),
       isValid,
-      overallValid: this.isValid,
+      overallValid: this.isIDValid,
     });
   }
 
@@ -350,7 +397,7 @@ export class RegisterComponent {
 
   trimTrailingShortLines(lines: string[]): string[] {
     let i = lines.length;
-    while (i > 0 && lines[i - 1].length < 9) {
+    while (i > 0 && lines[i - 1].length < 15) {
       i--;
     }
     return lines.slice(0, i);
@@ -370,9 +417,16 @@ export class RegisterComponent {
     return new Blob([intArray], { type: mime });
   }
 
-  sendData() {
-    // send data to backend
-    console.log('Data sent to backend.');
+  goToProfile() {
+    ScreenOrientation.unlock();
+
+    this.shared.setImage(this.profile.idImage);
+    this.profile.idImage = undefined!; // clear image data before navigation
+
+    this.router.navigate(['/profile'], {
+      replaceUrl: true,
+      state: { profile: this.profile },
+    });
   }
 
   async retakePhoto() {
@@ -380,7 +434,7 @@ export class RegisterComponent {
       await this.stopCamera();
 
       this.isPhotoTaken = false;
-      this.isValid = false;
+      this.isIDValid = false;
       this.extractedText = '';
 
       document.getElementById('ocr-preview')?.remove();

@@ -22,4 +22,10 @@ export class UserService extends GenericService {
       headers: this.headers,
     });
   }
+
+  registerProfile(user: UserProfile): Observable<UserProfile> {
+    return this.http.post<UserProfile>(this.profileURL + '/register', user, {
+      headers: this.headers,
+    });
+  }
 }

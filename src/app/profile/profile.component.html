@@ -21,9 +21,9 @@
         height="200"
         alt="User Avatar DEFAULT ALT"
       />
-      <ion-button shape="round" color="dark" (click)="captureImage()">
+      <!-- <ion-button shape="round" color="dark" (click)="captureImage()">
         <ion-icon slot="icon-only" name="refresh"></ion-icon>
-      </ion-button>
+      </ion-button> -->
     </ion-card-header>
 
     <ion-card-content>
@@ -93,14 +93,6 @@
             {{ nationality }}
           </ion-select-option>
         </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-input
-          label="{{ 'profile.birth-address' | translate }}"
-          labelPlacement="floating"
-          [(ngModel)]="user.birthAddress"
-        ></ion-input>
       </ion-item>
 
       <ion-item>
