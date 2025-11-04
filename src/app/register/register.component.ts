@@ -278,7 +278,7 @@ export class RegisterComponent {
       ?.split(' / ')[0]
       .split(' ')[1];
 
-    const sexLine = lines.find((line) => /Sex|Saxe/i);
+    const sexLine = lines.find((line) => / [FM]( |$)/);
     const sex = /M/.test(sexLine!) ? 'M' : /F/.test(sexLine!) ? 'F' : null;
 
     const addressStart = lines.findIndex((line) =>
