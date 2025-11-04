@@ -27,6 +27,7 @@ import { addIcons } from 'ionicons';
 import {
   arrowForward,
   camera,
+  checkmark,
   checkmarkCircleOutline,
   home,
   refresh,
@@ -67,11 +68,22 @@ window.addEventListener('beforeunload', () => {
 })
 export class RegisterComponent {
   private BASE64_PREFIX = 'data:image/jpeg;base64,';
+
+  isPhotoTaken = false;
+  isValid = false;
+
   imageDataUrl: string | undefined;
   extractedText: string;
 
   constructor() {
-    addIcons({ home, camera, arrowForward, refresh, checkmarkCircleOutline });
+    addIcons({
+      checkmark,
+      camera,
+      home,
+      arrowForward,
+      refresh,
+      checkmarkCircleOutline,
+    });
   }
 
   ngAfterViewInit() {
@@ -86,7 +98,7 @@ export class RegisterComponent {
     ScreenOrientation.unlock(); // or reset to default
   }
 
-  startCamera() {
+  async startCamera() {
     const options: CameraPreviewOptions = {
       position: 'rear',
       parent: 'camera-preview',
@@ -96,6 +108,10 @@ export class RegisterComponent {
       height: window.innerHeight,
     };
     CameraPreview.start(options);
+  }
+
+  async stopCamera() {
+    CameraPreview.stop().catch(() => {});
   }
 
   async captureImage() {
@@ -124,7 +140,9 @@ export class RegisterComponent {
 
     const img = new Image();
     img.src = URL.createObjectURL(blob);
+    img.id = 'ocr-preview';
     document.body.appendChild(img); // creates the effect of taken photo on the screen
+    this.isPhotoTaken = true;
 
     console.log('Image created for cropping:', img);
     // console.log('Image dimensions before load:', { width: img.naturalWidth, height: img.naturalHeight });
@@ -195,6 +213,7 @@ export class RegisterComponent {
           //logging
           const croppedImg = new Image();
           croppedImg.src = URL.createObjectURL(croppedBlob!);
+          croppedImg.id = 'cropped-greyscale-ocr-image';
           document.body.appendChild(croppedImg);
           console.log('Cropped Blob:', croppedImg);
 
@@ -230,16 +249,17 @@ export class RegisterComponent {
     const serie = lines[lines.length - 1].split('<')[0].substring(0, 2);
     const numar = lines[lines.length - 1].split('<')[0].substring(2, 8);
 
-    const validitate = lines[lines.length - 3].substring(
-      lines[lines.length - 3].length - 19
-    );
+    const validitate = lines[lines.length - 3]
+      .split(' ')
+      .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
     const validityArray = validitate.split('-');
-    const isValid = // WIP: currently NOT USED
+    const isValid =
       new Date().getTime() < this.parseDate_ddMMyy(validityArray[1])!.getTime();
 
     const cetatenie = lines
       .find((line) => /.*[A-ZĂÂÎȘȚa-zăâîșț]+.*\s\/\s[A-Z]{3}/i.test(line))
-      ?.split(' / ')[0];
+      ?.split(' / ')[0]
+      .split(' ')[1];
 
     const sexLine = lines.find((line) => /Sex|Saxe/i);
     const sex = /M/.test(sexLine!) ? 'M' : /F/.test(sexLine!) ? 'F' : null;
@@ -249,7 +269,17 @@ export class RegisterComponent {
     );
     const address = lines.slice(addressStart + 1, addressStart + 3).join(' ');
 
-    console.log('Parsed Data:', {
+    this.isValid =
+      !!nume &&
+      !!prenume &&
+      !!cnp &&
+      this.validateCNP(cnp) &&
+      !!serie &&
+      !!numar &&
+      isValid &&
+      address.length > 10;
+
+    console.log('Parsed Data + validation:', {
       cnp,
       serie,
       numar,
@@ -259,7 +289,49 @@ export class RegisterComponent {
       cetatenie,
       address,
       validitate,
+      validCNP: this.validateCNP(cnp || ''),
+      isValid,
+      overallValid: this.isValid,
     });
+  }
+
+  // validate against control digit and 18+
+  validateCNP(cnp: string): boolean {
+    if (!/^\d{13}$/.test(cnp)) return false;
+
+    const weights = [2, 7, 9, 1, 4, 6, 3, 5, 8, 2, 7, 9];
+    const digits = cnp.split('').map(Number);
+
+    const sum = weights.reduce((acc, weight, i) => acc + weight * digits[i], 0);
+    const control = sum % 11 === 10 ? 1 : sum % 11;
+
+    return digits[12] === control && this.isCNP18Plus(cnp);
+  }
+
+  isCNP18Plus(cnp: string): boolean {
+    if (!/^\d{13}$/.test(cnp)) return false;
+
+    const centuryCode = Number(cnp[0]);
+    const year = Number(cnp.slice(1, 3));
+    const month = Number(cnp.slice(3, 5));
+    const day = Number(cnp.slice(5, 7));
+
+    // Determine full year based on century code
+    let fullYear = 1900 + year;
+    if (centuryCode === 5 || centuryCode === 6) fullYear = 2000 + year;
+    if (centuryCode === 3 || centuryCode === 4) fullYear = 1800 + year;
+
+    const birthDate = new Date(fullYear, month - 1, day);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+
+    // Adjust if birthday hasn't occurred yet this year
+    const hasHadBirthday =
+      today.getMonth() > birthDate.getMonth() ||
+      (today.getMonth() === birthDate.getMonth() &&
+        today.getDate() >= birthDate.getDate());
+
+    return age > 18 || (age === 18 && hasHadBirthday);
   }
 
   // Helper to parse date in dd.MM.yy format
@@ -267,8 +339,21 @@ export class RegisterComponent {
     const [day, month, year] = dateStr.split('.').map(Number);
     if (!day || !month || !year) return null;
 
-    const fullYear = year + (year >= 50 ? 1900 : 2000); // handles 2-digit year
+    let fullYear = 0;
+    if (year < 100) {
+      fullYear = year + (year >= 50 ? 1900 : 2000); // handles 2-digit year
+    } else {
+      fullYear = year;
+    }
     return new Date(fullYear, month - 1, day); // month is 0-indexed
+  }
+
+  trimTrailingShortLines(lines: string[]): string[] {
+    let i = lines.length;
+    while (i > 0 && lines[i - 1].length < 9) {
+      i--;
+    }
+    return lines.slice(0, i);
   }
 
   base64ToBlob(base64: string): Blob {
@@ -283,5 +368,36 @@ export class RegisterComponent {
     }
 
     return new Blob([intArray], { type: mime });
+  }
+
+  sendData() {
+    // send data to backend
+    console.log('Data sent to backend.');
+  }
+
+  async retakePhoto() {
+    try {
+      await this.stopCamera();
+
+      this.isPhotoTaken = false;
+      this.isValid = false;
+      this.extractedText = '';
+
+      document.getElementById('ocr-preview')?.remove();
+      document.getElementById('cropped-greyscale-ocr-image')?.remove();
+
+      await ScreenOrientation.unlock();
+      await this.delay(300); // optional: give hardware time to release
+      await ScreenOrientation.lock({ orientation: 'landscape' });
+
+      await this.delay(300); // optional: give hardware time to release
+      await this.startCamera();
+    } catch (err) {
+      console.error('Camera restart failed:', err);
+    }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
