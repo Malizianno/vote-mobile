@@ -24,7 +24,7 @@ export class UserService extends GenericService {
   }
 
   registerProfile(user: UserProfile): Observable<UserProfile> {
-    return this.http.post<UserProfile>(this.profileURL + '/register', user, {
+    return this.http.post<UserProfile>('/register', user, {
       headers: this.headers,
     });
   }
