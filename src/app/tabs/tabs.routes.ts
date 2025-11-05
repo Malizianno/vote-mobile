@@ -39,16 +39,16 @@ export const routes: Routes = [
       import('../login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'face-id-login',
+    loadComponent: () =>
+      import('../face-id-login/face-id-login.component').then(
+        (m) => m.FaceIDLoginComponent
+      ),
+  },
+  {
     path: 'profile',
     loadComponent: () =>
       import('../profile/profile.component').then((m) => m.ProfileComponent),
-  },
-  {
-    path: 'signup-info',
-    loadComponent: () =>
-      import('../signup-info/signup-info.component').then(
-        (m) => m.SignupInfoComponent
-      ),
   },
   {
     path: 'register',

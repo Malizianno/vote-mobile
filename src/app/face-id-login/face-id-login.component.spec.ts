@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
-import { SignupInfoComponent } from './signup-info.component';
+import { FaceIDLoginComponent } from './face-id-login.component';
 
-describe('SignupInfoComponent', () => {
-  let component: SignupInfoComponent;
-  let fixture: ComponentFixture<SignupInfoComponent>;
+describe('FaceIDLoginComponent', () => {
+  let component: FaceIDLoginComponent;
+  let fixture: ComponentFixture<FaceIDLoginComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignupInfoComponent ],
-      imports: [IonicModule.forRoot()]
+      declarations: [FaceIDLoginComponent],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SignupInfoComponent);
+    fixture = TestBed.createComponent(FaceIDLoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

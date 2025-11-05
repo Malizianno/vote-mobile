@@ -29,8 +29,8 @@ export class LandingComponent implements OnInit {
     this.router.navigate(['/login'], { replaceUrl: true });
   }
 
-  signup() {
-    this.router.navigate(['/signup-info'], { replaceUrl: true });
+  loginWithFaceID() {
+    this.router.navigate(['/face-id-login'], { replaceUrl: true });
   }
 
   register() {

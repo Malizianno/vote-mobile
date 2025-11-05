@@ -4,6 +4,7 @@
     },
     "landing": {
         "login": "Conectare",
+        "face-id": "Face ID",
         "signup": "Înregistrare",
         "register": "Înregistrare"
     },

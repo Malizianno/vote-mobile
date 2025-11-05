@@ -4,6 +4,7 @@
     },
     "landing": {
         "login": "Login",
+        "face-id": "Face ID",
         "signup": "Signup",
         "register": "Register"
     },
