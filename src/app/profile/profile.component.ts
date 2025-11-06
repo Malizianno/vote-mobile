@@ -47,6 +47,7 @@ import { CredentialsService } from '../@shared/service/credentials.service';
 import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { UserService } from '../@shared/service/user.service';
+import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
 
 @Component({
   selector: 'app-profile',
@@ -190,6 +191,21 @@ export class ProfileComponent {
 
   saveProfile() {
     if (this.isRegisteringRN) {
+      const imageBase64Prefix = 'data:image/jpeg;base64,';
+
+      // first remove the prefix if it exists
+      if (this.user.idImage.startsWith(imageBase64Prefix)) {
+        this.user.idImage = this.user.idImage.substring(
+          imageBase64Prefix.length
+        );
+      }
+
+      if (this.user.faceImage.startsWith(imageBase64Prefix)) {
+        this.user.faceImage = this.user.faceImage.substring(
+          imageBase64Prefix.length
+        );
+      }
+
       this.users.registerProfile(this.user).subscribe({
         next: (res: User) => {
           this.toast.show(this.translate.instant('profile.registered'));

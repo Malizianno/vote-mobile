@@ -351,39 +351,46 @@ export class RegisterComponent implements AfterViewInit, OnInit {
         .split('\n')
         .map((line) => line.trim())
         .filter((line) => line.length > 0);
-  
+
       lines = this.trimTrailingShortLines(lines);
-  
+
       const cnp = lines
         .find((line) => /\b\d{13}\b/.test(line))
         ?.match(/\d{13}/)?.[0];
-  
+
       const nume = lines[lines.length - 2].split('<<')[0].replace('IDROU', '');
       const prenume = lines[lines.length - 2].split('<<')[1].replace('<', '-');
-  
+
       const serie = lines[lines.length - 1].split('<')[0].substring(0, 2);
       const numar = lines[lines.length - 1].split('<')[0].substring(2, 8);
-  
+
       const validitate = lines[lines.length - 3]
         .split(' ')
         .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
       const validityArray = validitate.split('-');
       const isValid =
-        new Date().getTime() < this.parseDate_ddMMyy(validityArray[1])!.getTime();
-  
-      const cetatenie = lines
-        .find((line) => /.*[A-ZĂÂÎȘȚa-zăâîșț]+.*\s\/\s[A-Z]{3}/i.test(line))
-        ?.split(' / ')[0]
-        .split(' ')[1];
-  
-      const sexLine = lines.find((line) => / [FM]( |$)/);
-      const sex = /M/.test(sexLine!) ? 'M' : /F/.test(sexLine!) ? 'F' : null;
-  
+        new Date().getTime() <
+        this.parseDate_ddMMyy(validityArray[1])!.getTime();
+
+      const cetatenie = this.parseCetatenie(lines);
+
+      const matchLine = lines.find((line) => /\/.*\b[MF]\b\s*$/.test(line));
+
+      const sexMatch = matchLine?.match(/\/.*\b([MF])\b\s*$/);
+      const sex = sexMatch?.[1];
+
+      // const sexLine = lines.find((line) => / \s[FM]\s|\n( |$)/);
+      // const sex = /\sM\s|\n/.test(sexLine!)
+      //   ? 'M'
+      //   : /\sF\s|\n/.test(sexLine!)
+      //   ? 'F'
+      //   : null;
+
       const addressStart = lines.findIndex((line) =>
         /Domiciliu|Adresse|Address/i.test(line)
       );
       const address = lines.slice(addressStart + 1, addressStart + 3).join(' ');
-  
+
       this.ngZone.run(() => {
         this.isIDValid =
           !!nume &&
@@ -395,8 +402,10 @@ export class RegisterComponent implements AfterViewInit, OnInit {
           isValid &&
           address.length > 10;
       });
-  
+
       if (this.isIDValid) {
+        console.log(`ID is valid: ${this.isIDValid}\nsex = ${sex}`);
+
         // create available profile object
         this.profile = new UserProfile();
         this.profile.cnp = +cnp!;
@@ -424,7 +433,7 @@ export class RegisterComponent implements AfterViewInit, OnInit {
         this.profile.idImage = this.idImageDataUrl!;
         this.profile.faceImage = this.faceImageDataUrl!;
       }
-  
+
       console.log('Parsed Data + validation:', {
         cnp,
         serie,
@@ -435,7 +444,7 @@ export class RegisterComponent implements AfterViewInit, OnInit {
         cetatenie,
         address,
         validitate,
-        validCNP: this.validateCNP(cnp || ''),
+        validCNP: this.validateCNP(cnp!),
         isValid,
         overallValid: this.isIDValid,
       });
@@ -450,6 +459,15 @@ export class RegisterComponent implements AfterViewInit, OnInit {
 
   // validate against control digit and 18+
   validateCNP(cnp: string): boolean {
+    console.log('Validating CNP:', cnp);
+    if (!/^\d{13}$/.test(cnp)) return false;
+
+    console.log('isCNP18Plus:', this.isCNP18Plus(cnp));
+    console.log('isCNPValidAgainstControlDigit:', this.isCNPValidAgainstControlDigit(cnp));
+    return this.isCNPValidAgainstControlDigit(cnp) && this.isCNP18Plus(cnp);
+  }
+
+  isCNPValidAgainstControlDigit(cnp: string): boolean {
     if (!/^\d{13}$/.test(cnp)) return false;
 
     const weights = [2, 7, 9, 1, 4, 6, 3, 5, 8, 2, 7, 9];
@@ -458,7 +476,7 @@ export class RegisterComponent implements AfterViewInit, OnInit {
     const sum = weights.reduce((acc, weight, i) => acc + weight * digits[i], 0);
     const control = sum % 11 === 10 ? 1 : sum % 11;
 
-    return digits[12] === control && this.isCNP18Plus(cnp);
+    return digits[12] === control;
   }
 
   isCNP18Plus(cnp: string): boolean {
@@ -501,6 +519,36 @@ export class RegisterComponent implements AfterViewInit, OnInit {
     return new Date(fullYear, month - 1, day); // month is 0-indexed
   }
 
+  parseCetatenie(lines: string[]) {
+    const index = lines.findIndex((line) =>
+      /nationalitate|nationality/i.test(line.normalize('NFD'))
+    );
+
+    if (index !== -1 && index + 1 < lines.length) {
+      const nextLine = lines[index + 1];
+
+      // old: /.*[A-ZĂÂÎȘȚa-zăâîșț]+.*\s\/\s[A-Z]{3}/
+      const match = nextLine.match(/([A-Za-zăâîșțĂÂÎȘȚ]{4,})(?=[^/\r\n]*\/)/);
+      const foundCetatenie = match?.[1];
+
+      return foundCetatenie;
+    } else {
+      // looking for '/' and 'XYZ' and match the word of at least 4 chars before '/'
+      const matchLine = lines.find(
+        (line) =>
+          /\/.*[A-Z]{3}/.test(line) &&
+          /\b[A-Za-zăâîșțĂÂÎȘȚ]{4,}\b(?=\s*\/)/i.test(line)
+      );
+
+      const match = matchLine?.match(/\b([A-Za-zăâîșțĂÂÎȘȚ]{4,})\b(?=\s*\/)/i);
+      const word = match?.[1];
+
+      return word;
+    }
+
+    return null;
+  }
+
   trimTrailingShortLines(lines: string[]): string[] {
     let i = lines.length;
     while (i > 0 && lines[i - 1].length < 15) {
@@ -533,6 +581,8 @@ export class RegisterComponent implements AfterViewInit, OnInit {
       replaceUrl: true,
       state: { profile: this.profile },
     });
+
+    this.retakePhoto();
   }
 
   async retakePhoto() {
