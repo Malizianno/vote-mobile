@@ -158,7 +158,7 @@ export class RegisterComponent implements AfterViewInit {
     // console.log('Image dimensions before load:', { width: img.naturalWidth, height: img.naturalHeight });
 
     img.onload = () => {
-      // metch pixels between displayed image and actual image
+      // match pixels between displayed image and actual image
       const scaleX = img.naturalWidth / window.innerWidth;
       const scaleY = img.naturalHeight / window.innerHeight;
       // console.log('Window dimensions:', {
