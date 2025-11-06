@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
+import { AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -34,7 +34,6 @@ import {
   refresh,
 } from 'ionicons/icons';
 import Tesseract from 'tesseract.js';
-import { __values } from 'tslib';
 import {
   UserGender,
   UserNationality,
@@ -47,6 +46,7 @@ window.addEventListener('beforeunload', () => {
   CameraPreview.stop().catch(() => {});
   ScreenOrientation.unlock();
 });
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -74,7 +74,7 @@ window.addEventListener('beforeunload', () => {
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class RegisterComponent {
+export class RegisterComponent implements AfterViewInit {
   private BASE64_PREFIX = 'data:image/jpeg;base64,';
 
   isPhotoTaken = false;
@@ -296,35 +296,35 @@ export class RegisterComponent {
       isValid &&
       address.length > 10;
 
-      if (this.isIDValid) {
-        this.isOCRDone = true;
-        // create available profile object
-        this.profile = new UserProfile();
-        this.profile.cnp = +cnp!;
-        this.profile.firstname = prenume;
-        this.profile.lastname = nume;
-        this.profile.gender =
-          sex === 'M'
-            ? UserGender.MALE
-            : sex === 'F'
-            ? UserGender.FEMALE
-            : UserGender.OTHER;
-        this.profile.idSeries = serie;
-        this.profile.idNumber = +numar;
-        this.profile.nationality = cetatenie?.match(/rom/i)
-          ? UserNationality.ROMANIAN
-          : UserNationality.FOREIGNER;
-        this.profile.residenceAddress = address;
-        this.profile.validityStartDate = this.parseDate_ddMMyy(
-          validityArray[0]
-        )!.getTime();
-        this.profile.validityEndDate = this.parseDate_ddMMyy(
-          validityArray[1]
-        )!.getTime();
-        // WIP: Images could be set here if needed
-        this.profile.idImage = this.imageDataUrl!;
-        // this.profile.faceImage = this.imageDataUrl!.replace(this.BASE64_PREFIX, '');
-      }
+    if (this.isIDValid) {
+      this.isOCRDone = true;
+      // create available profile object
+      this.profile = new UserProfile();
+      this.profile.cnp = +cnp!;
+      this.profile.firstname = prenume;
+      this.profile.lastname = nume;
+      this.profile.gender =
+        sex === 'M'
+          ? UserGender.MALE
+          : sex === 'F'
+          ? UserGender.FEMALE
+          : UserGender.OTHER;
+      this.profile.idSeries = serie;
+      this.profile.idNumber = +numar;
+      this.profile.nationality = cetatenie?.match(/rom/i)
+        ? UserNationality.ROMANIAN
+        : UserNationality.FOREIGNER;
+      this.profile.residenceAddress = address;
+      this.profile.validityStartDate = this.parseDate_ddMMyy(
+        validityArray[0]
+      )!.getTime();
+      this.profile.validityEndDate = this.parseDate_ddMMyy(
+        validityArray[1]
+      )!.getTime();
+      // WIP: Images could be set here if needed
+      this.profile.idImage = this.imageDataUrl!;
+      // this.profile.faceImage = this.imageDataUrl!.replace(this.BASE64_PREFIX, '');
+    }
 
     console.log('Parsed Data + validation:', {
       cnp,

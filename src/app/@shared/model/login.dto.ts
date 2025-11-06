@@ -13,3 +13,11 @@ export class LoginResponseDTO {
     hasVoted!: boolean;
     id!: number;
 }
+
+export class FaceLoginRequestDTO extends LoginRequestDTO {
+    imageBase64!: string;
+}
+
+export class FaceLoginResponseDTO extends LoginResponseDTO {
+    
+}
