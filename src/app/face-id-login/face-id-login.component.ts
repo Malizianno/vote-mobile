@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -21,11 +21,11 @@ import {
   IonItem,
   IonRow,
   IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+  IonToolbar, IonFab, IonFabButton } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
+import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
-import { arrowForward } from 'ionicons/icons';
+import { arrowForward, refresh, camera } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
 import {
   FaceLoginRequestDTO,
@@ -44,7 +44,7 @@ window.addEventListener('beforeunload', () => {
   templateUrl: './face-id-login.component.html',
   styleUrls: ['./face-id-login.component.scss'],
   standalone: true,
-  imports: [
+  imports: [IonFabButton, IonFab, 
     IonGrid,
     IonInput,
     IonButtons,
@@ -65,7 +65,7 @@ window.addEventListener('beforeunload', () => {
     TranslateModule,
   ],
 })
-export class FaceIDLoginComponent {
+export class FaceIDLoginComponent implements AfterViewInit, OnInit {
   appVersion: string;
   imageBase64: string = '';
 
@@ -74,9 +74,18 @@ export class FaceIDLoginComponent {
     private credentials: CredentialsService,
     private router: Router
   ) {
-    addIcons({ arrowForward });
+    addIcons({camera,refresh,arrowForward});
 
     this.appVersion = environment.version;
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.loadModels();
+    console.log('Loaded face-api models...');
+  }
+
+  ngAfterViewInit(): void {
+    this.startCamera();
   }
 
   async startCamera() {
@@ -98,6 +107,16 @@ export class FaceIDLoginComponent {
   async captureImage() {
     const result = await CameraPreview.capture({ quality: 90 });
     this.imageBase64 = result.value;
+    console.log('captured image: ');
+  }
+
+  async loadModels() {
+    const MODEL_URL = '/assets/models';
+    await Promise.all([
+      faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+    ]);
   }
 
   async login() {

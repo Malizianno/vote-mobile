@@ -47,6 +47,7 @@ import {
   UserProfile,
 } from '../@shared/model/user.model';
 import { SharedService } from '../@shared/service/shared.service';
+import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
 
 // XXX: TESTING: Ensure camera stops when navigating away (livereload issue)
 window.addEventListener('beforeunload', () => {
@@ -54,7 +55,7 @@ window.addEventListener('beforeunload', () => {
   ScreenOrientation.unlock();
 });
 
-@Component({
+@Component({ 
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
@@ -184,7 +185,7 @@ export class RegisterComponent implements AfterViewInit, OnInit {
 
     // processing image to crop to rectangle area could be added here
     // console.log('image base64: ', imageDataUrl);
-    const blob = this.base64ToBlob(imageDataUrl);
+    const blob = ParseAndFormatUtil.base64ToBlob(imageDataUrl);
     // console.log('Converted Blob:', blob);
 
     const img = new Image();
@@ -555,20 +556,6 @@ export class RegisterComponent implements AfterViewInit, OnInit {
       i--;
     }
     return lines.slice(0, i);
-  }
-
-  base64ToBlob(base64: string): Blob {
-    const [header, data] = base64.split(',');
-    const mime = header.match(/:(.*?);/)![1];
-    const byteString = atob(data);
-    const arrayBuffer = new ArrayBuffer(byteString.length);
-    const intArray = new Uint8Array(arrayBuffer);
-
-    for (let i = 0; i < byteString.length; i++) {
-      intArray[i] = byteString.charCodeAt(i);
-    }
-
-    return new Blob([intArray], { type: mime });
   }
 
   goToProfile() {

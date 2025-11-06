@@ -15,10 +15,10 @@
       color="dark"
       (click)="retakePhoto()"
     >
-      <ion-icon *ngIf="isOCRDone" name="refresh"></ion-icon>
+      <ion-icon name="refresh"></ion-icon>
     </ion-fab-button>
     <div *ngIf="shouldWaitScanning()" class="spinner-container">
-      <ion-spinner  name="crescent"></ion-spinner>
+      <ion-spinner name="crescent"></ion-spinner>
     </div>
     <ion-fab-button
       *ngIf="shouldSavePhoto()"

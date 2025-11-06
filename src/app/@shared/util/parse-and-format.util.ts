@@ -1,12 +1,15 @@
 export class ParseAndFormatUtil {
-  static base64ToBlob(base64: string, mimeType: string): Blob {
-    const byteString = atob(base64);
-    const byteArray = new Uint8Array(byteString.length);
+  static base64ToBlob(base64: string): Blob {
+    const [header, data] = base64.split(',');
+    const mime = header.match(/:(.*?);/)![1];
+    const byteString = atob(data);
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const intArray = new Uint8Array(arrayBuffer);
 
     for (let i = 0; i < byteString.length; i++) {
-      byteArray[i] = byteString.charCodeAt(i);
+      intArray[i] = byteString.charCodeAt(i);
     }
 
-    return new Blob([byteArray], { type: mimeType });
+    return new Blob([intArray], { type: mime });
   }
 }

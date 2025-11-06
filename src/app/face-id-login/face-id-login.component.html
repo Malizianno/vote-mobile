@@ -1,2 +1,18 @@
-<!-- CAMERA -->
-<div id="camera-preview"></div>
+<div class="container">
+  <!-- CAMERA -->
+  <div id="camera-preview"></div>
+
+  <!-- FACE OVAL -->
+  <div class="face-overlay"></div>
+
+  <!-- TAKE PHOTO BUTTON -->
+  <!-- Floating button -->
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button 
+      color="dark"
+      (click)="captureImage()"
+    >
+      <ion-icon name="camera"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</div>
