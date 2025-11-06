@@ -3,6 +3,7 @@ import {
   AfterViewInit,
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
+  NgZone,
   OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -92,7 +93,11 @@ export class RegisterComponent implements AfterViewInit, OnInit {
   extractedText: string;
   profile: UserProfile;
 
-  constructor(private router: Router, private shared: SharedService) {
+  constructor(
+    private router: Router,
+    private shared: SharedService,
+    private ngZone: NgZone
+  ) {
     addIcons({
       checkmark,
       camera,
@@ -117,6 +122,18 @@ export class RegisterComponent implements AfterViewInit, OnInit {
 
   ionViewWillLeave() {
     ScreenOrientation.unlock(); // or reset to default
+  }
+
+  shouldRetakePhoto(): boolean {
+    return this.isPhotoTaken && !this.isIDValid && this.isOCRDone;
+  }
+
+  shouldWaitScanning(): boolean {
+    return this.isPhotoTaken && !this.isOCRDone;
+  }
+
+  shouldSavePhoto(): boolean {
+    return this.isPhotoTaken && this.isIDValid && this.isOCRDone;
   }
 
   async startCamera() {
@@ -152,6 +169,7 @@ export class RegisterComponent implements AfterViewInit, OnInit {
 
   async runOCR(imageDataUrl: string | null) {
     console.log('Starting OCR process...');
+    this.isOCRDone = false;
 
     const rect = document
       .querySelector('.scan-rectangle')!
@@ -173,7 +191,10 @@ export class RegisterComponent implements AfterViewInit, OnInit {
     img.src = URL.createObjectURL(blob);
     img.id = 'ocr-preview';
     document.body.appendChild(img); // creates the effect of taken photo on the screen
-    this.isPhotoTaken = true;
+
+    this.ngZone.run(() => {
+      this.isPhotoTaken = true;
+    });
 
     // console.log('Image created for cropping:', img);
     // console.log('Image dimensions before load:', { width: img.naturalWidth, height: img.naturalHeight });
@@ -305,7 +326,18 @@ export class RegisterComponent implements AfterViewInit, OnInit {
           this.extractedText = result.data.text;
 
           this.parseExtractedText(this.extractedText);
+
           console.log('OCR process completed.');
+          this.ngZone.run(() => {
+            this.isOCRDone = true;
+          });
+
+          console.log(
+            `isOCRDone: ${this.isOCRDone}, isIDValid: ${this.isIDValid}, isPhotoTaken: ${this.isPhotoTaken}`
+          );
+          console.log(
+            `shouldRetakePhoto(): ${this.shouldRetakePhoto()}\n shouldWaitScanning(): ${this.shouldWaitScanning()}\n shouldSavePhoto(): ${this.shouldSavePhoto()}`
+          );
         },
         'image/jpeg',
         0.9
@@ -314,97 +346,106 @@ export class RegisterComponent implements AfterViewInit, OnInit {
   }
 
   parseExtractedText(text: string) {
-    let lines = text
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
+    try {
+      let lines = text
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+  
+      lines = this.trimTrailingShortLines(lines);
+  
+      const cnp = lines
+        .find((line) => /\b\d{13}\b/.test(line))
+        ?.match(/\d{13}/)?.[0];
+  
+      const nume = lines[lines.length - 2].split('<<')[0].replace('IDROU', '');
+      const prenume = lines[lines.length - 2].split('<<')[1].replace('<', '-');
+  
+      const serie = lines[lines.length - 1].split('<')[0].substring(0, 2);
+      const numar = lines[lines.length - 1].split('<')[0].substring(2, 8);
+  
+      const validitate = lines[lines.length - 3]
+        .split(' ')
+        .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
+      const validityArray = validitate.split('-');
+      const isValid =
+        new Date().getTime() < this.parseDate_ddMMyy(validityArray[1])!.getTime();
+  
+      const cetatenie = lines
+        .find((line) => /.*[A-ZĂÂÎȘȚa-zăâîșț]+.*\s\/\s[A-Z]{3}/i.test(line))
+        ?.split(' / ')[0]
+        .split(' ')[1];
+  
+      const sexLine = lines.find((line) => / [FM]( |$)/);
+      const sex = /M/.test(sexLine!) ? 'M' : /F/.test(sexLine!) ? 'F' : null;
+  
+      const addressStart = lines.findIndex((line) =>
+        /Domiciliu|Adresse|Address/i.test(line)
+      );
+      const address = lines.slice(addressStart + 1, addressStart + 3).join(' ');
+  
+      this.ngZone.run(() => {
+        this.isIDValid =
+          !!nume &&
+          !!prenume &&
+          !!cnp &&
+          this.validateCNP(cnp) &&
+          !!serie &&
+          !!numar &&
+          isValid &&
+          address.length > 10;
+      });
+  
+      if (this.isIDValid) {
+        // create available profile object
+        this.profile = new UserProfile();
+        this.profile.cnp = +cnp!;
+        this.profile.firstname = prenume;
+        this.profile.lastname = nume;
+        this.profile.gender =
+          sex === 'M'
+            ? UserGender.MALE
+            : sex === 'F'
+            ? UserGender.FEMALE
+            : UserGender.OTHER;
+        this.profile.idSeries = serie;
+        this.profile.idNumber = +numar;
+        this.profile.nationality = cetatenie?.match(/rom/i)
+          ? UserNationality.ROMANIAN
+          : UserNationality.FOREIGNER;
+        this.profile.residenceAddress = address;
+        this.profile.validityStartDate = this.parseDate_ddMMyy(
+          validityArray[0]
+        )!.getTime();
+        this.profile.validityEndDate = this.parseDate_ddMMyy(
+          validityArray[1]
+        )!.getTime();
+        // WIP: CHECK IF IMAGES ARE CORRECLTY SAVED
+        this.profile.idImage = this.idImageDataUrl!;
+        this.profile.faceImage = this.faceImageDataUrl!;
+      }
+  
+      console.log('Parsed Data + validation:', {
+        cnp,
+        serie,
+        numar,
+        nume,
+        prenume,
+        sex,
+        cetatenie,
+        address,
+        validitate,
+        validCNP: this.validateCNP(cnp || ''),
+        isValid,
+        overallValid: this.isIDValid,
+      });
+    } catch (err) {
+      console.error('OCR failed with:', err);
 
-    lines = this.trimTrailingShortLines(lines);
-
-    const cnp = lines
-      .find((line) => /\b\d{13}\b/.test(line))
-      ?.match(/\d{13}/)?.[0];
-
-    const nume = lines[lines.length - 2].split('<<')[0].replace('IDROU', '');
-    const prenume = lines[lines.length - 2].split('<<')[1].replace('<', '-');
-
-    const serie = lines[lines.length - 1].split('<')[0].substring(0, 2);
-    const numar = lines[lines.length - 1].split('<')[0].substring(2, 8);
-
-    const validitate = lines[lines.length - 3]
-      .split(' ')
-      .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
-    const validityArray = validitate.split('-');
-    const isValid =
-      new Date().getTime() < this.parseDate_ddMMyy(validityArray[1])!.getTime();
-
-    const cetatenie = lines
-      .find((line) => /.*[A-ZĂÂÎȘȚa-zăâîșț]+.*\s\/\s[A-Z]{3}/i.test(line))
-      ?.split(' / ')[0]
-      .split(' ')[1];
-
-    const sexLine = lines.find((line) => / [FM]( |$)/);
-    const sex = /M/.test(sexLine!) ? 'M' : /F/.test(sexLine!) ? 'F' : null;
-
-    const addressStart = lines.findIndex((line) =>
-      /Domiciliu|Adresse|Address/i.test(line)
-    );
-    const address = lines.slice(addressStart + 1, addressStart + 3).join(' ');
-
-    this.isIDValid =
-      !!nume &&
-      !!prenume &&
-      !!cnp &&
-      this.validateCNP(cnp) &&
-      !!serie &&
-      !!numar &&
-      isValid &&
-      address.length > 10;
-
-    if (this.isIDValid) {
-      this.isOCRDone = true;
-      // create available profile object
-      this.profile = new UserProfile();
-      this.profile.cnp = +cnp!;
-      this.profile.firstname = prenume;
-      this.profile.lastname = nume;
-      this.profile.gender =
-        sex === 'M'
-          ? UserGender.MALE
-          : sex === 'F'
-          ? UserGender.FEMALE
-          : UserGender.OTHER;
-      this.profile.idSeries = serie;
-      this.profile.idNumber = +numar;
-      this.profile.nationality = cetatenie?.match(/rom/i)
-        ? UserNationality.ROMANIAN
-        : UserNationality.FOREIGNER;
-      this.profile.residenceAddress = address;
-      this.profile.validityStartDate = this.parseDate_ddMMyy(
-        validityArray[0]
-      )!.getTime();
-      this.profile.validityEndDate = this.parseDate_ddMMyy(
-        validityArray[1]
-      )!.getTime();
-      // WIP: CHECK IF IMAGES ARE CORRECLTY SAVED
-      this.profile.idImage = this.idImageDataUrl!;
-      this.profile.faceImage = this.faceImageDataUrl!;
+      this.ngZone.run(() => {
+        this.isIDValid = false;
+      });
     }
-
-    console.log('Parsed Data + validation:', {
-      cnp,
-      serie,
-      numar,
-      nume,
-      prenume,
-      sex,
-      cetatenie,
-      address,
-      validitate,
-      validCNP: this.validateCNP(cnp || ''),
-      isValid,
-      overallValid: this.isIDValid,
-    });
   }
 
   // validate against control digit and 18+
@@ -498,12 +539,15 @@ export class RegisterComponent implements AfterViewInit, OnInit {
     try {
       await this.stopCamera();
 
-      this.isPhotoTaken = false;
-      this.isIDValid = false;
-      this.extractedText = '';
+      this.ngZone.run(() => {
+        this.isPhotoTaken = false;
+        this.isIDValid = false;
+        this.extractedText = '';
+      });
 
       document.getElementById('ocr-preview')?.remove();
       document.getElementById('cropped-greyscale-ocr-image')?.remove();
+      document.getElementById('cropped-face-image')?.remove();
 
       await ScreenOrientation.unlock();
       await this.delay(300); // optional: give hardware time to release

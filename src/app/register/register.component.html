@@ -11,15 +11,17 @@
   <!-- Floating button -->
   <ion-fab vertical="center" horizontal="end" slot="fixed">
     <ion-fab-button 
-      *ngIf="isPhotoTaken && !isIDValid"
+      *ngIf="shouldRetakePhoto()"
       color="dark"
       (click)="retakePhoto()"
     >
-      <ion-spinner *ngIf="!isOCRDone" name="crescent"></ion-spinner>
       <ion-icon *ngIf="isOCRDone" name="refresh"></ion-icon>
     </ion-fab-button>
+    <div *ngIf="shouldWaitScanning()" class="spinner-container">
+      <ion-spinner  name="crescent"></ion-spinner>
+    </div>
     <ion-fab-button
-      *ngIf="isPhotoTaken && isIDValid"
+      *ngIf="shouldSavePhoto()"
       color="dark"
       (click)="goToProfile()"
     >
