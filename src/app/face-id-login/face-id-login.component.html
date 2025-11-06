@@ -10,12 +10,30 @@
 
   <!-- TAKE PHOTO BUTTON -->
   <!-- Floating button -->
-  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button 
-      color="dark"
-      (click)="captureImage()"
-    >
+  <ion-fab
+    *ngIf="!isPhotoTaken"
+    vertical="bottom"
+    horizontal="center"
+    slot="fixed"
+    style="margin-bottom: 30px"
+  >
+    <ion-fab-button color="dark" (click)="captureImage()">
       <ion-icon name="camera"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab
+    *ngIf="isPhotoTaken && !isFaceValid"
+    vertical="bottom"
+    horizontal="center"
+    slot="fixed"
+  >
+    <ion-fab-button color="dark" (click)="retakeImage()">
+      <ion-icon name="refresh"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab *ngIf="isPhotoTaken && isFaceValid" vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button color="dark" (click)="login()">
+      <ion-icon name="checkmark"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </div>

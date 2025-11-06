@@ -83,8 +83,6 @@ window.addEventListener('beforeunload', () => {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RegisterComponent implements AfterViewInit, OnInit {
-  private BASE64_PREFIX = 'data:image/jpeg;base64,';
-
   isPhotoTaken = false;
   isIDValid = false;
   isOCRDone = false;
@@ -156,7 +154,7 @@ export class RegisterComponent implements AfterViewInit, OnInit {
   async captureImage() {
     const result = await CameraPreview.capture({ quality: 90 });
     const base64 = result.value;
-    this.runOCR(this.BASE64_PREFIX + base64);
+    this.runOCR(ParseAndFormatUtil.BASE64_PREFIX + base64);
   }
 
   async loadModels() {
@@ -430,7 +428,6 @@ export class RegisterComponent implements AfterViewInit, OnInit {
         this.profile.validityEndDate = this.parseDate_ddMMyy(
           validityArray[1]
         )!.getTime();
-        // WIP: CHECK IF IMAGES ARE CORRECLTY SAVED
         this.profile.idImage = this.idImageDataUrl!;
         this.profile.faceImage = this.faceImageDataUrl!;
       }

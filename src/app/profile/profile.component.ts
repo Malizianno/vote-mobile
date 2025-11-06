@@ -166,7 +166,7 @@ export class ProfileComponent {
 
   closeToLogin() {
     // go to login page after OCRing the data from the ID card
-    this.router.navigate(['/login'], { replaceUrl: true });
+    this.router.navigate(['/face-id-login'], { replaceUrl: true });
   }
 
   get loadedData(): boolean {
@@ -210,7 +210,7 @@ export class ProfileComponent {
         next: (res: User) => {
           this.toast.show(this.translate.instant('profile.registered'));
           console.log('user profile registered: ', res);
-          this.router.navigate(['/login'], { replaceUrl: true });
+          this.router.navigate(['/face-id-login'], { replaceUrl: true });
         },
         error: (err: HttpErrorResponse) => {
           this.users.handleHTTPErrors(err);
@@ -230,9 +230,5 @@ export class ProfileComponent {
         },
       });
     }
-  }
-
-  captureImage() {
-    // WIP: should be implemented to take you to reshoot the photo
   }
 }

@@ -1,6 +1,8 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AfterViewInit, Component, NgZone, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Platform } from '@ionic/angular';
 import {
   CameraPreview,
   CameraPreviewOptions,
@@ -14,6 +16,8 @@ import {
   IonCardHeader,
   IonCol,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonGrid,
   IonHeader,
   IonIcon,
@@ -22,13 +26,11 @@ import {
   IonRow,
   IonTitle,
   IonToolbar,
-  IonFab,
-  IonFabButton,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
-import { arrowForward, refresh, camera } from 'ionicons/icons';
+import { arrowForward, camera, checkmark, refresh } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
 import {
   FaceLoginRequestDTO,
@@ -36,13 +38,11 @@ import {
 } from '../@shared/model/login.dto';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { LoginService } from '../@shared/service/login.service';
-import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
 
 // XXX: TESTING: Ensure camera stops when navigating away (livereload issue)
 window.addEventListener('beforeunload', () => {
   CameraPreview.stop().catch(() => {});
-  // ScreenOrientation.unlock();
 });
 
 @Component({
@@ -69,22 +69,34 @@ window.addEventListener('beforeunload', () => {
     IonItem,
     IonIcon,
     FormsModule,
+    CommonModule,
     IonGrid,
     TranslateModule,
   ],
 })
 export class FaceIDLoginComponent implements AfterViewInit, OnInit {
-  private BASE64_PREFIX = 'data:image/jpeg;base64,';
-
   appVersion: string;
   imageBase64: string = '';
 
+  isFaceValid = false;
+  isPhotoTaken = false;
+
   constructor(
+    private platform: Platform,
     private service: LoginService,
     private credentials: CredentialsService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) {
-    addIcons({ camera, refresh, arrowForward });
+    addIcons({ camera, refresh, checkmark, arrowForward });
+
+    this.platform.ready().then(() => {
+      this.platform.backButton.subscribeWithPriority(10, () => {
+        // console.log('Hardware back button pressed');
+
+        this.close();
+      });
+    });
 
     this.appVersion = environment.version;
   }
@@ -97,14 +109,6 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
   ngAfterViewInit(): void {
     this.startCamera();
   }
-
-  // ionViewWillEnter() {
-  //   ScreenOrientation.lock({ orientation: 'portrait' });
-  // }
-
-  // ionViewWillLeave() {
-  //   ScreenOrientation.unlock(); // or reset to default
-  // }
 
   async startCamera() {
     const options: CameraPreviewOptions = {
@@ -123,25 +127,35 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
   }
 
   async captureImage() {
+    this.ngZone.run(() => {
+      this.isPhotoTaken = false;
+    });
+
     const result = await CameraPreview.capture({
       width: window.innerWidth,
       height: window.innerHeight,
       quality: 90,
     });
     const base64 = result.value; // without prefix
-    const rotated = await this.rotateBase64Left(base64);
+    const rotated = await ParseAndFormatUtil.rotateBase64LeftAndFlipVertically(
+      base64
+    );
 
     const img = new Image();
-    img.src = this.BASE64_PREFIX + rotated;
+    img.src = ParseAndFormatUtil.BASE64_PREFIX + rotated;
     img.id = 'face-preview';
     img.width = window.innerWidth;
     img.height = window.innerHeight;
     document.body.appendChild(img); // creates the effect of taken photo on the screen
 
-    const croppedFace = this.faceCrop(base64);
+    // if longer
+    if (img.src.length > ParseAndFormatUtil.BASE64_PREFIX.length) {
+      this.ngZone.run(() => {
+        this.isPhotoTaken = true;
+      });
+    }
 
-    // console.log('captured image: ', base64);
-    // console.log('cropped image: ', croppedFace);
+    await this.validateFace(rotated);
   }
 
   async loadModels() {
@@ -151,6 +165,24 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
       faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
       faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
     ]);
+  }
+
+  async retakeImage() {
+    try {
+      await this.stopCamera();
+
+      this.ngZone.run(() => {
+        this.isPhotoTaken = false;
+        this.isFaceValid = false;
+        this.imageBase64 = '';
+      });
+
+      this.cleanTheDocumentBody();
+
+      await this.startCamera();
+    } catch (err) {
+      console.error('Camera restart failed:', err);
+    }
   }
 
   async login() {
@@ -185,33 +217,79 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
   }
 
   // using Face API to recognize face and control the status of buttons ;)
-  private faceCrop(base64Image: string): string {
-    return base64Image;
-  }
+  async validateFace(base64Image: string) {
+    // crop faceImage using canvas
+    const faceImg = new Image();
+    faceImg.src = ParseAndFormatUtil.BASE64_PREFIX + base64Image;
+    faceImg.id = 'found-face-preview';
+    faceImg.width = window.innerWidth;
+    faceImg.height = window.innerHeight;
+    document.body.appendChild(faceImg); // creates the effect of taken photo on the screen
 
-  private rotateBase64Left(base64: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.src = this.BASE64_PREFIX + base64;
+    console.log('finding face image: ', faceImg);
 
-      img.onload = () => {
+    faceImg.onload = async () => {
+      const detection = await faceapi
+        .detectSingleFace(faceImg)
+        .withFaceLandmarks();
+
+      if (detection) {
+        const { box } = detection.detection;
+
         const canvas = document.createElement('canvas');
-        canvas.width = img.height;
-        canvas.height = img.width;
+        canvas.width = box.width;
+        canvas.height = box.height;
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) return reject('Canvas context not available');
+        ctx!.drawImage(
+          faceImg,
+          box.x,
+          box.y,
+          box.width,
+          box.height,
+          0,
+          0,
+          box.width,
+          box.height
+        );
+        const faceImageDataUrl = canvas.toDataURL('image/jpeg');
 
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate((-90 * Math.PI) / 180); // rotate left
-        ctx.scale(1, -1); // flip vertically
-        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+        // log the photo:
+        canvas.toBlob(async (faceBlob) => {
+          const base64Image = URL.createObjectURL(faceBlob!);
+          const faceCroppedImage = new Image();
+          faceCroppedImage.src = base64Image;
+          faceCroppedImage.id = 'cropped-face-image';
+          document.body.appendChild(faceCroppedImage);
+          // console.log('Cropped Face Blob:', faceCroppedImage);
 
-        const rotatedBase64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-        resolve(rotatedBase64);
-      };
+          if (faceCroppedImage) {
+            this.ngZone.run(() => {
+              this.isFaceValid = true;
+            });
+          }
+        });
 
-      img.onerror = (err) => reject('Image load error: ' + err);
-    });
+        this.imageBase64 = canvas.toDataURL('image/jpeg');
+        // console.log(`image as base64? : ${this.imageBase64}`);
+
+        return faceImageDataUrl;
+      }
+
+      return null;
+    };
+
+    return null;
+  }
+
+  cleanTheDocumentBody() {
+    document.getElementById('face-preview')?.remove();
+    document.getElementById('found-face-preview')?.remove();
+    document.getElementById('cropped-face-image')?.remove();
+  }
+
+  close() {
+    this.cleanTheDocumentBody();
+    this.router.navigate(['/landing'], { replaceUrl: true });
   }
 }
