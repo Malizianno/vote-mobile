@@ -49,8 +49,8 @@
         "nationality": "Naționalitate",
         "birth-address": "Loc naștere",
         "residence-address": "Adresă Domiciliu",
-        "valid-from": "Valabilitate de la",
-        "valid-until": "Valabilitate până la",
+        "valid-from": "Valabil de la",
+        "valid-until": "Până la",
         "save": "Salvează",
         "saved": "Profil salvat cu success!",
         "registered": "Profil înregistrat cu success!"
@@ -62,5 +62,14 @@
         "election-active": {
             "here": "aici"
         }
+    },
+    "nationality": {
+        "ROMANIAN": "Română",
+        "FOREIGNER": "Străină"
+    }, 
+    "gender": {
+        "MALE": "Masculin",
+        "FEMALE": "Feminin",
+        "OTHER": "Altul"
     }
 }

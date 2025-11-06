@@ -527,7 +527,7 @@ export class RegisterComponent implements AfterViewInit, OnInit {
     ScreenOrientation.unlock();
 
     this.shared.setImage(this.profile.idImage);
-    this.profile.idImage = undefined!; // clear image data before navigation
+    // this.profile.idImage = undefined!; // clear image data before navigation
 
     this.router.navigate(['/profile'], {
       replaceUrl: true,

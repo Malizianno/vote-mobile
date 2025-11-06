@@ -1,10 +1,10 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ 'profile.title' | translate }}</ion-title>
+    <ion-title>{{ "profile.title" | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-fab vertical="top" horizontal="end" slot="fixed">
+<ion-fab *ngIf="!isRegisteringRN" vertical="top" horizontal="end" slot="fixed">
   <ion-fab-button color="white" class="fab-bordered">
     <ion-icon (click)="close()" name="close"></ion-icon>
   </ion-fab-button>
@@ -21,12 +21,46 @@
         height="200"
         alt="User Avatar DEFAULT ALT"
       />
-      <!-- <ion-button shape="round" color="dark" (click)="captureImage()">
-        <ion-icon slot="icon-only" name="refresh"></ion-icon>
-      </ion-button> -->
     </ion-card-header>
 
     <ion-card-content>
+      <!-- LASTNAME -->
+      <ion-item>
+        <ion-input
+          disabled
+          label="{{ 'profile.lastname' | translate }}"
+          labelPlacement="floating"
+          [(ngModel)]="user.lastname"
+        ></ion-input>
+      </ion-item>
+
+      <!-- FISRTNAME -->
+      <ion-item>
+        <ion-input
+          disabled
+          label="{{ 'profile.firstname' | translate }}"
+          labelPlacement="floating"
+          [(ngModel)]="user.firstname"
+        ></ion-input>
+      </ion-item>
+
+      <!-- ID SERIES & NUMBER -->
+      <ion-item>
+        <ion-input
+          disabled
+          label="{{ 'profile.id-series' | translate }}"
+          labelPlacement="floating"
+          [(ngModel)]="user.idSeries"
+        ></ion-input>
+        <ion-input
+          disabled
+          label="{{ 'profile.id-number' | translate }}"
+          labelPlacement="floating"
+          [(ngModel)]="user.idNumber"
+        ></ion-input>
+      </ion-item>
+
+      <!-- CNP -->
       <ion-item>
         <ion-input
           disabled
@@ -36,50 +70,7 @@
         ></ion-input>
       </ion-item>
 
-      <ion-item>
-        <ion-input
-          label="{{ 'profile.firstname' | translate }}"
-          labelPlacement="floating"
-          [(ngModel)]="user.firstname"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-input
-          label="{{ 'profile.lastname' | translate }}"
-          labelPlacement="floating"
-          [(ngModel)]="user.lastname"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-select
-          label="{{ 'profile.gender' | translate }}"
-          labelPlacement="floating"
-          [(ngModel)]="user.gender"
-        >
-          <ion-select-option *ngFor="let gender of genders" [value]="gender">
-            {{ gender }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-input
-          label="{{ 'profile.id-series' | translate }}"
-          labelPlacement="floating"
-          [(ngModel)]="user.idSeries"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-input
-          label="{{ 'profile.id-number' | translate }}"
-          labelPlacement="floating"
-          [(ngModel)]="user.idNumber"
-        ></ion-input>
-      </ion-item>
-
+      <!-- NATIONALITY -->
       <ion-item>
         <ion-select
           label="{{ 'profile.nationality' | translate }}"
@@ -90,11 +81,25 @@
             *ngFor="let nationality of nationalities"
             [value]="nationality"
           >
-            {{ nationality }}
+            {{ "nationality." + nationality | translate }}
           </ion-select-option>
         </ion-select>
       </ion-item>
 
+      <!-- GENDER -->
+      <ion-item>
+        <ion-select
+          label="{{ 'profile.gender' | translate }}"
+          labelPlacement="floating"
+          [(ngModel)]="user.gender"
+        >
+          <ion-select-option *ngFor="let gender of genders" [value]="gender">
+            {{ "gender." + gender | translate }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- RESIDENCE ADDRESS -->
       <ion-item>
         <ion-input
           label="{{ 'profile.residence-address' | translate }}"
@@ -103,25 +108,23 @@
         ></ion-input>
       </ion-item>
 
+      <!-- VALIDITY -->
       <ion-item>
         <ion-input
           label="{{ 'profile.valid-from' | translate }}"
           labelPlacement="floating"
-          [(ngModel)]="user.validityStartDate"
+          [value]="user.validityStartDate | date : 'dd-MM-yyyy'"
         ></ion-input>
-      </ion-item>
-
-      <ion-item>
         <ion-input
           label="{{ 'profile.valid-until' | translate }}"
           labelPlacement="floating"
-          [(ngModel)]="user.validityEndDate"
+          [value]="user.validityEndDate | date : 'dd-MM-yyyy'"
         ></ion-input>
       </ion-item>
 
-      <ion-button expand="block" color="dark" (click)="saveProfile()"
-        >{{ 'profile.save' | translate }}</ion-button
-      >
+      <ion-button expand="block" color="dark" (click)="saveProfile()">{{
+        "profile.save" | translate
+      }}</ion-button>
     </ion-card-content>
   </ion-card>
   <ion-card *ngIf="!loadedData">

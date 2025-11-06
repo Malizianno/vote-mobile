@@ -81,7 +81,7 @@ import { UserService } from '../@shared/service/user.service';
 })
 export class ProfileComponent {
   user: UserProfile = new UserProfile();
-  memmoryUser: LoginResponseDTO;
+  memoryUser: LoginResponseDTO;
 
   isRegisteringRN: boolean = false;
 
@@ -126,14 +126,21 @@ export class ProfileComponent {
   }
 
   init() {
-    this.memmoryUser = this.credentials.credentials!;
+    this.memoryUser = this.credentials.credentials!;
 
-    if (this.memmoryUser) {
-      this.getProfile(this.memmoryUser.id);
+    if (this.memoryUser) {
+      this.getProfile(this.memoryUser.id);
     } else {
       this.isRegisteringRN = true;
 
       this.user = this.router.getCurrentNavigation()?.extras.state?.['profile'];
+      this.user.gender =
+        UserGender[this.user.gender as unknown as keyof typeof UserGender];
+      this.user.nationality =
+        UserNationality[
+          this.user.nationality as unknown as keyof typeof UserNationality
+        ];
+
       this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
         this.shared.getImage()!
       ) as string;
@@ -199,7 +206,7 @@ export class ProfileComponent {
           this.toast.show(this.translate.instant('profile.saved'));
           console.log('user profile updated: ', res);
 
-          this.credentials.setCredentials(this.memmoryUser);
+          this.credentials.setCredentials(this.memoryUser);
           this.close();
         },
         error: (err: HttpErrorResponse) => {

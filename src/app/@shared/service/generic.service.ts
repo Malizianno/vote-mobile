@@ -25,14 +25,14 @@ export class GenericService {
     // const role = this.credentials.credentials?.role ? this.credentials.credentials.role.toString() : '';
 
     // WIP: there should only be id in credentials because username doesn't make sense in the voting app
-    if (username == '') {
-      username = this.credentials.credentials!.id.toString();
-    }
+    // if (username == '') {
+    //   username = this.credentials.credentials!.id!.toString();
+    // }
 
     return new HttpHeaders()
       .set('Content-Type', 'application/json')
-      .set('Authorization', 'Bearer ' + token)
-      .set('principal', username)
+      .set('Authorization', 'Bearer ' + token!)
+      .set('principal', username!)
       .set('role', 'VOTANT')
       .set('apikey', 'mobileapikey');
   }

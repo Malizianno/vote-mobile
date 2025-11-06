@@ -50,7 +50,7 @@
         "birth-address": "Birth address",
         "residence-address": "Residence Address",
         "valid-from": "Valid From",
-        "valid-until": "Valid Until",
+        "valid-until": "Until",
         "save": "Save",
         "saved": "Profile successfully saved!",
         "registered": "Profile successfully registered!"
@@ -62,5 +62,14 @@
         "election-active": {
             "here": "here"
         }
+    },
+    "nationality": {
+        "ROMANIAN": "Romanian",
+        "FOREIGNER": "Foreigner"
+    }, 
+    "gender": {
+        "MALE": "Male",
+        "FEMALE": "Female",
+        "OTHER": "Other"
     }
 }
