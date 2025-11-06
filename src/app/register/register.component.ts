@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
+import {
+  AfterViewInit,
+  CUSTOM_ELEMENTS_SCHEMA,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -24,6 +29,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
 import {
   arrowForward,
@@ -74,14 +80,15 @@ window.addEventListener('beforeunload', () => {
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class RegisterComponent implements AfterViewInit {
+export class RegisterComponent implements AfterViewInit, OnInit {
   private BASE64_PREFIX = 'data:image/jpeg;base64,';
 
   isPhotoTaken = false;
   isIDValid = false;
   isOCRDone = false;
 
-  imageDataUrl: string | undefined;
+  idImageDataUrl: string | undefined;
+  faceImageDataUrl: string | undefined;
   extractedText: string;
   profile: UserProfile;
 
@@ -94,6 +101,10 @@ export class RegisterComponent implements AfterViewInit {
       refresh,
       checkmarkCircleOutline,
     });
+  }
+  async ngOnInit(): Promise<void> {
+    await this.loadModels();
+    console.log('Loaded face-api models...');
   }
 
   ngAfterViewInit() {
@@ -130,13 +141,23 @@ export class RegisterComponent implements AfterViewInit {
     this.runOCR(this.BASE64_PREFIX + base64);
   }
 
+  async loadModels() {
+    const MODEL_URL = '/assets/models';
+    await Promise.all([
+      faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+    ]);
+  }
+
   async runOCR(imageDataUrl: string | null) {
     console.log('Starting OCR process...');
+
     const rect = document
       .querySelector('.scan-rectangle')!
       .getBoundingClientRect();
 
-    console.log('Scan rectangle dimensions:', rect);
+    // console.log('Scan rectangle dimensions:', rect);
 
     if (!imageDataUrl || !rect) {
       this.extractedText = 'No image data available.';
@@ -144,9 +165,9 @@ export class RegisterComponent implements AfterViewInit {
     }
 
     // processing image to crop to rectangle area could be added here
-    console.log('image base64: ', imageDataUrl);
+    // console.log('image base64: ', imageDataUrl);
     const blob = this.base64ToBlob(imageDataUrl);
-    console.log('Converted Blob:', blob);
+    // console.log('Converted Blob:', blob);
 
     const img = new Image();
     img.src = URL.createObjectURL(blob);
@@ -154,7 +175,7 @@ export class RegisterComponent implements AfterViewInit {
     document.body.appendChild(img); // creates the effect of taken photo on the screen
     this.isPhotoTaken = true;
 
-    console.log('Image created for cropping:', img);
+    // console.log('Image created for cropping:', img);
     // console.log('Image dimensions before load:', { width: img.naturalWidth, height: img.naturalHeight });
 
     img.onload = () => {
@@ -183,7 +204,7 @@ export class RegisterComponent implements AfterViewInit {
       //   cropHeight,
       // });
 
-      // Now crop using canvas
+      // Now crop ID using canvas
       const canvas = document.createElement('canvas');
       canvas.width = cropWidth;
       canvas.height = cropHeight;
@@ -209,9 +230,53 @@ export class RegisterComponent implements AfterViewInit {
       // add the cropped image to the global imageURL
       const base64 = canvas.toDataURL('image/jpeg');
       // .replace('data:image/jpeg;base64,', '');
-      this.imageDataUrl = base64;
+      this.idImageDataUrl = base64;
 
-      // convert to grayscale
+      // crop faceImage using canvas
+      const faceImg = new Image();
+      faceImg.src = this.idImageDataUrl;
+
+      faceImg.onload = async () => {
+        const detection = await faceapi
+          .detectSingleFace(faceImg)
+          .withFaceLandmarks();
+
+        if (detection) {
+          const { box } = detection.detection;
+
+          const canvas = document.createElement('canvas');
+          canvas.width = box.width;
+          canvas.height = box.height;
+
+          const ctx = canvas.getContext('2d');
+          ctx!.drawImage(
+            faceImg,
+            box.x,
+            box.y,
+            box.width,
+            box.height,
+            0,
+            0,
+            box.width,
+            box.height
+          );
+          const faceImageDataUrl = canvas.toDataURL('image/jpeg');
+
+          // log the photo:
+          canvas.toBlob(async (faceBlob) => {
+            const faceCroppedImage = new Image();
+            faceCroppedImage.src = URL.createObjectURL(faceBlob!);
+            faceCroppedImage.id = 'cropped-face-image';
+            document.body.appendChild(faceCroppedImage);
+            console.log('Cropped Face Blob:', faceCroppedImage);
+          });
+
+          // save globally to put it to DTO after OCR
+          this.faceImageDataUrl = faceImageDataUrl;
+        }
+      };
+
+      // convert ID to grayscale
       const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
@@ -226,15 +291,15 @@ export class RegisterComponent implements AfterViewInit {
       canvas.toBlob(
         async (croppedBlob) => {
           //logging
-          const croppedImg = new Image();
-          croppedImg.src = URL.createObjectURL(croppedBlob!);
-          croppedImg.id = 'cropped-greyscale-ocr-image';
-          document.body.appendChild(croppedImg);
-          console.log('Cropped Blob:', croppedImg);
+          const greyscaleIDImage = new Image();
+          greyscaleIDImage.src = URL.createObjectURL(croppedBlob!);
+          greyscaleIDImage.id = 'cropped-greyscale-ocr-image';
+          document.body.appendChild(greyscaleIDImage);
+          console.log('Cropped Blob:', greyscaleIDImage);
 
           const result = await Tesseract.recognize(croppedBlob!, 'ron', {
             langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
-            logger: (m) => console.log(m),
+            // logger: (m) => console.log(m),
           });
           console.log('OCR result (result.data.text):', result.data.text);
           this.extractedText = result.data.text;
@@ -321,9 +386,9 @@ export class RegisterComponent implements AfterViewInit {
       this.profile.validityEndDate = this.parseDate_ddMMyy(
         validityArray[1]
       )!.getTime();
-      // WIP: Images could be set here if needed
-      this.profile.idImage = this.imageDataUrl!;
-      // this.profile.faceImage = this.imageDataUrl!.replace(this.BASE64_PREFIX, '');
+      // WIP: CHECK IF IMAGES ARE CORRECLTY SAVED
+      this.profile.idImage = this.idImageDataUrl!;
+      this.profile.faceImage = this.faceImageDataUrl!;
     }
 
     console.log('Parsed Data + validation:', {

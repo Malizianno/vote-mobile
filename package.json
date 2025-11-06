@@ -1,6 +1,6 @@
 {
   "name": "vote.e",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "author": "Cristian Sterie",
   "homepage": "https://github.com/Malizianno/vote-mobile",
   "scripts": {
@@ -42,7 +42,9 @@
     "@ionic/pwa-elements": "^3.3.0",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
+    "@tensorflow/tfjs": "^4.22.0",
     "cordova-plugin-camera-preview": "^0.14.0",
+    "face-api.js": "^0.22.2",
     "firebase": "^12.1.0",
     "flag-icons": "^7.5.0",
     "ionicons": "^7.2.1",
