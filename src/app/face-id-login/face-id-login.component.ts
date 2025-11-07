@@ -187,7 +187,7 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
 
   async login() {
     const request = new FaceLoginRequestDTO();
-    request.imageBase64 = this.imageBase64;
+    request.imageBase64 = ParseAndFormatUtil.cleanBase64FromPrefix(this.imageBase64);
     this.service.loginWithFace(request).then(
       (res: HttpResponse) => {
         this.handleLoginResponse(res);

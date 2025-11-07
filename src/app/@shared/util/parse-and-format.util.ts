@@ -1,6 +1,14 @@
 export class ParseAndFormatUtil {
   public static BASE64_PREFIX = 'data:image/jpeg;base64,';
 
+  static cleanBase64FromPrefix(base64: string): string {
+    if (base64.includes(this.BASE64_PREFIX)) {
+      base64 = base64.split(',')[1];
+    }
+
+    return base64;
+  }
+
   static base64ToBlob(base64: string): Blob {
     const [header, data] = base64.split(',');
     const mime = header.match(/:(.*?);/)![1];
