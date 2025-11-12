@@ -13,9 +13,9 @@
       </div>
     </div>
   </div>
-  <div class="swiper-pagination"></div>
+  <div *ngIf="candidates.length > 0" class="swiper-pagination"></div>
 
-  <ion-grid class="card-grid">
+  <ion-grid *ngIf="candidates.length > 0" class="card-grid">
     <ion-row>
       <ion-col size="6">
         <ion-card class="info-card">

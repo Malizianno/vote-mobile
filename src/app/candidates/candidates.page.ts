@@ -117,9 +117,7 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
     }
   }
 
-  constructor(
-    private candidatesService: CandidateService,
-  ) {
+  constructor(private candidatesService: CandidateService) {
     this.reloadPage();
   }
 
@@ -158,15 +156,16 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
   }
 
   getFiltered() {
-    return this.candidatesService.getFiltered(this.filter, this.paging).pipe(
+    return this.candidatesService.getAll(this.filter, this.paging).pipe(
       map((res) => {
-        if (res && this.candidates != res.candidates) {
-          this.candidates = Candidate.fromArray(res.candidates);
-          this.totalCandidates = res.total;
+        console.log('candidates got res: ', res);
+        if (res && this.candidates != res) {
+          this.candidates = Candidate.fromArray(res);
+          this.totalCandidates = res.length;
 
           this.setSelected(0);
           this.reloadSwiper();
-          // console.log('candidates: ', this.candidates);
+          console.log('candidates: ', this.candidates);
         }
       })
     );
