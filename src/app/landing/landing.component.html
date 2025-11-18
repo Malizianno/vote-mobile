@@ -3,8 +3,9 @@
     <img src="assets/logo.png" alt="App Logo" class="logo" />
   </div>
   <div class="button-group">
-    <ion-button color="dark" (click)="login()">{{ "landing.login" | translate }}</ion-button>
-    <ion-button color="dark" (click)="loginWithFaceID()">{{ "landing.face-id" | translate }}</ion-button>
+    <!-- WIP: remove this at cleanup; after testing -->
+    <!-- <ion-button color="dark" (click)="login()">{{ "landing.login" | translate }}</ion-button> -->
+    <ion-button color="dark" (click)="loginWithFaceID()">{{ "landing.login" | translate }}</ion-button>
     <ion-button color="dark" (click)="register()">{{ "landing.register" | translate }}</ion-button>
   </div>
   <div class="version-label">{{ 'v' + appVersion }}</div>
