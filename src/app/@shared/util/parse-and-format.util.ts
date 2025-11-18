@@ -48,4 +48,19 @@ export class ParseAndFormatUtil {
       img.onerror = (err) => reject('Image load error: ' + err);
     });
   }
+
+  static parseShortDateFromDB(date: number): number {
+    const magicLength = 8; // 20240101 - 1st january 2024
+    const raw = date.toString();
+
+    if (raw.length == magicLength) {
+      const year = parseInt(raw.substring(0, 4), 10);
+      const month = parseInt(raw.substring(4, 6), 10) - 1; // Months are 0-indexed
+      const day = parseInt(raw.substring(6, 8), 10);
+
+      date = new Date(year, month, day).getTime();
+    }
+
+    return date;
+  }
 }

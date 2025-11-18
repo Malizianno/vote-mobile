@@ -126,7 +126,15 @@ export class ProfileComponent {
     this.init();
   }
 
+  ionViewWillEnter() {
+    this.init();
+  }
+
   init() {
+    if (!!this.user && !!this.user.cnp) {
+      return;
+    }
+
     this.memoryUser = this.credentials.credentials!;
 
     if (this.memoryUser) {
@@ -135,6 +143,7 @@ export class ProfileComponent {
       this.isRegisteringRN = true;
 
       this.user = this.router.getCurrentNavigation()?.extras.state?.['profile'];
+
       this.user.gender =
         UserGender[this.user.gender as unknown as keyof typeof UserGender];
       this.user.nationality =
@@ -142,8 +151,17 @@ export class ProfileComponent {
           this.user.nationality as unknown as keyof typeof UserNationality
         ];
 
+      const sharedImage: string | null = this.shared.getImage();
+
+      let userAvatarSrc: string;
+      if (sharedImage != null) {
+        userAvatarSrc = sharedImage;
+      } else {
+        userAvatarSrc = this.user.idImage;
+      }
+
       this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
-        this.shared.getImage()!
+        `${ParseAndFormatUtil.BASE64_PREFIX}${userAvatarSrc}`
       ) as string;
     }
 
@@ -178,9 +196,18 @@ export class ProfileComponent {
       next: (res: UserProfile) => {
         this.user = res;
         console.log('user profile: ', this.user);
+
+        this.user.validityStartDate = ParseAndFormatUtil.parseShortDateFromDB(
+          this.user.validityStartDate
+        );
+        this.user.validityEndDate = ParseAndFormatUtil.parseShortDateFromDB(
+          this.user.validityEndDate
+        );
+
         this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
-          this.user.idImage
+          `${ParseAndFormatUtil.BASE64_PREFIX}${this.user.idImage}`
         ) as string;
+
         console.log('user avatar', this.userAvatar);
       },
       error: (err: HttpErrorResponse) => {

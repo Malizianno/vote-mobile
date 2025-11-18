@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  AfterViewInit,
-  CUSTOM_ELEMENTS_SCHEMA,
-  Component,
-  NgZone,
-  OnInit,
-} from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -13,23 +7,7 @@ import {
   CameraPreviewOptions,
 } from '@capacitor-community/camera-preview';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
-import {
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCol,
-  IonContent,
-  IonGrid,
-  IonHeader,
-  IonIcon,
-  IonInput,
-  IonItem,
-  IonRow,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+import { IonIcon } from '@ionic/angular/standalone';
 import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
 import {
@@ -49,40 +27,15 @@ import {
 import { SharedService } from '../@shared/service/shared.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
 
-// XXX: TESTING: Ensure camera stops when navigating away (livereload issue)
-window.addEventListener('beforeunload', () => {
-  CameraPreview.stop().catch(() => {});
-  ScreenOrientation.unlock();
-});
-
-@Component({ 
+@Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
   standalone: true,
-  imports: [
-    IonGrid,
-    IonInput,
-    IonButtons,
-    IonCardContent,
-    IonCardHeader,
-    IonRow,
-    IonCard,
-    IonCol,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButton,
-    IonItem,
-    IonIcon,
-    FormsModule,
-    IonGrid,
-    CommonModule,
-  ],
+  imports: [IonIcon, FormsModule, CommonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class RegisterComponent implements AfterViewInit, OnInit {
+export class RegisterComponent {
   isPhotoTaken = false;
   isIDValid = false;
   isOCRDone = false;
@@ -106,21 +59,28 @@ export class RegisterComponent implements AfterViewInit, OnInit {
       checkmarkCircleOutline,
     });
   }
-  async ngOnInit(): Promise<void> {
+
+  async ionViewWillEnter() {
+    await ScreenOrientation.lock({ orientation: 'landscape' });
+    await this.delay(300);
+
     await this.loadModels();
     console.log('Loaded face-api models...');
+
+    await this.startCamera();
+
+    this.isPhotoTaken = false;
+    this.isIDValid = false;
+    this.isOCRDone = false;
   }
 
-  ngAfterViewInit() {
-    this.startCamera();
-  }
+  async ionViewWillLeave() {
+    await ScreenOrientation.lock({ orientation: 'portrait-primary' });
+    await this.delay(300);
 
-  ionViewWillEnter() {
-    ScreenOrientation.lock({ orientation: 'landscape' });
-  }
+    await this.stopCamera();
 
-  ionViewWillLeave() {
-    ScreenOrientation.unlock(); // or reset to default
+    this.cleanDocumentImages();
   }
 
   shouldRetakePhoto(): boolean {
@@ -144,6 +104,7 @@ export class RegisterComponent implements AfterViewInit, OnInit {
       width: window.innerWidth,
       height: window.innerHeight,
     };
+
     CameraPreview.start(options);
   }
 
@@ -461,7 +422,10 @@ export class RegisterComponent implements AfterViewInit, OnInit {
     if (!/^\d{13}$/.test(cnp)) return false;
 
     console.log('isCNP18Plus:', this.isCNP18Plus(cnp));
-    console.log('isCNPValidAgainstControlDigit:', this.isCNPValidAgainstControlDigit(cnp));
+    console.log(
+      'isCNPValidAgainstControlDigit:',
+      this.isCNPValidAgainstControlDigit(cnp)
+    );
     return this.isCNPValidAgainstControlDigit(cnp) && this.isCNP18Plus(cnp);
   }
 
@@ -555,18 +519,25 @@ export class RegisterComponent implements AfterViewInit, OnInit {
     return lines.slice(0, i);
   }
 
-  goToProfile() {
-    ScreenOrientation.unlock();
+  async goToProfile() {
+    await ScreenOrientation.lock({ orientation: 'portrait-primary' });
+    await this.delay(300);
 
     this.shared.setImage(this.profile.idImage);
     // this.profile.idImage = undefined!; // clear image data before navigation
 
+    // cleanup before you go ;)
+    await this.stopCamera();
+    await this.delay(300);
+
+    this.isPhotoTaken = false;
+    this.isIDValid = false;
+    this.isOCRDone = false;
+
     this.router.navigate(['/profile'], {
       replaceUrl: true,
-      state: { profile: this.profile },
+      state: { 'profile': this.profile },
     });
-
-    this.retakePhoto();
   }
 
   async retakePhoto() {
@@ -579,12 +550,8 @@ export class RegisterComponent implements AfterViewInit, OnInit {
         this.extractedText = '';
       });
 
-      document.getElementById('ocr-preview')?.remove();
-      document.getElementById('cropped-greyscale-ocr-image')?.remove();
-      document.getElementById('cropped-face-image')?.remove();
+      this.cleanDocumentImages();
 
-      await ScreenOrientation.unlock();
-      await this.delay(300); // optional: give hardware time to release
       await ScreenOrientation.lock({ orientation: 'landscape' });
 
       await this.delay(300); // optional: give hardware time to release
@@ -592,6 +559,12 @@ export class RegisterComponent implements AfterViewInit, OnInit {
     } catch (err) {
       console.error('Camera restart failed:', err);
     }
+  }
+
+  cleanDocumentImages() {
+    document.getElementById('ocr-preview')?.remove();
+    document.getElementById('cropped-greyscale-ocr-image')?.remove();
+    document.getElementById('cropped-face-image')?.remove();
   }
 
   private delay(ms: number): Promise<void> {
