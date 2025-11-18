@@ -2,36 +2,22 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, NgZone, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Platform } from '@ionic/angular';
 import {
   CameraPreview,
   CameraPreviewOptions,
 } from '@capacitor-community/camera-preview';
 import { HttpResponse } from '@capacitor/core';
+import { Platform } from '@ionic/angular';
 import {
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCol,
-  IonContent,
   IonFab,
   IonFabButton,
-  IonGrid,
-  IonHeader,
   IonIcon,
-  IonInput,
-  IonItem,
-  IonRow,
-  IonTitle,
-  IonToolbar,
+  IonSpinner,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
 import { arrowForward, camera, checkmark, refresh } from 'ionicons/icons';
-import { environment } from 'src/environments/environment';
 import {
   FaceLoginRequestDTO,
   FaceLoginResponseDTO,
@@ -51,35 +37,22 @@ window.addEventListener('beforeunload', () => {
   styleUrls: ['./face-id-login.component.scss'],
   standalone: true,
   imports: [
+    IonSpinner,
     IonFabButton,
     IonFab,
-    IonGrid,
-    IonInput,
-    IonButtons,
-    IonCardContent,
-    IonCardHeader,
-    IonRow,
-    IonCard,
-    IonCol,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButton,
-    IonItem,
     IonIcon,
     FormsModule,
     CommonModule,
-    IonGrid,
+    IonSpinner,
     TranslateModule,
   ],
 })
-export class FaceIDLoginComponent implements AfterViewInit, OnInit {
-  appVersion: string;
+export class FaceIDLoginComponent {
   imageBase64: string = '';
 
   isFaceValid = false;
   isPhotoTaken = false;
+  isPhotoProcessing = false;
 
   constructor(
     private platform: Platform,
@@ -97,17 +70,21 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
         this.close();
       });
     });
-
-    this.appVersion = environment.version;
   }
 
-  async ngOnInit(): Promise<void> {
+  async ionViewWillEnter() {
     await this.loadModels();
     console.log('Loaded face-api models...');
-  }
 
-  ngAfterViewInit(): void {
-    this.startCamera();
+    await this.startCamera();
+
+    this.isFaceValid = false;
+    this.isPhotoProcessing = false;
+    this.isPhotoTaken = false;
+
+    console.log(
+      `ionViewWillEnter:\nfaceValid: ${this.isFaceValid}\nphotoTaken: ${this.isPhotoTaken}\nphotoProcessing: ${this.isPhotoProcessing}`
+    );
   }
 
   async startCamera() {
@@ -119,7 +96,13 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
       width: window.innerWidth,
       height: window.innerHeight,
     };
+
     CameraPreview.start(options);
+
+    this.ngZone.run(() => {
+      this.isPhotoTaken = false;
+      this.isPhotoProcessing = false;
+    });
   }
 
   async stopCamera() {
@@ -129,6 +112,7 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
   async captureImage() {
     this.ngZone.run(() => {
       this.isPhotoTaken = false;
+      this.isPhotoProcessing = true;
     });
 
     const result = await CameraPreview.capture({
@@ -187,7 +171,15 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
 
   async login() {
     const request = new FaceLoginRequestDTO();
-    request.imageBase64 = ParseAndFormatUtil.cleanBase64FromPrefix(this.imageBase64);
+
+    this.ngZone.run(() => {
+      this.isPhotoProcessing = true;
+    });
+
+    request.imageBase64 = ParseAndFormatUtil.cleanBase64FromPrefix(
+      this.imageBase64
+    );
+
     this.service.loginWithFace(request).then(
       (res: HttpResponse) => {
         this.handleLoginResponse(res);
@@ -198,7 +190,7 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
     );
   }
 
-  handleLoginResponse(response: HttpResponse) {
+  async handleLoginResponse(response: HttpResponse) {
     console.log('got data: ', response);
 
     if (response.status === 200) {
@@ -208,12 +200,25 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
         this.credentials.setCredentials(responseData);
       }
 
+      this.cleanTheDocumentBody();
+      await this.stopCamera();
+
       this.router.navigate(['/tabs/home']);
+
+      this.ngZone.run(() => {
+        this.isPhotoProcessing = false;
+      });
     }
   }
 
   handleLoginError(err: string) {
     console.log('got err: ', err);
+    this.cleanTheDocumentBody();
+
+    this.ngZone.run(() => {
+      this.isFaceValid = false;
+      this.isPhotoProcessing = false;
+    });
   }
 
   // using Face API to recognize face and control the status of buttons ;)
@@ -233,6 +238,7 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
         .detectSingleFace(faceImg)
         .withFaceLandmarks();
 
+      // console.log('detection found: ', detection);
       if (detection) {
         const { box } = detection.detection;
 
@@ -263,11 +269,12 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
           document.body.appendChild(faceCroppedImage);
           // console.log('Cropped Face Blob:', faceCroppedImage);
 
-          if (faceCroppedImage) {
-            this.ngZone.run(() => {
+          this.ngZone.run(() => {
+            if (faceCroppedImage) {
               this.isFaceValid = true;
-            });
-          }
+              this.isPhotoProcessing = false;
+            }
+          });
         });
 
         this.imageBase64 = canvas.toDataURL('image/jpeg');
@@ -275,6 +282,13 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
 
         return faceImageDataUrl;
       }
+
+      // if it got to this point, no face detection found
+      this.ngZone.run(() => {
+        this.isFaceValid = false;
+        this.isPhotoProcessing = false;
+        this.isPhotoTaken = true;
+      });
 
       return null;
     };
@@ -291,5 +305,25 @@ export class FaceIDLoginComponent implements AfterViewInit, OnInit {
   close() {
     this.cleanTheDocumentBody();
     this.router.navigate(['/landing'], { replaceUrl: true });
+  }
+
+  isProcessing(): boolean {
+    // spinner
+    return this.isPhotoProcessing;
+  }
+
+  isReadyToTakePhoto(): boolean {
+    // camera
+    return !this.isPhotoTaken && !this.isFaceValid && !this.isPhotoProcessing;
+  }
+
+  isReadyToRetakePhoto(): boolean {
+    // refresh
+    return this.isPhotoTaken && !this.isFaceValid && !this.isPhotoProcessing;
+  }
+
+  isReadyToLogin(): boolean {
+    // checkmark
+    return this.isPhotoTaken && this.isFaceValid && !this.isPhotoProcessing;
   }
 }
