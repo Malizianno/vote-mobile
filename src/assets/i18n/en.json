@@ -8,10 +8,16 @@
         "signup": "Signup",
         "register": "Register"
     },
+    "register": {
+        "info": "Your ID is being scanned securely. No data is stored without your consent. Please keep the document visible and well-lit.",
+        "retake-photo": "ID scan failed. No data was stored. Please check lighting and clarity, then try again."
+    },
     "login": {
-        "warning-message": "THIS PAGE WILL BE REPLACED BY ACTUAL LOGIN WITH CAMERA OPTIONS!",
         "username": "Username",
-        "password": "Password"
+        "password": "Password",
+        "info": "Ready for face login. Please look directly at the camera in a well-lit environment. We'll verify your identity securely in just a moment",
+        "no-face": "Face not recognized. Please try again, making sure your face is clearly visible and unobstructed.",
+        "login-failed": "Login attempt failed. If this wasn’t you, your account is safe. Otherwise, please try again or use an alternate login method."
     },
     "tabs": {
         "home": "Home",

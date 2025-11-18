@@ -26,6 +26,8 @@ import {
 } from '../@shared/model/user.model';
 import { SharedService } from '../@shared/service/shared.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
+import { ToastService } from '../@shared/service/toast.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
@@ -48,7 +50,9 @@ export class RegisterComponent {
   constructor(
     private router: Router,
     private shared: SharedService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private toast: ToastService,
+    private translate: TranslateService,
   ) {
     addIcons({
       checkmark,
@@ -72,6 +76,8 @@ export class RegisterComponent {
     this.isPhotoTaken = false;
     this.isIDValid = false;
     this.isOCRDone = false;
+
+    this.toast.show(this.translate.instant('register.info'), 5000);
   }
 
   async ionViewWillLeave() {
@@ -391,6 +397,8 @@ export class RegisterComponent {
         )!.getTime();
         this.profile.idImage = this.idImageDataUrl!;
         this.profile.faceImage = this.faceImageDataUrl!;
+      } else {
+        this.toast.show(this.translate.instant('register.retake-photo'), 5000);
       }
 
       console.log('Parsed Data + validation:', {
@@ -412,6 +420,8 @@ export class RegisterComponent {
 
       this.ngZone.run(() => {
         this.isIDValid = false;
+
+        this.toast.show(this.translate.instant('register.retake-photo'), 5000);
       });
     }
   }
@@ -520,9 +530,6 @@ export class RegisterComponent {
   }
 
   async goToProfile() {
-    await ScreenOrientation.lock({ orientation: 'portrait-primary' });
-    await this.delay(300);
-
     this.shared.setImage(this.profile.idImage);
     // this.profile.idImage = undefined!; // clear image data before navigation
 

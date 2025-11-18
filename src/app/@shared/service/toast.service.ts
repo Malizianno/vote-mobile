@@ -9,10 +9,11 @@ export class ToastService {
     // empty
   }
 
-  public async show(message: string) {
+  public async show(message: string, durationMs?: number) {
+    const defaultDurationMs = 2000;
     const toast = await this.toast.create({
       message,
-      duration: 2000,
+      duration: durationMs ? durationMs : defaultDurationMs,
       position: 'top',
       color: 'dark',
     });

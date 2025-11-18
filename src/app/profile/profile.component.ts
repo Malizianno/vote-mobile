@@ -48,6 +48,7 @@ import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { UserService } from '../@shared/service/user.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 @Component({
   selector: 'app-profile',
@@ -127,6 +128,7 @@ export class ProfileComponent {
   }
 
   ionViewWillEnter() {
+    ScreenOrientation.lock({ orientation: 'portrait-primary' });
     this.init();
   }
 
@@ -161,7 +163,7 @@ export class ProfileComponent {
       }
 
       this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
-        `${ParseAndFormatUtil.BASE64_PREFIX}${userAvatarSrc}`
+        `${ParseAndFormatUtil.addMissingPrefixToBase64(userAvatarSrc)}`
       ) as string;
     }
 
@@ -205,7 +207,7 @@ export class ProfileComponent {
         );
 
         this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
-          `${ParseAndFormatUtil.BASE64_PREFIX}${this.user.idImage}`
+          `${ParseAndFormatUtil.addMissingPrefixToBase64(this.userAvatar)}`
         ) as string;
 
         console.log('user avatar', this.userAvatar);

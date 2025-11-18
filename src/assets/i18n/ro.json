@@ -8,10 +8,16 @@
         "signup": "Înregistrare",
         "register": "Înregistrare"
     },
+    "register": {
+        "info": "Actul dumneavoastră de identitate este scanat în siguranță. Nicio informație nu este stocată fără consimțământul dumneavoastră. Vă rugăm să păstrați documentul vizibil și bine iluminat.",
+        "retake-photo": "Scanarea documentului a eșuat. Nu au fost stocate date. Verificați iluminarea și claritatea, apoi încercați din nou."
+    },
     "login": {
-        "warning-message": "Această pagină va fi înlocuită cu un ecran cu camera!",
         "username": "Utilizator",
-        "password": "Parolă"
+        "password": "Parolă",
+        "info": "Gata pentru autentificare facială. Vă rugăm să priviți direct spre cameră într-un mediu bine luminat. Vă vom verifica identitatea în siguranță imediat.",
+        "no-face": "Fața nu este recunoscută. Încercați din nou, asigurându-vă că fața dumneavoastră este clar vizibilă și neobstrucționată.",
+        "login-failed": "Încercarea de conectare a eșuat. Dacă nu ați fost dumneavoastră, contul dumneavoastră este în siguranță. În caz contrar, încercați din nou sau utilizați o altă metodă de conectare."
     },
     "tabs": {
         "home": "Acasă",

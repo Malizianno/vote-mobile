@@ -14,7 +14,7 @@ import {
   IonIcon,
   IonSpinner,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
 import { arrowForward, camera, checkmark, refresh } from 'ionicons/icons';
@@ -25,6 +25,7 @@ import {
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { LoginService } from '../@shared/service/login.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
+import { ToastService } from '../@shared/service/toast.service';
 
 // XXX: TESTING: Ensure camera stops when navigating away (livereload issue)
 window.addEventListener('beforeunload', () => {
@@ -59,7 +60,9 @@ export class FaceIDLoginComponent {
     private service: LoginService,
     private credentials: CredentialsService,
     private router: Router,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private toast: ToastService,
+    private translate: TranslateService,
   ) {
     addIcons({ camera, refresh, checkmark, arrowForward });
 
@@ -82,6 +85,7 @@ export class FaceIDLoginComponent {
     this.isPhotoProcessing = false;
     this.isPhotoTaken = false;
 
+    this.toast.show(this.translate.instant('login.info'), 5000);
     console.log(
       `ionViewWillEnter:\nfaceValid: ${this.isFaceValid}\nphotoTaken: ${this.isPhotoTaken}\nphotoProcessing: ${this.isPhotoProcessing}`
     );
@@ -218,6 +222,8 @@ export class FaceIDLoginComponent {
     this.ngZone.run(() => {
       this.isFaceValid = false;
       this.isPhotoProcessing = false;
+
+      this.toast.show(this.translate.instant('login.login-failed'), 5000);
     });
   }
 
@@ -288,6 +294,8 @@ export class FaceIDLoginComponent {
         this.isFaceValid = false;
         this.isPhotoProcessing = false;
         this.isPhotoTaken = true;
+
+        this.toast.show(this.translate.instant('login.no-face'));
       });
 
       return null;
