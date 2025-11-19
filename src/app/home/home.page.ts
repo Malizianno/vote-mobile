@@ -3,15 +3,16 @@ import { Component, OnDestroy } from '@angular/core';
 import {
   IonContent,
   IonHeader,
+  IonText,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { interval, map, Subscription } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 import { HomeElementComponent } from '../@shared/components/home-element/home-element.component';
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
-import { ElectionCampaignDTO } from '../@shared/model/campaign.model';
-import { ElectionService } from '../@shared/service/election.service';
+import { Election } from '../@shared/model/election.model';
+import { SharedService } from '../@shared/service/shared.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
@@ -23,6 +24,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     IonHeader,
     IonToolbar,
     IonTitle,
+    IonText,
     IonContent,
     CommonModule,
     TranslateModule,
@@ -31,13 +33,12 @@ import { AppConstants } from '../@shared/util/app-constants.util';
   ],
 })
 export class HomePage implements OnDestroy {
-  electionEnabled = false;
+  election: Election | null = null;
 
   private refreshSub: Subscription;
 
   ionViewWillEnter() {
     // console.log('ionViewWillEnter - home');
-    this.reloadPage();
     this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() =>
       this.reloadPage()
     ); // every every <AppCOnstants.REFRESH_TIME_MS> s
@@ -50,8 +51,8 @@ export class HomePage implements OnDestroy {
     }
   }
 
-  constructor(private election: ElectionService) {
-    // this.reloadPage();
+  constructor(private shared: SharedService) {
+    this.reloadPage();
   }
 
   ngOnDestroy(): void {
@@ -59,18 +60,6 @@ export class HomePage implements OnDestroy {
   }
 
   reloadPage() {
-    this.getElectionStatus().subscribe({
-      next: (res) => res,
-      error: (err) => this.election.handleHTTPErrors(err),
-    });
-  }
-
-  getElectionStatus() {
-    return this.election.getStatus().pipe(
-      map((res: ElectionCampaignDTO) => {
-        this.electionEnabled = res.enabled;
-        console.log('(home) electionEnabled: ', res);
-      })
-    );
+    this.election = this.shared.getSelectedElection();
   }
 }

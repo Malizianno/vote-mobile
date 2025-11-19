@@ -47,6 +47,7 @@ import { Swiper } from 'swiper';
 import { Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { SharedService } from '../@shared/service/shared.service';
 
 Swiper.use([Pagination]);
 
@@ -117,7 +118,7 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
     }
   }
 
-  constructor(private candidatesService: CandidateService) {
+  constructor(private candidatesService: CandidateService, private shared: SharedService) {
     this.reloadPage();
   }
 
@@ -149,14 +150,15 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
   }
 
   reloadPage() {
-    this.getFiltered().subscribe({
+    this.getAllForElection().subscribe({
       next: (res) => res,
       error: (err) => this.candidatesService.handleHTTPErrors(err),
     });
   }
 
-  getFiltered() {
-    return this.candidatesService.getAll(this.filter, this.paging).pipe(
+  getAllForElection() {
+    const election = this.shared.getSelectedElection();
+    return this.candidatesService.getAllForElection(election?.id).pipe(
       map((res) => {
         console.log('candidates got res: ', res);
         if (res && this.candidates != res) {

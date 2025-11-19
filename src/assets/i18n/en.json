@@ -61,6 +61,11 @@
         "saved": "Profile successfully saved!",
         "registered": "Profile successfully registered!"
     },
+    "elections": {
+        "title": "Elections",
+        "selector-title": "Election list",
+        "save": "Save"
+    },
     "components": {
          "no-results": {
             "message": "No results found!"

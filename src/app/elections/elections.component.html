@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ "elections.title" | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-fab vertical="top" horizontal="end" slot="fixed">
+  <ion-fab-button color="white" class="fab-bordered">
+    <ion-icon (click)="close()" name="close"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+<ion-content class="ion-padding">
+  <ion-card *ngIf="loadedData">
+    <ion-card-content>
+      <!-- SELECTOR -->
+      <ion-item>
+        <ion-select
+          label="{{ 'elections.selector-title' | translate }}"
+          labelPlacement="floating"
+          [(ngModel)]="selected"
+        >
+          <ion-select-option
+            *ngFor="let election of elections"
+            [value]="election"
+          >
+            {{ election.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-button expand="block" color="dark" (click)="saveAndClose()">{{
+        "elections.save" | translate
+      }}</ion-button>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="!loadedData">
+    <ion-card-content>
+      <ion-spinner name="crescent"></ion-spinner>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

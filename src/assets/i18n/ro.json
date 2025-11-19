@@ -61,6 +61,11 @@
         "saved": "Profil salvat cu success!",
         "registered": "Profil înregistrat cu success!"
     },
+    "elections": {
+        "title": "Alegeri",
+        "selector-title": "Listă alegeri",
+        "save": "Salvează"
+    },
     "components": {
         "no-results": {
             "message": "Nu au fost găsite rezultate!"

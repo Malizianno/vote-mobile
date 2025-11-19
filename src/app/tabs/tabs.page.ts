@@ -24,6 +24,7 @@ import {
   ellipse,
   exit,
   homeOutline,
+  layersOutline,
   people,
   person,
   square,
@@ -32,9 +33,10 @@ import {
 } from 'ionicons/icons';
 import { map } from 'rxjs';
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
-import { ElectionCampaignDTO } from '../@shared/model/campaign.model';
+import { Election } from '../@shared/model/election.model';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
+import { SharedService } from '../@shared/service/shared.service';
 
 @Component({
   selector: 'app-tabs',
@@ -62,12 +64,13 @@ import { ElectionService } from '../@shared/service/election.service';
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
-  electionEnabled: boolean;
+  election: Election | null = null;
 
   constructor(
     private router: Router,
-    private election: ElectionService,
-    private credentials: CredentialsService
+    private electionService: ElectionService,
+    private credentials: CredentialsService,
+    private shared: SharedService
   ) {
     addIcons({
       person,
@@ -80,32 +83,43 @@ export class TabsPage {
       triangle,
       ellipse,
       square,
+      layersOutline,
     });
     this.reloadPage();
   }
 
   reloadPage() {
-    this.getElectionStatus().subscribe({
-      next: (res) => res,
-      error: (err) => this.election.handleHTTPErrors(err),
-    });
+    const selectedElection = this.shared.getSelectedElection();
+
+    if (!selectedElection) {
+      this.getLastElectionActive().subscribe({
+        next: (res) => res,
+        error: (err) => this.electionService.handleHTTPErrors(err),
+      });
+    }
   }
 
   goToCandidatesPage() {
     this.router.navigate(['/tabs/candidates'], { replaceUrl: true });
   }
 
-  getElectionStatus() {
-    return this.election.getStatus().pipe(
-      map((res: ElectionCampaignDTO) => {
-        this.electionEnabled = res.enabled;
-        console.log('(tabs) electionEnabled: ', res);
+  getLastElectionActive() {
+    return this.electionService.getLast().pipe(
+      map((res: Election) => {
+        this.election = res;
+        console.log('(tabs) last election active: ', res);
+
+        this.shared.setSelectedElection(res);
       })
     );
   }
 
   goToProfile() {
     this.router.navigate(['/profile'], { replaceUrl: true });
+  }
+
+  goToElectionSelector() {
+    this.router.navigate(['/elections'], { replaceUrl: true });
   }
 
   logout() {

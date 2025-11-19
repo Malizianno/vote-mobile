@@ -1,1 +1,17 @@
 @import "../app.component.scss";
+
+.title-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 12px;
+}
+.floating-label {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  margin-bottom: 2px;
+}
+
+.language-switcher-wrapper {
+  margin-right: 70px; /* Adjust offset from edge */
+}

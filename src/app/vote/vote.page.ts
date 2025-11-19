@@ -35,6 +35,7 @@ import { ElectionService } from '../@shared/service/election.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { ModalConfirmVoteComponent } from './modal-confirm-vote/modal-confirm-vote.component';
+import { SharedService } from '../@shared/service/shared.service';
 
 @Component({
   selector: 'app-vote',
@@ -104,7 +105,8 @@ export class VotePage implements OnDestroy {
     private credentials: CredentialsService,
     private toast: ToastService,
     private translate: TranslateService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private shared: SharedService,
   ) {
     addIcons({ checkmarkCircleOutline });
     // this.reloadPage();
@@ -116,15 +118,16 @@ export class VotePage implements OnDestroy {
 
   reloadPage() {
     this.hasVoted = this.credentials.hasVoted;
+    const election = this.shared.getSelectedElection();
 
-    this.getFiltered().subscribe({
+    this.getAllForElection(election?.id).subscribe({
       next: (res) => res,
       error: (err) => this.candidatesService.handleHTTPErrors(err),
     });
   }
 
-  getFiltered() {
-    return this.candidatesService.getAll(this.filter, this.paging).pipe(
+  getAllForElection(id: number | undefined) {
+    return this.candidatesService.getAllForElection(id).pipe(
       map((res) => {
         if (res && this.candidates != res) {
           this.candidates = Candidate.fromArray(res);

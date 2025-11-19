@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Candidate } from '../model/candidate.model';
-import { Paging } from '../model/paging.model';
 import { AppConstants } from '../util/app-constants.util';
 import { GenericService } from './generic.service';
 
@@ -17,14 +16,12 @@ export class CandidateService extends GenericService {
     });
   }
 
-  getAll(candidate: Candidate, paging: Paging): Observable<Candidate[]> {
-    const filter = {
-      candidate,
-      paging: { page: paging.page - 1, size: paging.size },
-    };
-
-    return this.http.post<Candidate[]>(this.apiURL + '/all', filter, {
-      headers: this.headers,
-    });
+  getAllForElection(electionID: number | undefined): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(
+      this.apiURL + `/allForElection/${electionID}`,
+      {
+        headers: this.headers,
+      }
+    );
   }
 }

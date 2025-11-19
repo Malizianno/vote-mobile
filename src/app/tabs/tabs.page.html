@@ -5,6 +5,9 @@
       <ion-icon (click)="goToProfile()" name="person"></ion-icon>
     </ion-fab-button>
     <ion-fab-button class="fab-bordered">
+      <ion-icon (click)="goToElectionSelector()" name="layers-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button class="fab-bordered">
       <ion-icon (click)="logout()" name="exit"></ion-icon>
     </ion-fab-button>
   </ion-fab-list>
@@ -26,7 +29,7 @@
       tab="vote"
       class="dark-tab-btn"
       href="/tabs/vote"
-      disabled="{{!electionEnabled}}"
+      disabled="{{!election?.enabled}}"
     >
       <ion-icon aria-hidden="true" name="today"></ion-icon>
       <ion-label>{{ 'tabs.vote' | translate }}</ion-label>
