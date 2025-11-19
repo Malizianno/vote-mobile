@@ -213,6 +213,15 @@ export class FaceIDLoginComponent {
         this.isPhotoProcessing = false;
       });
     }
+
+    // custom bad request from backend
+    if (response.status === 400) {
+      this.ngZone.run(() => {
+        this.isFaceValid = false;
+        this.isPhotoProcessing = false;
+        this.toast.show(this.translate.instant('login.login-failed'), 7000);
+      });
+    }
   }
 
   handleLoginError(err: string) {
@@ -223,7 +232,7 @@ export class FaceIDLoginComponent {
       this.isFaceValid = false;
       this.isPhotoProcessing = false;
 
-      this.toast.show(this.translate.instant('login.login-failed'), 5000);
+      this.toast.show(this.translate.instant('login.login-failed'), 7000);
     });
   }
 
