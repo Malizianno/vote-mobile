@@ -15,22 +15,21 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Candidate } from 'src/app/@shared/model/candidate.model';
 
 @Component({
-  selector: 'app-modal-confirm-vote',
-  templateUrl: 'modal-confirm-vote.component.html',
-  styleUrl: 'modal-confirm-vote.component.scss',
-  standalone: true,
-  encapsulation: ViewEncapsulation.None,
-  imports: [
-    FormsModule,
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonItem,
-    IonTitle,
-    IonToolbar,
-    TranslateModule,
-  ],
+    selector: 'app-modal-confirm-vote',
+    templateUrl: 'modal-confirm-vote.component.html',
+    styleUrl: 'modal-confirm-vote.component.scss',
+    encapsulation: ViewEncapsulation.None,
+    imports: [
+        FormsModule,
+        IonButton,
+        IonButtons,
+        IonContent,
+        IonHeader,
+        IonItem,
+        IonTitle,
+        IonToolbar,
+        TranslateModule,
+    ]
 })
 export class ModalConfirmVoteComponent {
   @HostBinding('class') hostClass = 'modal-vote-confirm-content';

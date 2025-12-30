@@ -12,20 +12,19 @@ import { addIcons } from 'ionicons';
 import { arrowForward } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-language-switcher',
-  templateUrl: './language-switcher.component.html',
-  styleUrls: ['./language-switcher.component.scss'],
-  standalone: true,
-  imports: [IonIcon, 
-    IonCard,
-    IonCardContent,
-    TranslateModule,
-    IonSelect,
-    IonSelectOption,
-    IonButton,
-    IonButtons,
-    FormsModule,
-  ],
+    selector: 'app-language-switcher',
+    templateUrl: './language-switcher.component.html',
+    styleUrls: ['./language-switcher.component.scss'],
+    imports: [IonIcon,
+        IonCard,
+        IonCardContent,
+        TranslateModule,
+        IonSelect,
+        IonSelectOption,
+        IonButton,
+        IonButtons,
+        FormsModule,
+    ]
 })
 export class LanguageSwitcherComponent {
   selectedLang = 'ro';

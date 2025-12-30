@@ -39,28 +39,27 @@ import { ElectionService } from '../@shared/service/election.service';
 import { SharedService } from '../@shared/service/shared.service';
 
 @Component({
-  selector: 'app-tabs',
-  templateUrl: 'tabs.page.html',
-  styleUrls: ['tabs.page.scss'],
-  standalone: true,
-  imports: [
-    IonFabList,
-    IonFabButton,
-    IonFab,
-    IonButtons,
-    IonButton,
-    IonTabs,
-    IonTabBar,
-    IonTabButton,
-    IonIcon,
-    IonLabel,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    TranslateModule,
-    LanguageSwitcherComponent,
-  ],
+    selector: 'app-tabs',
+    templateUrl: 'tabs.page.html',
+    styleUrls: ['tabs.page.scss'],
+    imports: [
+        IonFabList,
+        IonFabButton,
+        IonFab,
+        IonButtons,
+        IonButton,
+        IonTabs,
+        IonTabBar,
+        IonTabButton,
+        IonIcon,
+        IonLabel,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+        TranslateModule,
+        LanguageSwitcherComponent,
+    ]
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);

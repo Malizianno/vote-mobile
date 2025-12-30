@@ -33,20 +33,19 @@ window.addEventListener('beforeunload', () => {
 });
 
 @Component({
-  selector: 'app-face-id-login',
-  templateUrl: './face-id-login.component.html',
-  styleUrls: ['./face-id-login.component.scss'],
-  standalone: true,
-  imports: [
-    IonSpinner,
-    IonFabButton,
-    IonFab,
-    IonIcon,
-    FormsModule,
-    CommonModule,
-    IonSpinner,
-    TranslateModule,
-  ],
+    selector: 'app-face-id-login',
+    templateUrl: './face-id-login.component.html',
+    styleUrls: ['./face-id-login.component.scss'],
+    imports: [
+        IonSpinner,
+        IonFabButton,
+        IonFab,
+        IonIcon,
+        FormsModule,
+        CommonModule,
+        IonSpinner,
+        TranslateModule,
+    ]
 })
 export class FaceIDLoginComponent {
   imageBase64: string = '';

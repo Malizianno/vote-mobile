@@ -16,21 +16,20 @@ import { SharedService } from '../@shared/service/shared.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
-  standalone: true,
-  imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonText,
-    IonContent,
-    CommonModule,
-    TranslateModule,
-    LanguageSwitcherComponent,
-    HomeElementComponent,
-  ],
+    selector: 'app-home',
+    templateUrl: 'home.page.html',
+    styleUrls: ['home.page.scss'],
+    imports: [
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonText,
+        IonContent,
+        CommonModule,
+        TranslateModule,
+        LanguageSwitcherComponent,
+        HomeElementComponent,
+    ]
 })
 export class HomePage implements OnDestroy {
   election: Election | null = null;

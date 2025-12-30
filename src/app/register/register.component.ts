@@ -30,12 +30,11 @@ import { ToastService } from '../@shared/service/toast.service';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
-  standalone: true,
-  imports: [IonIcon, FormsModule, CommonModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss'],
+    imports: [IonIcon, FormsModule, CommonModule],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class RegisterComponent {
   isPhotoTaken = false;

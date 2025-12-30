@@ -13,17 +13,16 @@ import { register } from 'swiper/element/bundle';
 register();
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  standalone: true,
-  imports: [
-    IonApp,
-    IonRouterOutlet,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-  ],
+    selector: 'app-root',
+    templateUrl: 'app.component.html',
+    imports: [
+        IonApp,
+        IonRouterOutlet,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+    ]
 })
 export class AppComponent {
   constructor() {}

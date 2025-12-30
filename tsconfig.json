@@ -6,6 +6,7 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
@@ -14,7 +15,6 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
@@ -22,8 +22,7 @@
     "module": "es2020",
     "lib": ["es2018", "dom"],
     "useDefineForClassFields": false,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "resolveJsonModule": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

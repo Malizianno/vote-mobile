@@ -6,11 +6,10 @@ import { TranslateModule } from '@ngx-translate/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-landing',
-  templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.scss'],
-  standalone: true,
-  imports: [IonContent, IonButton, FormsModule, TranslateModule],
+    selector: 'app-landing',
+    templateUrl: './landing.component.html',
+    styleUrls: ['./landing.component.scss'],
+    imports: [IonContent, IonButton, FormsModule, TranslateModule]
 })
 export class LandingComponent implements OnInit {
   appVersion: string;

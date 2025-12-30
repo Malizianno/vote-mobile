@@ -29,30 +29,29 @@ import { CredentialsService } from '../@shared/service/credentials.service';
 import { LoginService } from '../@shared/service/login.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  standalone: true,
-  imports: [
-    IonGrid,
-    IonInput,
-    IonButtons,
-    IonCardContent,
-    IonCardHeader,
-    IonRow,
-    IonCard,
-    IonCol,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButton,
-    IonItem,
-    IonIcon,
-    FormsModule,
-    IonGrid,
-    TranslateModule,
-  ],
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    imports: [
+        IonGrid,
+        IonInput,
+        IonButtons,
+        IonCardContent,
+        IonCardHeader,
+        IonRow,
+        IonCard,
+        IonCol,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+        IonButton,
+        IonItem,
+        IonIcon,
+        FormsModule,
+        IonGrid,
+        TranslateModule,
+    ]
 })
 export class LoginComponent {
   appVersion: string;
