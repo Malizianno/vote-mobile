@@ -4,20 +4,16 @@ import { Router } from '@angular/router';
 import { HttpResponse } from '@capacitor-community/http';
 import {
   IonButton,
-  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCol,
   IonContent,
   IonGrid,
-  IonHeader,
   IonIcon,
   IonInput,
   IonItem,
   IonRow,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -29,29 +25,26 @@ import { CredentialsService } from '../@shared/service/credentials.service';
 import { LoginService } from '../@shared/service/login.service';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    imports: [
-        IonGrid,
-        IonInput,
-        IonButtons,
-        IonCardContent,
-        IonCardHeader,
-        IonRow,
-        IonCard,
-        IonCol,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonButton,
-        IonItem,
-        IonIcon,
-        FormsModule,
-        IonGrid,
-        TranslateModule,
-    ]
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [
+    IonGrid,
+    IonInput,
+    IonCardContent,
+    IonCardHeader,
+    IonRow,
+    IonCard,
+    IonCol,
+    IonContent,
+    IonButton,
+    IonItem,
+    IonIcon,
+    FormsModule,
+    IonGrid,
+    TranslateModule,
+  ],
 })
 export class LoginComponent {
   appVersion: string;

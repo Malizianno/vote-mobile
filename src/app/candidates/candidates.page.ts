@@ -11,79 +11,54 @@ import { interval, Subscription } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import {
-  IonButton,
   IonCard,
   IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-  IonChip,
   IonCol,
   IonContent,
   IonGrid,
   IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonNote,
   IonRow,
-  IonThumbnail,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { map } from 'rxjs';
+import { Swiper } from 'swiper';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Pagination } from 'swiper/modules';
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
 import { Candidate } from '../@shared/model/candidate.model';
 import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
-import { ToastService } from '../@shared/service/toast.service';
+import { SharedService } from '../@shared/service/shared.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
-import { CandidateElementComponent } from '../@shared/components/candidate-element/candidate-element.component';
-import { Swiper } from 'swiper';
-import { Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import { SharedService } from '../@shared/service/shared.service';
 
 Swiper.use([Pagination]);
 
 @Component({
-    selector: 'app-candidates',
-    templateUrl: 'candidates.page.html',
-    styleUrls: ['candidates.page.scss'],
-    imports: [
-        IonInput,
-        IonCol,
-        IonRow,
-        IonGrid,
-        IonButton,
-        IonCard,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonCardHeader,
-        IonCardTitle,
-        IonCardSubtitle,
-        IonCardContent,
-        IonList,
-        IonItem,
-        IonThumbnail,
-        IonLabel,
-        CommonModule,
-        IonButton,
-        IonNote,
-        FormsModule,
-        NoResultsComponent,
-        IonChip,
-        TranslateModule,
-        LanguageSwitcherComponent,
-        CandidateElementComponent,
-    ]
+  selector: 'app-candidates',
+  templateUrl: 'candidates.page.html',
+  styleUrls: ['candidates.page.scss'],
+  standalone: true,
+  imports: [
+    IonCol,
+    IonRow,
+    IonGrid,
+    IonCard,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonCardContent,
+    CommonModule,
+    FormsModule,
+    NoResultsComponent,
+    TranslateModule,
+    LanguageSwitcherComponent,
+  ],
 })
 export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
   @ViewChild(IonContent) content: IonContent;
@@ -117,7 +92,10 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
     }
   }
 
-  constructor(private candidatesService: CandidateService, private shared: SharedService) {
+  constructor(
+    private candidatesService: CandidateService,
+    private shared: SharedService
+  ) {
     this.reloadPage();
   }
 

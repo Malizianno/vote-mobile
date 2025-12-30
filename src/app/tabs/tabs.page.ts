@@ -1,20 +1,14 @@
 import { Component, EnvironmentInjector, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonButton,
-  IonButtons,
-  IonContent,
   IonFab,
   IonFabButton,
   IonFabList,
-  IonHeader,
   IonIcon,
   IonLabel,
   IonTabBar,
   IonTabButton,
   IonTabs,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -32,34 +26,27 @@ import {
   triangle,
 } from 'ionicons/icons';
 import { map } from 'rxjs';
-import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 import { Election } from '../@shared/model/election.model';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
 import { SharedService } from '../@shared/service/shared.service';
 
 @Component({
-    selector: 'app-tabs',
-    templateUrl: 'tabs.page.html',
-    styleUrls: ['tabs.page.scss'],
-    imports: [
-        IonFabList,
-        IonFabButton,
-        IonFab,
-        IonButtons,
-        IonButton,
-        IonTabs,
-        IonTabBar,
-        IonTabButton,
-        IonIcon,
-        IonLabel,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        TranslateModule,
-        LanguageSwitcherComponent,
-    ]
+  selector: 'app-tabs',
+  templateUrl: 'tabs.page.html',
+  styleUrls: ['tabs.page.scss'],
+  standalone: true,
+  imports: [
+    IonFabList,
+    IonFabButton,
+    IonFab,
+    IonTabs,
+    IonTabBar,
+    IonTabButton,
+    IonIcon,
+    IonLabel,
+    TranslateModule,
+  ],
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);

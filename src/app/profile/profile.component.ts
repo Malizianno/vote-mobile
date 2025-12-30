@@ -4,22 +4,18 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Platform } from '@ionic/angular';
 import {
   IonButton,
-  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
-  IonCol,
   IonContent,
-  IonGrid,
   IonHeader,
   IonIcon,
-  IonImg,
   IonInput,
   IonItem,
-  IonRow,
   IonSelect,
   IonSelectOption,
   IonTitle,
@@ -48,37 +44,31 @@ import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { UserService } from '../@shared/service/user.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
-import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 @Component({
-    selector: 'app-profile',
-    templateUrl: './profile.component.html',
-    styleUrls: ['./profile.component.scss'],
-    imports: [
-        IonGrid,
-        IonInput,
-        IonButtons,
-        IonCardContent,
-        IonCardHeader,
-        IonRow,
-        IonCard,
-        IonCol,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonSelect,
-        IonSelectOption,
-        IonButton,
-        IonItem,
-        IonIcon,
-        FormsModule,
-        IonGrid,
-        IonImg,
-        CommonModule,
-        TranslateModule,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  selector: 'app-profile',
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.scss'],
+  standalone: true,
+  imports: [
+    IonInput,
+    IonCardContent,
+    IonCardHeader,
+    IonCard,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonSelect,
+    IonSelectOption,
+    IonButton,
+    IonItem,
+    IonIcon,
+    FormsModule,
+    CommonModule,
+    TranslateModule,
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ProfileComponent {
   user: UserProfile = new UserProfile();
