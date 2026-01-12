@@ -1,5 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
+import { Platform } from '@ionic/angular';
 import {
   IonContent,
   IonHeader,
@@ -16,20 +17,21 @@ import { SharedService } from '../@shared/service/shared.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: 'home.page.html',
-    styleUrls: ['home.page.scss'],
-    imports: [
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonText,
-        IonContent,
-        CommonModule,
-        TranslateModule,
-        LanguageSwitcherComponent,
-        HomeElementComponent,
-    ]
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+  standalone: true,
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonText,
+    IonContent,
+    CommonModule,
+    TranslateModule,
+    LanguageSwitcherComponent,
+    HomeElementComponent,
+  ],
 })
 export class HomePage implements OnDestroy {
   election: Election | null = null;
@@ -50,7 +52,19 @@ export class HomePage implements OnDestroy {
     }
   }
 
-  constructor(private shared: SharedService) {
+  constructor(
+    private shared: SharedService,
+    private location: Location,
+    private platform: Platform
+  ) {
+    this.platform.ready().then(() => {
+      this.platform.backButton.subscribeWithPriority(10, () => {
+        // console.log('Hardware back button pressed');
+
+        this.goBack();
+      });
+    });
+
     this.reloadPage();
   }
 
@@ -60,5 +74,9 @@ export class HomePage implements OnDestroy {
 
   reloadPage() {
     this.election = this.shared.getSelectedElection();
+  }
+
+  goBack() {
+    this.location.back();
   }
 }

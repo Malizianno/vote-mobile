@@ -44,6 +44,7 @@ import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { UserService } from '../@shared/service/user.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
@@ -87,6 +88,7 @@ export class ProfileComponent {
 
   constructor(
     private platform: Platform,
+    private location: Location,
     private router: Router,
     private credentials: CredentialsService,
     private users: UserService,
@@ -162,15 +164,14 @@ export class ProfileComponent {
   // let the app choose what the screen is after closure
   close() {
     if (this.user && this.user.id > 0) {
-      this.closeToDashboard();
+      this.goBack();
     } else {
       this.closeToLogin();
     }
   }
 
-  closeToDashboard() {
-    // go to home tab when back button/close is pressed
-    this.router.navigate(['/tabs/home'], { replaceUrl: true });
+  goBack() {
+    this.location.back();
   }
 
   closeToLogin() {

@@ -36,6 +36,7 @@ window.addEventListener('beforeunload', () => {
     selector: 'app-face-id-login',
     templateUrl: './face-id-login.component.html',
     styleUrls: ['./face-id-login.component.scss'],
+    standalone: true,
     imports: [
         IonSpinner,
         IonFabButton,
@@ -69,7 +70,7 @@ export class FaceIDLoginComponent {
       this.platform.backButton.subscribeWithPriority(10, () => {
         // console.log('Hardware back button pressed');
 
-        this.close();
+        this.goBack();
       });
     });
   }
@@ -318,7 +319,7 @@ export class FaceIDLoginComponent {
     document.getElementById('cropped-face-image')?.remove();
   }
 
-  close() {
+  goBack() {
     this.cleanTheDocumentBody();
     this.router.navigate(['/landing'], { replaceUrl: true });
   }

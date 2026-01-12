@@ -1,9 +1,9 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
+import { Platform } from '@ionic/angular';
 import {
   IonButton,
   IonCard,
-  IonCardContent,
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
@@ -12,13 +12,10 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
-  IonNote,
   IonRow,
+  IonThumbnail,
   IonTitle,
   IonToolbar,
-  IonModal,
-  IonButtons,
-  IonThumbnail,
   ModalController,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -32,36 +29,36 @@ import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
+import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { ModalConfirmVoteComponent } from './modal-confirm-vote/modal-confirm-vote.component';
-import { SharedService } from '../@shared/service/shared.service';
 
 @Component({
-    selector: 'app-vote',
-    templateUrl: 'vote.page.html',
-    styleUrls: ['vote.page.scss'],
-    standalone: true,
-    imports: [
-        IonCard,
-        IonCardHeader,
-        IonGrid,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonCardTitle,
-        IonCardSubtitle,
-        IonContent,
-        CommonModule,
-        IonIcon,
-        IonButton,
-        IonRow,
-        IonCol,
-        IonThumbnail,
-        TranslateModule,
-        NoResultsComponent,
-        LanguageSwitcherComponent,
-    ]
+  selector: 'app-vote',
+  templateUrl: 'vote.page.html',
+  styleUrls: ['vote.page.scss'],
+  standalone: true,
+  imports: [
+    IonCard,
+    IonCardHeader,
+    IonGrid,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonContent,
+    CommonModule,
+    IonIcon,
+    IonButton,
+    IonRow,
+    IonCol,
+    IonThumbnail,
+    TranslateModule,
+    NoResultsComponent,
+    LanguageSwitcherComponent,
+  ],
 })
 export class VotePage implements OnDestroy {
   candidates: Candidate[] = [];
@@ -102,7 +99,17 @@ export class VotePage implements OnDestroy {
     private translate: TranslateService,
     private modalCtrl: ModalController,
     private shared: SharedService,
+    private platform: Platform,
+    private location: Location
   ) {
+    this.platform.ready().then(() => {
+      this.platform.backButton.subscribeWithPriority(10, () => {
+        // console.log('Hardware back button pressed');
+
+        this.goBack();
+      });
+    });
+
     addIcons({ checkmarkCircleOutline });
     // this.reloadPage();
   }
@@ -119,6 +126,10 @@ export class VotePage implements OnDestroy {
       next: (res) => res,
       error: (err) => this.candidatesService.handleHTTPErrors(err),
     });
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   getAllForElection(id: number | undefined) {

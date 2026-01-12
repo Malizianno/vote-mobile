@@ -35,6 +35,7 @@ import { ElectionService } from '../@shared/service/election.service';
 import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { UserService } from '../@shared/service/user.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-elections',
@@ -69,6 +70,7 @@ export class ElectionsComponent {
 
   constructor(
     private platform: Platform,
+    private location: Location,
     private router: Router,
     private credentials: CredentialsService,
     private users: UserService,
@@ -92,7 +94,7 @@ export class ElectionsComponent {
       this.platform.backButton.subscribeWithPriority(10, () => {
         // console.log('Hardware back button pressed');
 
-        this.close();
+        this.goBack();
       });
     });
 
@@ -103,12 +105,16 @@ export class ElectionsComponent {
     // update shared service
     this.shared.setSelectedElection(this.selected);
     // close :)))
-    this.close();
+    this.goBack();
   }
 
   close() {
-    // go to home tab when back button/close is pressed
+    // go to home tab when close is pressed
     this.router.navigate(['/tabs/home'], { replaceUrl: true });
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   reloadPage() {

@@ -35,6 +35,8 @@ import { CandidateService } from '../@shared/service/candidate.service';
 import { SharedService } from '../@shared/service/shared.service';
 import { AppConstants } from '../@shared/util/app-constants.util';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
+import { Platform } from '@ionic/angular';
+import { Location } from '@angular/common';
 
 Swiper.use([Pagination]);
 
@@ -94,8 +96,18 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
 
   constructor(
     private candidatesService: CandidateService,
-    private shared: SharedService
+    private shared: SharedService,
+    private platform: Platform,
+    private location: Location
   ) {
+    this.platform.ready().then(() => {
+      this.platform.backButton.subscribeWithPriority(10, () => {
+        // console.log('Hardware back button pressed');
+
+        this.goBack();
+      });
+    });
+
     this.reloadPage();
   }
 
@@ -131,6 +143,10 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
       next: (res) => res,
       error: (err) => this.candidatesService.handleHTTPErrors(err),
     });
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   getAllForElection() {

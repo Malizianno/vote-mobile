@@ -1,7 +1,9 @@
+import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpResponse } from '@capacitor-community/http';
+import { Platform } from '@ionic/angular';
 import {
   IonButton,
   IonCard,
@@ -53,9 +55,19 @@ export class LoginComponent {
   constructor(
     private service: LoginService,
     private router: Router,
-    private credentials: CredentialsService
+    private credentials: CredentialsService,
+    private platform: Platform,
+    private location: Location
   ) {
     addIcons({ arrowForward });
+
+    this.platform.ready().then(() => {
+      this.platform.backButton.subscribeWithPriority(10, () => {
+        // console.log('Hardware back button pressed');
+
+        this.goBack();
+      });
+    });
 
     this.appVersion = environment.version;
     this.dto.role = UserRole.VOTANT;
@@ -100,5 +112,9 @@ export class LoginComponent {
 
   canLogin(): boolean {
     return !!this.dto && !!this.dto.username && !!this.dto.password;
+  }
+
+  goBack() {
+    this.location.back();
   }
 }
