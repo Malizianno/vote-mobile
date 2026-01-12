@@ -165,12 +165,15 @@ export class ProfileComponent implements OnInit {
     console.log('user opened: ', this.user);
   }
 
-  // let the app choose what the screen is after closure
   close() {
     if (this.user && this.user.id > 0) {
-      this.goBack();
+      console.log('updating profile');
+      // user is updating profile
+      this.closeToDashboard();
     } else {
-      this.closeToLogin();
+      console.log('registering profile');
+      // user is registering for the first time
+      this.goBack();
     }
   }
 
@@ -178,9 +181,9 @@ export class ProfileComponent implements OnInit {
     this.location.back();
   }
 
-  closeToLogin() {
+  closeToDashboard() {
     // go to login page after OCRing the data from the ID card
-    this.router.navigate(['/face-id-login'], { replaceUrl: true });
+    this.router.navigate(['/tabs/home'], { replaceUrl: true });
   }
 
   get loadedData(): boolean {
