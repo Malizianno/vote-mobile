@@ -5,6 +5,7 @@ import {
   ElementRef,
   OnChanges,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
@@ -37,6 +38,7 @@ import { AppConstants } from '../@shared/util/app-constants.util';
 import { PartyTypeEnum } from '../@shared/util/party-type.enum';
 import { Platform } from '@ionic/angular';
 import { Location } from '@angular/common';
+import { Election } from '../@shared/model/election.model';
 
 Swiper.use([Pagination]);
 
@@ -62,13 +64,14 @@ Swiper.use([Pagination]);
     LanguageSwitcherComponent,
   ],
 })
-export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
+export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges, OnInit {
   @ViewChild(IonContent) content: IonContent;
   @ViewChild('swiperRef') swiperRef!: ElementRef;
 
   candidates: Candidate[] = [];
 
   selected: Candidate;
+  selectedElection: Election | null = null;
 
   filter: Candidate = new Candidate();
   paging = new Paging();
@@ -107,8 +110,12 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
         this.goBack();
       });
     });
-
-    this.reloadPage();
+  }
+  
+  ngOnInit(): void {
+    this.shared.selectedElection$.subscribe((election) => {
+      this.selectedElection = election;
+    });
   }
 
   ngOnDestroy(): void {
@@ -139,7 +146,7 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
   }
 
   reloadPage() {
-    this.getAllForElection().subscribe({
+    this.getAllForElection(this.selectedElection?.id).subscribe({
       next: (res) => res,
       error: (err) => this.candidatesService.handleHTTPErrors(err),
     });
@@ -149,9 +156,8 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges {
     this.location.back();
   }
 
-  getAllForElection() {
-    const election = this.shared.getSelectedElection();
-    return this.candidatesService.getAllForElection(election?.id).pipe(
+  getAllForElection(id: number | undefined) {
+    return this.candidatesService.getAllForElection(id).pipe(
       map((res) => {
         console.log('candidates got res: ', res);
         if (res && this.candidates != res) {

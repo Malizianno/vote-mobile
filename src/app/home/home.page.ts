@@ -1,5 +1,5 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import {
   IonContent,
@@ -9,12 +9,10 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { interval, Subscription } from 'rxjs';
 import { HomeElementComponent } from '../@shared/components/home-element/home-element.component';
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 import { Election } from '../@shared/model/election.model';
 import { SharedService } from '../@shared/service/shared.service';
-import { AppConstants } from '../@shared/util/app-constants.util';
 
 @Component({
   selector: 'app-home',
@@ -33,24 +31,8 @@ import { AppConstants } from '../@shared/util/app-constants.util';
     HomeElementComponent,
   ],
 })
-export class HomePage implements OnDestroy {
-  election: Election | null = null;
-
-  private refreshSub: Subscription;
-
-  ionViewWillEnter() {
-    // console.log('ionViewWillEnter - home');
-    this.refreshSub = interval(AppConstants.REFRESH_TIME_MS).subscribe(() =>
-      this.reloadPage()
-    ); // every every <AppCOnstants.REFRESH_TIME_MS> s
-  }
-
-  ionViewWillLeave() {
-    // console.log('ionViewWillLeave - home');
-    if (this.refreshSub) {
-      this.refreshSub.unsubscribe(); // stop refreshing when tab is left
-    }
-  }
+export class HomePage implements OnInit {
+  selectedElection: Election | null = null;
 
   constructor(
     private shared: SharedService,
@@ -64,16 +46,12 @@ export class HomePage implements OnDestroy {
         this.goBack();
       });
     });
-
-    this.reloadPage();
   }
 
-  ngOnDestroy(): void {
-    this.refreshSub.unsubscribe();
-  }
-
-  reloadPage() {
-    this.election = this.shared.getSelectedElection();
+  ngOnInit(): void {
+    this.shared.selectedElection$.subscribe((election) => {
+      this.selectedElection = election;
+    });
   }
 
   goBack() {

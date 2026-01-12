@@ -1,5 +1,5 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import {
   IonButton,
@@ -25,6 +25,7 @@ import { interval, map, Subscription } from 'rxjs';
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
 import { Candidate } from '../@shared/model/candidate.model';
+import { Election } from '../@shared/model/election.model';
 import { Paging } from '../@shared/model/paging.model';
 import { CandidateService } from '../@shared/service/candidate.service';
 import { CredentialsService } from '../@shared/service/credentials.service';
@@ -60,7 +61,7 @@ import { ModalConfirmVoteComponent } from './modal-confirm-vote/modal-confirm-vo
     LanguageSwitcherComponent,
   ],
 })
-export class VotePage implements OnDestroy {
+export class VotePage implements OnInit, OnDestroy {
   candidates: Candidate[] = [];
 
   filter: Candidate = new Candidate();
@@ -70,6 +71,7 @@ export class VotePage implements OnDestroy {
   selected = 0;
 
   selectedCandidate: Candidate;
+  selectedElection: Election | null = null;
 
   hasVoted = false;
   isModalOpen = false;
@@ -102,6 +104,8 @@ export class VotePage implements OnDestroy {
     private platform: Platform,
     private location: Location
   ) {
+    addIcons({ checkmarkCircleOutline });
+
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, () => {
         // console.log('Hardware back button pressed');
@@ -109,9 +113,12 @@ export class VotePage implements OnDestroy {
         this.goBack();
       });
     });
+  }
 
-    addIcons({ checkmarkCircleOutline });
-    // this.reloadPage();
+  ngOnInit(): void {
+    this.shared.selectedElection$.subscribe((election) => {
+      this.selectedElection = election;
+    });
   }
 
   ngOnDestroy(): void {
@@ -120,9 +127,8 @@ export class VotePage implements OnDestroy {
 
   reloadPage() {
     this.hasVoted = this.credentials.hasVoted;
-    const election = this.shared.getSelectedElection();
 
-    this.getAllForElection(election?.id).subscribe({
+    this.getAllForElection(this.selectedElection?.id).subscribe({
       next: (res) => res,
       error: (err) => this.candidatesService.handleHTTPErrors(err),
     });

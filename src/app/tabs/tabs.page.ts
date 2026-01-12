@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject } from '@angular/core';
+import { Component, EnvironmentInjector, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonFab,
@@ -48,9 +48,9 @@ import { SharedService } from '../@shared/service/shared.service';
     TranslateModule,
   ],
 })
-export class TabsPage {
+export class TabsPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
-  election: Election | null = null;
+  selectedElection: Election | null = null;
 
   constructor(
     private router: Router,
@@ -71,13 +71,18 @@ export class TabsPage {
       square,
       layersOutline,
     });
+
     this.reloadPage();
   }
 
-  reloadPage() {
-    const selectedElection = this.shared.getSelectedElection();
+  ngOnInit(): void {
+    this.shared.selectedElection$.subscribe((election) => {
+      this.selectedElection = election;
+    });
+  }
 
-    if (!selectedElection) {
+  reloadPage() {
+    if (!this.selectedElection) {
       this.getLastElectionActive().subscribe({
         next: (res) => res,
         error: (err) => this.electionService.handleHTTPErrors(err),
@@ -92,7 +97,7 @@ export class TabsPage {
   getLastElectionActive() {
     return this.electionService.getLast().pipe(
       map((res: Election) => {
-        this.election = res;
+        this.selectedElection = res;
         console.log('(tabs) last election active: ', res);
 
         this.shared.setSelectedElection(res);

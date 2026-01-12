@@ -1,14 +1,14 @@
 <ion-header [translucent]="true" class="header-border">
   <ion-toolbar>
     <div slot="start" class="title-stack">
-      <ion-text *ngIf="!election?.enabled" class="floating-text"
+      <ion-text *ngIf="!selectedElection?.enabled" class="floating-text"
         >{{ 'home.inactive-title' | translate }}</ion-text
       >
-      <ion-text *ngIf="election?.enabled" class="floating-text"
+      <ion-text *ngIf="selectedElection?.enabled" class="floating-text"
         >{{ 'home.active-title' | translate }}</ion-text
       >
   
-      <ion-title>{{ election?.name }}</ion-title>
+      <ion-title>{{ selectedElection?.name }}</ion-title>
     </div>
     <div slot="end" class="language-switcher-wrapper">
       <app-language-switcher></app-language-switcher>
