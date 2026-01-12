@@ -1,11 +1,11 @@
-import { Injectable } from "@angular/core";
-import { Election } from "../model/election.model";
-import { BehaviorSubject } from "rxjs/internal/BehaviorSubject";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Election } from '../model/election.model';
 
 @Injectable({ providedIn: 'root' })
 export class SharedService {
-  private imageData: string | null = null;
-  // private selectedElection: Election | null = null;
+  private imageData = new BehaviorSubject<string | null>(null);
+  imageData$ = this.imageData.asObservable();
 
   private selectedElection = new BehaviorSubject<Election | null>(null);
   selectedElection$ = this.selectedElection.asObservable();
@@ -14,32 +14,20 @@ export class SharedService {
     this.selectedElection.next(election);
   }
 
-  // setSelectedElection(election: Election) {
-  //   this.selectedElection = election;
-  // }
-
-  // getSelectedElection(): Election | null {
-  //   return this.selectedElection;
-  // }
-
-  // clearSelectedElection() {
-  //   this.selectedElection = null;
-  // }
-
-  setImage(data: string) {
-    this.imageData = data;
-  }
-
-  getImage(): string | null {
-    return this.imageData;
+  setImage(data: string | null) {
+    this.imageData.next(data);
   }
 
   clearImage() {
-    this.imageData = null;
+    this.imageData.next(null);
+  }
+
+  clearSelectedElection() {
+    this.selectedElection.next(null);
   }
 
   clearAll() {
-    this.imageData = null;
-    this.selectedElection.next(null);
+    this.clearImage();
+    this.clearSelectedElection();
   }
 }

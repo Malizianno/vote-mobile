@@ -2,7 +2,10 @@ export class ParseAndFormatUtil {
   public static BASE64_PREFIX = 'data:image/jpeg;base64,';
 
   static addMissingPrefixToBase64(base64: string): string {
-    if (!base64.startsWith(this.BASE64_PREFIX)) {
+    // sanitize
+    base64 = String(base64 ?? '').trim();
+
+    if (!base64.includes(this.BASE64_PREFIX)) {
       base64 = this.BASE64_PREFIX + base64;
     }
 
@@ -10,6 +13,9 @@ export class ParseAndFormatUtil {
   }
 
   static cleanBase64FromPrefix(base64: string): string {
+    // sanitize
+    base64 = String(base64 ?? '').trim();
+
     if (base64.includes(this.BASE64_PREFIX)) {
       base64 = base64.split(',')[1];
     }

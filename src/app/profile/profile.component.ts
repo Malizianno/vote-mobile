@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -44,7 +44,6 @@ import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { UserService } from '../@shared/service/user.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
@@ -71,13 +70,14 @@ import { Location } from '@angular/common';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   user: UserProfile = new UserProfile();
   memoryUser: LoginResponseDTO;
 
   isRegisteringRN: boolean = false;
 
   userAvatar: string;
+  sharedImage: string | null = null;
 
   nationalities = Object.values(UserNationality).filter(
     (value) => typeof value === 'string'
@@ -118,6 +118,12 @@ export class ProfileComponent {
     this.init();
   }
 
+  ngOnInit(): void {
+    this.shared.imageData$.subscribe((data) => {
+      this.sharedImage = data;
+    });
+  }
+
   ionViewWillEnter() {
     ScreenOrientation.lock({ orientation: 'portrait-primary' });
     this.init();
@@ -144,11 +150,9 @@ export class ProfileComponent {
           this.user.nationality as unknown as keyof typeof UserNationality
         ];
 
-      const sharedImage: string | null = this.shared.getImage();
-
       let userAvatarSrc: string;
-      if (sharedImage != null) {
-        userAvatarSrc = sharedImage;
+      if (this.sharedImage != null) {
+        userAvatarSrc = this.sharedImage;
       } else {
         userAvatarSrc = this.user.idImage;
       }
@@ -196,8 +200,10 @@ export class ProfileComponent {
           this.user.validityEndDate
         );
 
+        this.shared.setImage(res.idImage);
+
         this.userAvatar = this.sanitizer.bypassSecurityTrustUrl(
-          `${ParseAndFormatUtil.addMissingPrefixToBase64(this.userAvatar)}`
+          `${ParseAndFormatUtil.addMissingPrefixToBase64(res.idImage)}`
         ) as string;
 
         console.log('user avatar', this.userAvatar);

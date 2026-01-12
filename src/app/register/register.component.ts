@@ -8,6 +8,7 @@ import {
 } from '@capacitor-community/camera-preview';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { IonIcon } from '@ionic/angular/standalone';
+import { TranslateService } from '@ngx-translate/core';
 import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
 import {
@@ -25,16 +26,16 @@ import {
   UserProfile,
 } from '../@shared/model/user.model';
 import { SharedService } from '../@shared/service/shared.service';
-import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
 import { ToastService } from '../@shared/service/toast.service';
-import { TranslateService } from '@ngx-translate/core';
+import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
 
 @Component({
-    selector: 'app-register',
-    templateUrl: './register.component.html',
-    styleUrls: ['./register.component.scss'],
-    imports: [IonIcon, FormsModule, CommonModule],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
+  standalone: true,
+  imports: [IonIcon, FormsModule, CommonModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RegisterComponent {
   isPhotoTaken = false;
@@ -51,7 +52,7 @@ export class RegisterComponent {
     private shared: SharedService,
     private ngZone: NgZone,
     private toast: ToastService,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {
     addIcons({
       checkmark,
@@ -542,7 +543,7 @@ export class RegisterComponent {
 
     this.router.navigate(['/profile'], {
       replaceUrl: true,
-      state: { 'profile': this.profile },
+      state: { profile: this.profile },
     });
   }
 
