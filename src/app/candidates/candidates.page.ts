@@ -20,8 +20,7 @@ import {
   IonHeader,
   IonRow,
   IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+  IonToolbar, IonSpinner } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { map } from 'rxjs';
 import { Swiper } from 'swiper';
@@ -47,7 +46,7 @@ Swiper.use([Pagination]);
   templateUrl: 'candidates.page.html',
   styleUrls: ['candidates.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonSpinner, 
     IonCol,
     IonRow,
     IonGrid,
@@ -81,6 +80,7 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges, OnIn
   private refreshSub: Subscription;
 
   swiper!: Swiper;
+  loadedData: boolean = false;
 
   ionViewWillEnter() {
     // console.log('ionViewWillEnter - candidates');
@@ -118,6 +118,11 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges, OnIn
     this.shared.selectedElection$.subscribe((election) => {
       this.selectedElection = election;
     });
+
+    setTimeout(() => {
+    this.loadedData = true;
+  }, 2000);
+
   }
 
   ngOnDestroy(): void {

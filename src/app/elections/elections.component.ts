@@ -104,7 +104,7 @@ export class ElectionsComponent {
   saveAndClose() {
     // update shared service
     this.shared.setSelectedElection(this.selected);
-    // close :)))
+    // close (go back to home)
     this.close();
   }
 

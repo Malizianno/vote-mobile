@@ -71,17 +71,19 @@ export class TabsPage implements OnInit {
       square,
       layersOutline,
     });
-
-    this.reloadPage();
   }
 
   ngOnInit(): void {
     this.shared.selectedElection$.subscribe((election) => {
       this.selectedElection = election;
     });
+
+    this.reloadPage();
   }
 
   reloadPage() {
+    console.log('tabs: this.selectedElection: ', this.selectedElection);
+
     if (!this.selectedElection) {
       this.getLastElectionActive().subscribe({
         next: (res) => res,
@@ -106,7 +108,7 @@ export class TabsPage implements OnInit {
   }
 
   handleNullLastElection(err: any) {
-    console.log('No active election found: ', err);
+    console.log('No active election found: ');
     this.selectedElection = null;
     this.shared.setSelectedElection(null);
   }

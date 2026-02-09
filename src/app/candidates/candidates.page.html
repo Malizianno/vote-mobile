@@ -6,6 +6,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!-- THIS CANNOT BE RENDERED AFTER THE DOM, LIKE CONDITIONALLY -->
   <div class="swiper" #swiperRef>
     <div class="swiper-wrapper">
       <div class="swiper-slide" *ngFor="let candidate of candidates">
@@ -13,7 +14,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="candidates.length > 0" class="swiper-pagination"></div>
+  <div class="swiper-pagination"></div>
 
   <ion-grid *ngIf="candidates.length > 0" class="card-grid">
     <ion-row>
@@ -42,4 +43,8 @@
   </ion-grid>
 
   <app-no-results *ngIf="candidates.length < 1"></app-no-results>
+
+  <div class="spinner-overlay" *ngIf="!loadedData">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
 </ion-content>
