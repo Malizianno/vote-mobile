@@ -85,7 +85,7 @@ export class TabsPage implements OnInit {
     if (!this.selectedElection) {
       this.getLastElectionActive().subscribe({
         next: (res) => res,
-        error: (err) => this.electionService.handleHTTPErrors(err),
+        error: (err) => this.handleNullLastElection(err),
       });
     }
   }
@@ -103,6 +103,12 @@ export class TabsPage implements OnInit {
         this.shared.setSelectedElection(res);
       })
     );
+  }
+
+  handleNullLastElection(err: any) {
+    console.log('No active election found: ', err);
+    this.selectedElection = null;
+    this.shared.setSelectedElection(null);
   }
 
   goToProfile() {

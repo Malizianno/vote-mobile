@@ -103,6 +103,7 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges, OnIn
     private platform: Platform,
     private location: Location
   ) {
+    console.log('constructor - candidates');
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, () => {
         // console.log('Hardware back button pressed');
@@ -113,6 +114,7 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges, OnIn
   }
   
   ngOnInit(): void {
+    console.log('ngOnInit - candidates');
     this.shared.selectedElection$.subscribe((election) => {
       this.selectedElection = election;
     });
@@ -146,6 +148,10 @@ export class CandidatesPage implements OnDestroy, AfterViewInit, OnChanges, OnIn
   }
 
   reloadPage() {
+    if (!this.selectedElection) {
+      return;
+    }
+    
     this.getAllForElection(this.selectedElection?.id).subscribe({
       next: (res) => res,
       error: (err) => this.candidatesService.handleHTTPErrors(err),
