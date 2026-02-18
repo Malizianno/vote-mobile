@@ -19,6 +19,8 @@
           label="{{ 'elections.selector-title' | translate }}"
           labelPlacement="floating"
           [(ngModel)]="selected"
+          [compareWith]="compareWith"
+          [selectedText]="selected.name"
         >
           <ion-select-option
             *ngFor="let election of elections"

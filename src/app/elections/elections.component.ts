@@ -1,7 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import {
@@ -17,7 +16,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   add,
@@ -30,12 +29,8 @@ import {
 } from 'ionicons/icons';
 import { map } from 'rxjs';
 import { Election } from '../@shared/model/election.model';
-import { CredentialsService } from '../@shared/service/credentials.service';
 import { ElectionService } from '../@shared/service/election.service';
 import { SharedService } from '../@shared/service/shared.service';
-import { ToastService } from '../@shared/service/toast.service';
-import { UserService } from '../@shared/service/user.service';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-elections',
@@ -68,15 +63,12 @@ export class ElectionsComponent {
 
   selected: Election;
 
+  compareWith = (a: any, b: any) => a && b && a.id === b.id;
+
   constructor(
     private platform: Platform,
     private location: Location,
     private router: Router,
-    private credentials: CredentialsService,
-    private users: UserService,
-    private sanitizer: DomSanitizer,
-    private toast: ToastService,
-    private translate: TranslateService,
     private shared: SharedService,
     private electionService: ElectionService
   ) {
@@ -98,7 +90,11 @@ export class ElectionsComponent {
       });
     });
 
+    console.log("ElectionsComponent initialized");
+
     this.reloadPage();
+
+    console.log('ElectionsComponent constructor completed');
   }
 
   saveAndClose() {
@@ -125,12 +121,18 @@ export class ElectionsComponent {
       error: (err) => this.electionService.handleHTTPErrors(err),
     });
 
-    this.getLastElectionActive().subscribe({
-      next: (res) => res,
-      error: (err) => this.electionService.handleHTTPErrors(err),
+    this.shared.selectedElection$.subscribe((election) => {
+      if (election) {
+        this.selected = election;
+      } else {
+        this.getLastElectionActive().subscribe({
+          next: (res) => res,
+          error: (err) => this.electionService.handleHTTPErrors(err),
+        });
+      }
+  
+      this.loadedData = true;
     });
-
-    this.loadedData = true;
   }
 
   getAllElections() {
