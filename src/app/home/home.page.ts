@@ -7,6 +7,8 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { HomeElementComponent } from '../@shared/components/home-element/home-element.component';
@@ -15,6 +17,8 @@ import { Election } from '../@shared/model/election.model';
 import { SharedService } from '../@shared/service/shared.service';
 import { NewsfeedPost } from '../@shared/model/newsfeed-post.model';
 import { NewsfeedService } from '../@shared/service/newsfeed.service';
+import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
+import { Paging } from '../@shared/model/paging.model';
 
 @Component({
   selector: 'app-home',
@@ -27,21 +31,28 @@ import { NewsfeedService } from '../@shared/service/newsfeed.service';
     IonTitle,
     IonText,
     IonContent,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     CommonModule,
     TranslateModule,
     LanguageSwitcherComponent,
+    NoResultsComponent,
     HomeElementComponent,
   ],
 })
 export class HomePage implements OnInit {
   selectedElection: Election | null = null;
+
   newsfeed: NewsfeedPost[] = [];
+
+  filter: NewsfeedPost = new NewsfeedPost();
+  paging: Paging = new Paging();
 
   constructor(
     private shared: SharedService,
     private location: Location,
     private platform: Platform,
-    private service: NewsfeedService,
+    private service: NewsfeedService
   ) {
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, () => {
@@ -55,9 +66,9 @@ export class HomePage implements OnInit {
   ngOnInit(): void {
     this.shared.selectedElection$.subscribe((election) => {
       this.selectedElection = election;
-    });
 
-    this.reloadPage();
+      this.reloadPage();
+    });
   }
 
   goBack() {
@@ -65,16 +76,30 @@ export class HomePage implements OnInit {
   }
 
   reloadPage() {
+    this.paging = new Paging();
+    this.filter = new NewsfeedPost();
+    this.filter.electionId = this.selectedElection?.id!;
     this.updateNewsfeed();
   }
 
   updateNewsfeed() {
-    this.service.getNewsfeedAll().subscribe((news) => {
-      console.log("loaded news:", news);
+    console.log('filter: ', this.filter);
+    this.service
+      .getNewsfeedFiltered(this.filter, this.paging)
+      .subscribe((news) => {
+        console.log('loaded news:', news);
 
-      if (news) {
-        this.newsfeed = NewsfeedPost.fromArray(news);
-      }
-    });
+        if (news && news.posts && news.posts.length > 0) {
+          this.newsfeed = NewsfeedPost.fromArray(news.posts);
+        }
+      });
+  }
+
+  loadMore(event: any) {
+    this.paging.page++;
+
+    // setInterval(() => {
+      this.updateNewsfeed();
+    // }, 2000); // 2 seconds
   }
 }

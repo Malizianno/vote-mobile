@@ -10,3 +10,8 @@ export class NewsfeedPost extends GenericModel {
     createdBy: string;
     electionId: number;
 }
+
+export class NewsfeedPostResponse extends GenericModel {
+  posts!: NewsfeedPost[];
+  total!: number;
+}
