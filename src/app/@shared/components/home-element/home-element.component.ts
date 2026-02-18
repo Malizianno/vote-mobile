@@ -10,19 +10,18 @@ import {
   IonItem,
   IonLabel,
   IonRow,
-  IonThumbnail,
-} from '@ionic/angular/standalone';
+  IonThumbnail, IonCardTitle, IonCardHeader, IonImg } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { chevronDownCircleOutline } from 'ionicons/icons';
-import { NewsElement } from '../../model/news.model';
+import { NewsfeedPost } from '../../model/newsfeed-post.model';
 
 @Component({
     selector: 'app-home-element',
     templateUrl: './home-element.component.html',
     styleUrls: ['./home-element.component.scss'],
     standalone: true,
-    imports: [
+    imports: [IonImg, IonCardHeader, IonCardTitle, 
         IonIcon,
         IonCol,
         IonRow,
@@ -31,12 +30,13 @@ import { NewsElement } from '../../model/news.model';
         IonButton,
         IonCardContent,
         IonGrid,
+        IonLabel,
         TranslateModule,
         CommonModule,
     ]
 })
 export class HomeElementComponent implements OnInit {
-  @Input() news: NewsElement;
+  @Input() news: NewsfeedPost;
 
   constructor() {
     addIcons({ chevronDownCircleOutline });

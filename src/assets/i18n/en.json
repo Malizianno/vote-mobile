@@ -82,5 +82,8 @@
         "MALE": "Male",
         "FEMALE": "Female",
         "OTHER": "Other"
+    },
+    "newsfeed": {
+        "by": "by "
     }
 }

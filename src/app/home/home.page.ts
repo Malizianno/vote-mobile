@@ -13,6 +13,8 @@ import { HomeElementComponent } from '../@shared/components/home-element/home-el
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
 import { Election } from '../@shared/model/election.model';
 import { SharedService } from '../@shared/service/shared.service';
+import { NewsfeedPost } from '../@shared/model/newsfeed-post.model';
+import { NewsfeedService } from '../@shared/service/newsfeed.service';
 
 @Component({
   selector: 'app-home',
@@ -33,11 +35,13 @@ import { SharedService } from '../@shared/service/shared.service';
 })
 export class HomePage implements OnInit {
   selectedElection: Election | null = null;
+  newsfeed: NewsfeedPost[] = [];
 
   constructor(
     private shared: SharedService,
     private location: Location,
-    private platform: Platform
+    private platform: Platform,
+    private service: NewsfeedService,
   ) {
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, () => {
@@ -52,9 +56,25 @@ export class HomePage implements OnInit {
     this.shared.selectedElection$.subscribe((election) => {
       this.selectedElection = election;
     });
+
+    this.reloadPage();
   }
 
   goBack() {
     this.location.back();
+  }
+
+  reloadPage() {
+    this.updateNewsfeed();
+  }
+
+  updateNewsfeed() {
+    this.service.getNewsfeedAll().subscribe((news) => {
+      console.log("loaded news:", news);
+
+      if (news) {
+        this.newsfeed = NewsfeedPost.fromArray(news);
+      }
+    });
   }
 }

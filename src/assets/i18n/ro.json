@@ -82,5 +82,8 @@
         "MALE": "Masculin",
         "FEMALE": "Feminin",
         "OTHER": "Altul"
+    },
+    "newsfeed": {
+        "by": "de "
     }
 }
