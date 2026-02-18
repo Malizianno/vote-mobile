@@ -1,7 +1,11 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CredentialsService } from './credentials.service';
 import { Router } from '@angular/router';
+import { CredentialsService } from './credentials.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,12 +22,6 @@ export class GenericService {
     let username = this.credentials.credentials?.username
       ? this.credentials.credentials.username
       : '';
-    // const role = this.credentials.credentials?.role ? this.credentials.credentials.role.toString() : '';
-
-    // WIP: there should only be id in credentials because username doesn't make sense in the voting app
-    // if (username == '') {
-    //   username = this.credentials.credentials!.id!.toString();
-    // }
 
     return new HttpHeaders()
       .set('Content-Type', 'application/json')

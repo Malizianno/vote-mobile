@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
     selector: 'app-landing',
     templateUrl: './landing.component.html',
     styleUrls: ['./landing.component.scss'],
+    standalone: true,
     imports: [IonContent, IonButton, FormsModule, TranslateModule]
 })
 export class LandingComponent implements OnInit {
