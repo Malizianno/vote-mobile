@@ -67,7 +67,9 @@ export class HomePage implements OnInit {
     this.shared.selectedElection$.subscribe((election) => {
       this.selectedElection = election;
 
-      this.reloadPage();
+      if (this.selectedElection!.id) {
+        this.reloadPage();
+      }
     });
   }
 
@@ -98,8 +100,13 @@ export class HomePage implements OnInit {
   loadMore(event: any) {
     this.paging.page++;
 
-    // setInterval(() => {
-      this.updateNewsfeed();
-    // }, 2000); // 2 seconds
+    var retryCount = 3;
+    while (retryCount > 0) {
+      setInterval(() => {
+        this.updateNewsfeed();
+      }, 5000); // 5 seconds
+
+      retryCount--;
+    }
   }
 }
