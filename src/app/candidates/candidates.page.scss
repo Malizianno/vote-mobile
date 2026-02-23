@@ -4,81 +4,49 @@
     top: 50px;
 }
 
-.swiper {
-  width: 100%;
-  height: auto;
+.candidates-content {
+  --padding-bottom: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  height: 50vh; // half of the viewport height
 }
 
-.swiper-wrapper {
-  width: 100%;
-}
-
-.swiper-slide {
+.swiper-container-wrapper {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
+  height: 100%;
 }
 
-.swiper-slide img {
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.candidate-image {
   width: 100%;
   height: auto;
+  max-height: 40vh; /* adjust between 30–45vh depending on your design */
   object-fit: cover;
-  z-index: 1;
-  position: relative;
-  display: block;
+  border-radius: 8px; /* optional, looks nicer */
 }
 
-.swiper-slide::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
+.candidates-swiper {
   width: 100%;
-  height: 10%;
-  pointer-events: none;
-  z-index: 2;
-  background: linear-gradient(to bottom, black, transparent);
 }
 
-.swiper-slide::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 50%;
-  pointer-events: none;
-  background: linear-gradient(to top, black, transparent);
-  z-index: 2;
+swiper-container::part(bullet) {
+  background: grey; /* your dark color */
+  opacity: 0.4;
 }
 
-.swiper-pagination {
-  margin-top: 12px;
-  position: static;
-  display: flex;
-  justify-content: center;
-}
-
-:host ::ng-deep .swiper-pagination-bullet {
-  background-color: #ccc; // light grey
-  opacity: 0.5;
-}
-
-:host ::ng-deep .swiper-pagination-bullet-active {
-  background-color: #fff; // pure white
+swiper-container::part(bullet-active) {
+  background: white;
   opacity: 1;
-  transform: scale(1.2);
 }
 
 .card-grid {
   padding: 16px;
+  margin-top: auto; /* pushes grid to the bottom */
 }
 
 .info-card {

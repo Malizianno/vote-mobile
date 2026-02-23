@@ -5,42 +5,48 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <!-- THIS CANNOT BE RENDERED AFTER THE DOM, LIKE CONDITIONALLY -->
-  <div class="swiper" #swiperRef>
-    <div class="swiper-wrapper">
-      <div class="swiper-slide" *ngFor="let candidate of candidates">
-        <img [src]="candidate.image" alt="carousel image" />
-      </div>
-    </div>
+<ion-content [fullscreen]="true" class="candidates-content">
+  <div class="swiper-container-wrapper">
+    <swiper-container
+      pagination="true"
+      pagination-clickable="true"
+      space-between="10"
+      slides-per-view="1"
+      class="candidates-swiper"
+    >
+      <swiper-slide *ngFor="let candidate of candidates">
+        <div class="slide-content">
+          <img [src]="candidate.image" class="candidate-image" />
+          
+          <ion-grid class="card-grid">
+            <ion-row>
+              <ion-col size="6">
+                <ion-card class="info-card">
+                  <ion-card-content
+                    >{{ candidate.firstName + ' ' + candidate.lastName
+                    }}</ion-card-content
+                  >
+                </ion-card>
+              </ion-col>
+              <ion-col size="6">
+                <ion-card class="info-card">
+                  <ion-card-content>{{ candidate.party }}</ion-card-content>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+    
+            <ion-row class="center-row">
+              <ion-col size="12">
+                <ion-card class="info-card full-card">
+                  <ion-card-content>{{ candidate.description }}</ion-card-content>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </swiper-slide>
+    </swiper-container>
   </div>
-  <div class="swiper-pagination"></div>
-
-  <ion-grid *ngIf="candidates.length > 0" class="card-grid">
-    <ion-row>
-      <ion-col size="6">
-        <ion-card class="info-card">
-          <ion-card-content
-            >{{ selected.firstName + ' ' + selected.lastName
-            }}</ion-card-content
-          >
-        </ion-card>
-      </ion-col>
-      <ion-col size="6">
-        <ion-card class="info-card">
-          <ion-card-content>{{ selected.party }}</ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-
-    <ion-row class="center-row">
-      <ion-col size="12">
-        <ion-card class="info-card full-card">
-          <ion-card-content>{{ selected.description }}</ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 
   <app-no-results *ngIf="candidates.length < 1"></app-no-results>
 
