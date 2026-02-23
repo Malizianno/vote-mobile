@@ -17,14 +17,14 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="reload($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <app-no-results *ngIf="newsfeed.length < 1"></app-no-results>
 
   <app-home-element
     *ngFor="let news of newsfeed"
     [news]="news"
   ></app-home-element>
-
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
 </ion-content>

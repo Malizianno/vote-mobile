@@ -1,24 +1,24 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import {
   IonContent,
   IonHeader,
+  IonRefresher,
+  IonRefresherContent,
   IonText,
   IonTitle,
   IonToolbar,
-  IonInfiniteScroll,
-  IonInfiniteScrollContent,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { HomeElementComponent } from '../@shared/components/home-element/home-element.component';
 import { LanguageSwitcherComponent } from '../@shared/components/language-switcher/language-switcher.component';
-import { Election } from '../@shared/model/election.model';
-import { SharedService } from '../@shared/service/shared.service';
-import { NewsfeedPost } from '../@shared/model/newsfeed-post.model';
-import { NewsfeedService } from '../@shared/service/newsfeed.service';
 import { NoResultsComponent } from '../@shared/components/no-results/no-results.component';
+import { Election } from '../@shared/model/election.model';
+import { NewsfeedPost } from '../@shared/model/newsfeed-post.model';
 import { Paging } from '../@shared/model/paging.model';
+import { NewsfeedService } from '../@shared/service/newsfeed.service';
+import { SharedService } from '../@shared/service/shared.service';
 
 @Component({
   selector: 'app-home',
@@ -26,13 +26,13 @@ import { Paging } from '../@shared/model/paging.model';
   styleUrls: ['home.page.scss'],
   standalone: true,
   imports: [
+    IonRefresherContent,
+    IonRefresher,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonText,
     IonContent,
-    IonInfiniteScroll,
-    IonInfiniteScrollContent,
     CommonModule,
     TranslateModule,
     LanguageSwitcherComponent,
@@ -40,10 +40,12 @@ import { Paging } from '../@shared/model/paging.model';
     HomeElementComponent,
   ],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   selectedElection: Election | null = null;
 
   newsfeed: NewsfeedPost[] = [];
+
+  intervalId: any;
 
   filter: NewsfeedPost = new NewsfeedPost();
   paging: Paging = new Paging();
@@ -68,17 +70,36 @@ export class HomePage implements OnInit {
       this.selectedElection = election;
 
       if (this.selectedElection!.id) {
-        this.reloadPage();
+        this.intervalId = setInterval(() => {
+          if (this.newsfeed.length < 1) {
+            this.reloadPage();
+          }
+        }, 3000);
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   goBack() {
     this.location.back();
   }
 
+  async reload(event: any) {
+    await this.reloadPage();
+
+    setTimeout(() => {
+      event.target.complete(); // stop the spinner
+    }, 1000);
+  }
+
   reloadPage() {
     this.paging = new Paging();
+    this.paging.size = 50; // XXX: hardcoded to be big enough
     this.filter = new NewsfeedPost();
     this.filter.electionId = this.selectedElection?.id!;
     this.updateNewsfeed();

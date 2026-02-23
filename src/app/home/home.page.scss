@@ -15,3 +15,10 @@
 .language-switcher-wrapper {
   margin-right: 70px; /* Adjust offset from edge */
 }
+
+ion-refresher,
+ion-refresher-content,
+ion-spinner {
+  color: red !important;
+  --ion-color-primary: dark;
+}
