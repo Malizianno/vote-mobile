@@ -15,7 +15,7 @@
     "login": {
         "username": "Username",
         "password": "Password",
-        "info": "Ready for face login. Please look directly at the camera in a well-lit environment. We'll verify your identity securely in just a moment",
+        "info": "Ready for face login. Please look directly at the camera in a well-lit environment.",
         "no-face": "Face not recognized. Please try again, making sure your face is clearly visible and unobstructed.",
         "login-failed": "Login attempt failed. If this wasn’t you, your account is safe. Otherwise, please try again or use an alternate login method."
     },

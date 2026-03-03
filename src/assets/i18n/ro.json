@@ -15,7 +15,7 @@
     "login": {
         "username": "Utilizator",
         "password": "Parolă",
-        "info": "Gata pentru autentificare facială. Vă rugăm să priviți direct spre cameră într-un mediu bine luminat. Vă vom verifica identitatea în siguranță imediat.",
+        "info": "Pentru autentificare vă rugăm să vă poziționați în centrul ecranului. Se recomandă o iluminare bună și un fundal simplu pentru o recunoaștere optimă.",
         "no-face": "Fața nu este recunoscută. Încercați din nou, asigurându-vă că fața dumneavoastră este clar vizibilă și neobstrucționată.",
         "login-failed": "Încercarea de conectare a eșuat. Dacă nu ați fost dumneavoastră, contul dumneavoastră este în siguranță. În caz contrar, încercați din nou sau utilizați o altă metodă de conectare."
     },
