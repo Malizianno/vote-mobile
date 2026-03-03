@@ -8,12 +8,34 @@ vot.e App is designed to be a three-part app known as microservice architecture 
 2. vot.e frontend -> The ADMIN user interface, accessible only via ADMIN accounts
 3. vot.e mobile app -> The mobile App
 
+# build prod .apk
+
+CONSOLE:
+& ionic build --configuration production
+$ cd android
+$ ./gradlew clean
+$ cd..
+$ npx cap sync android
+$ npx cap open android
+ANDROID STUDIO:
+Build > Build APK
+
+# permissions
+
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 ## vot.e mobile
 
-This app is the mobile app used by the end-users while voting. This app shows the candidates and the results to every election. More to this this application comes in help of the needs of its type of users and shows extra information about the candidates, the elections itself or even about the user authenticated. Outside the election interval, this application is used only for viewing usefull information.
+This app is the mobile app used by the end-users while voting. This app shows the candidates and the results to every election. More to this this application comes in help of the needs of its type of users and shows extra information about the candidates, the elections itself or even about the user authenticated. Outside the election interval, this application is used only for viewing useful information.
 
 ### v1.1.0 - implemented USER authentication.
+
 ### v1.0.0 - basic Ionic application + ADMIN authentication and overall authorization.
+
 ### v1.4.0 - added profile screen + registering new users (+OCR)
 
 All rights reserved to Cristian Sterie
