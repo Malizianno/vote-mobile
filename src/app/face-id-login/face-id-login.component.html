@@ -16,7 +16,7 @@
     slot="fixed"
     style="margin-bottom: 30px"
   >
-    <div *ngIf="isProcessing()" class="spinner-container">
+    <div *ngIf="photoProcessing" class="spinner-container">
       <ion-spinner name="crescent"></ion-spinner>
     </div>
     <ion-fab-button

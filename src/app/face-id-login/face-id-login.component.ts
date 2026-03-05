@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -15,7 +15,6 @@ import {
   IonSpinner,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
 import { arrowForward, camera, checkmark, refresh } from 'ionicons/icons';
 import {
@@ -24,8 +23,10 @@ import {
 } from '../@shared/model/login.dto';
 import { CredentialsService } from '../@shared/service/credentials.service';
 import { LoginService } from '../@shared/service/login.service';
-import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
 import { ToastService } from '../@shared/service/toast.service';
+import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
+
+import { FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
 
 // XXX: TESTING: Ensure camera stops when navigating away (livereload issue)
 window.addEventListener('beforeunload', () => {
@@ -33,27 +34,29 @@ window.addEventListener('beforeunload', () => {
 });
 
 @Component({
-    selector: 'app-face-id-login',
-    templateUrl: './face-id-login.component.html',
-    styleUrls: ['./face-id-login.component.scss'],
-    standalone: true,
-    imports: [
-        IonSpinner,
-        IonFabButton,
-        IonFab,
-        IonIcon,
-        FormsModule,
-        CommonModule,
-        IonSpinner,
-        TranslateModule,
-    ]
+  selector: 'app-face-id-login',
+  templateUrl: './face-id-login.component.html',
+  styleUrls: ['./face-id-login.component.scss'],
+  standalone: true,
+  imports: [
+    IonSpinner,
+    IonFabButton,
+    IonFab,
+    IonIcon,
+    FormsModule,
+    CommonModule,
+    IonSpinner,
+    TranslateModule,
+  ],
 })
-export class FaceIDLoginComponent {
+export class FaceIDLoginComponent implements OnInit {
   imageBase64: string = '';
 
   isFaceValid = false;
-  isPhotoTaken = false;
-  isPhotoProcessing = false;
+
+  faceDetector: FaceDetector | null = null;
+  photoProcessing = false;
+  photoTaken = false;
 
   constructor(
     private platform: Platform,
@@ -62,33 +65,87 @@ export class FaceIDLoginComponent {
     private router: Router,
     private ngZone: NgZone,
     private toast: ToastService,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {
+    console.log('[constructor]: Initializing FaceIDLoginComponent...');
     addIcons({ camera, refresh, checkmark, arrowForward });
 
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, () => {
-        // console.log('Hardware back button pressed');
-
         this.goBack();
       });
     });
   }
+  async ngOnInit(): Promise<void> {
+    console.log('[ngOnInit]: Initializing FaceIDLoginComponent...');
+    await this.initFaceDetector();
+
+    // await this.loadModels();
+    // console.log('Loaded face-api models...');
+  }
 
   async ionViewWillEnter() {
-    await this.loadModels();
-    console.log('Loaded face-api models...');
+    console.log('[ionViewWillEnter]: Initializing FaceIDLoginComponent...');
+    this.isFaceValid = false;
+    this.photoProcessing = false;
+    this.photoTaken = false;
+
+    console.log(
+      `ionViewWillEnter:\nfaceValid: ${this.isFaceValid}\nphotoTaken: ${this.photoTaken}\nphotoProcessing: ${this.photoProcessing}`
+    );
+
+    this.cleanTheDocumentBody();
+    console.log('Cleaned document body, ready for camera preview');
+  }
+
+  async ionViewDidLeave() {
+    console.log('[ionViewDidLeave]: Stopping camera preview...');
+    await this.stopCamera();
+    console.log('Camera stopped');
+  }
+
+  async ionViewDidEnter() {
+    console.log('[ionViewDidEnter]: Starting camera preview...');
+    this.toast.show(this.translate.instant('login.info'), 5000);
+    console.log('toast sent');
 
     await this.startCamera();
+    console.log('Camera started');
+  }
 
-    this.isFaceValid = false;
-    this.isPhotoProcessing = false;
-    this.isPhotoTaken = false;
+  async initFaceDetector() {
+    // console.log(
+    //   '[initFaceDetector]: Checking MediaPipe Face Detector support...'
+    // );
+    // fetch(
+    //   'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm/vision_wasm_internal.wasm'
+    // )
+    //   .then((r) =>
+    //     console.log('[initFaceDetector]: WASM fetch status:', r.status)
+    //   )
+    //   .catch((e) => console.error('[initFaceDetector]: WASM fetch error:', e));
 
-    this.toast.show(this.translate.instant('login.info'), 5000);
-    console.log(
-      `ionViewWillEnter:\nfaceValid: ${this.isFaceValid}\nphotoTaken: ${this.isPhotoTaken}\nphotoProcessing: ${this.isPhotoProcessing}`
+    console.log('[initFaceDetector]: Checking Model Face Detector support...');
+    fetch('/assets/mediapipe/blaze_face_short_range.tflite')
+      .then((r) =>
+        console.log('[initFaceDetector]: model fetch status:', r.status)
+      )
+      .catch((e) => console.error('[initFaceDetector]: model fetch error:', e));
+
+    console.log('[initFaceDetector]: Initializing MediaPipe Face Detector...');
+
+    const vision = await FilesetResolver.forVisionTasks(
+      '/assets/mediapipe/wasm'
     );
+
+    console.log('[initFaceDetector]: Loading MediaPipe Face Detector model...');
+
+    this.faceDetector = await FaceDetector.createFromModelPath(
+      vision,
+      '/assets/mediapipe/blaze_face_short_range.tflite'
+    );
+
+    console.log('MediaPipe Face Detector loaded.');
   }
 
   async startCamera() {
@@ -104,8 +161,8 @@ export class FaceIDLoginComponent {
     CameraPreview.start(options);
 
     this.ngZone.run(() => {
-      this.isPhotoTaken = false;
-      this.isPhotoProcessing = false;
+      this.photoTaken = false;
+      this.photoProcessing = false;
     });
   }
 
@@ -115,8 +172,8 @@ export class FaceIDLoginComponent {
 
   async captureImage() {
     this.ngZone.run(() => {
-      this.isPhotoTaken = false;
-      this.isPhotoProcessing = true;
+      this.photoTaken = false;
+      this.photoProcessing = true;
     });
 
     const result = await CameraPreview.capture({
@@ -139,20 +196,13 @@ export class FaceIDLoginComponent {
     // if longer
     if (img.src.length > ParseAndFormatUtil.BASE64_PREFIX.length) {
       this.ngZone.run(() => {
-        this.isPhotoTaken = true;
+        this.photoTaken = true;
       });
     }
 
-    await this.validateFace(rotated);
-  }
+    console.log('image captured, validating face...');
 
-  async loadModels() {
-    const MODEL_URL = '/assets/models';
-    await Promise.all([
-      faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-    ]);
+    await this.validateFace(rotated);
   }
 
   async retakeImage() {
@@ -160,7 +210,7 @@ export class FaceIDLoginComponent {
       await this.stopCamera();
 
       this.ngZone.run(() => {
-        this.isPhotoTaken = false;
+        this.photoTaken = false;
         this.isFaceValid = false;
         this.imageBase64 = '';
       });
@@ -177,7 +227,7 @@ export class FaceIDLoginComponent {
     const request = new FaceLoginRequestDTO();
 
     this.ngZone.run(() => {
-      this.isPhotoProcessing = true;
+      this.photoProcessing = true;
     });
 
     request.imageBase64 = ParseAndFormatUtil.cleanBase64FromPrefix(
@@ -210,7 +260,7 @@ export class FaceIDLoginComponent {
       this.router.navigate(['/tabs/home']);
 
       this.ngZone.run(() => {
-        this.isPhotoProcessing = false;
+        this.photoProcessing = false;
       });
     }
 
@@ -218,7 +268,7 @@ export class FaceIDLoginComponent {
     if (response.status === 400) {
       this.ngZone.run(() => {
         this.isFaceValid = false;
-        this.isPhotoProcessing = false;
+        this.photoProcessing = false;
         this.toast.show(this.translate.instant('login.login-failed'), 7000);
       });
     }
@@ -230,7 +280,7 @@ export class FaceIDLoginComponent {
 
     this.ngZone.run(() => {
       this.isFaceValid = false;
-      this.isPhotoProcessing = false;
+      this.photoProcessing = false;
 
       this.toast.show(this.translate.instant('login.login-failed'), 7000);
     });
@@ -238,79 +288,85 @@ export class FaceIDLoginComponent {
 
   // using Face API to recognize face and control the status of buttons ;)
   async validateFace(base64Image: string) {
-    // crop faceImage using canvas
-    const faceImg = new Image();
-    faceImg.src = ParseAndFormatUtil.BASE64_PREFIX + base64Image;
-    faceImg.id = 'found-face-preview';
-    faceImg.width = window.innerWidth;
-    faceImg.height = window.innerHeight;
-    document.body.appendChild(faceImg); // creates the effect of taken photo on the screen
+    this.ngZone.run(() => {
+      this.photoProcessing = true;
+      this.photoTaken = true;
+      console.log('photoTaken = ', this.photoTaken);
+    });
 
-    console.log('finding face image: ', faceImg);
+    if (!this.faceDetector) {
+      console.error('Face detector not initialized');
+      return;
+    }
 
-    faceImg.onload = async () => {
-      const detection = await faceapi
-        .detectSingleFace(faceImg)
-        .withFaceLandmarks();
+    const img = new Image();
+    img.src = 'data:image/jpeg;base64,' + base64Image;
+    await img.decode();
 
-      // console.log('detection found: ', detection);
-      if (detection) {
-        const { box } = detection.detection;
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
 
-        const canvas = document.createElement('canvas');
-        canvas.width = box.width;
-        canvas.height = box.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(img, 0, 0);
 
-        const ctx = canvas.getContext('2d');
-        ctx!.drawImage(
-          faceImg,
-          box.x,
-          box.y,
-          box.width,
-          box.height,
-          0,
-          0,
-          box.width,
-          box.height
-        );
-        const faceImageDataUrl = canvas.toDataURL('image/jpeg');
+    console.log('[FACE]: before detection');
+    const detections = this.faceDetector.detect(canvas);
+    console.log('[FACE]: after detection: ', detections);
 
-        // log the photo:
-        canvas.toBlob(async (faceBlob) => {
-          const base64Image = URL.createObjectURL(faceBlob!);
-          const faceCroppedImage = new Image();
-          faceCroppedImage.src = base64Image;
-          faceCroppedImage.id = 'cropped-face-image';
-          document.body.appendChild(faceCroppedImage);
-          // console.log('Cropped Face Blob:', faceCroppedImage);
-
-          this.ngZone.run(() => {
-            if (faceCroppedImage) {
-              this.isFaceValid = true;
-              this.isPhotoProcessing = false;
-            }
-          });
-        });
-
-        this.imageBase64 = canvas.toDataURL('image/jpeg');
-        // console.log(`image as base64? : ${this.imageBase64}`);
-
-        return faceImageDataUrl;
-      }
-
-      // if it got to this point, no face detection found
-      this.ngZone.run(() => {
+    this.ngZone.run(() => {
+      if (!detections || detections.detections.length === 0) {
         this.isFaceValid = false;
-        this.isPhotoProcessing = false;
-        this.isPhotoTaken = true;
+        this.photoProcessing = false;
+        this.toast.show('Nu am găsit nicio față.');
+        return;
+      }
+    });
 
-        this.toast.show(this.translate.instant('login.no-face'));
-      });
+    const face = detections.detections[0].boundingBox;
 
-      return null;
-    };
+    console.log('face from bounding box: ', face);
 
-    return null;
+    const cropCanvas = document.createElement('canvas');
+    cropCanvas.width = face!.width;
+    cropCanvas.height = face!.height;
+
+    const cropCtx = cropCanvas.getContext('2d')!;
+    cropCtx.drawImage(
+      img,
+      face!.originX,
+      face!.originY,
+      face!.width,
+      face!.height,
+      0,
+      0,
+      face!.width,
+      face!.height
+    );
+
+    this.imageBase64 = cropCanvas.toDataURL('image/jpeg');
+    console.log('this.imageBase64: ', this.imageBase64);
+
+    var croppedImg = new Image();
+    croppedImg.src = this.imageBase64;
+    croppedImg.id = 'cropped-face-image';
+    // document.body.appendChild(croppedImg);
+    console.log('cropped img: ', croppedImg);
+
+    // Afișează poza decupată în <div id="image-preview-layer">
+    // const previewLayer = document.getElementById('image-preview-layer');
+    // previewLayer!.innerHTML = '';
+    // const previewImg = document.createElement('img');
+    // previewImg.src = this.imageBase64;
+    // previewImg.classList.add('preview-face');
+    // previewLayer!.appendChild(previewImg);
+
+    this.ngZone.run(() => {
+      this.isFaceValid = true;
+      this.photoProcessing = false;
+      console.log('isFaceValid = ', this.isFaceValid);
+      console.log('photoProcessing = ', this.photoProcessing);
+    });
   }
 
   cleanTheDocumentBody() {
@@ -320,27 +376,21 @@ export class FaceIDLoginComponent {
   }
 
   goBack() {
-    this.cleanTheDocumentBody();
     this.router.navigate(['/landing'], { replaceUrl: true });
-  }
-
-  isProcessing(): boolean {
-    // spinner
-    return this.isPhotoProcessing;
   }
 
   isReadyToTakePhoto(): boolean {
     // camera
-    return !this.isPhotoTaken && !this.isFaceValid && !this.isPhotoProcessing;
+    return !this.photoTaken && !this.isFaceValid && !this.photoProcessing;
   }
 
   isReadyToRetakePhoto(): boolean {
     // refresh
-    return this.isPhotoTaken && !this.isFaceValid && !this.isPhotoProcessing;
+    return this.photoTaken && !this.isFaceValid && !this.photoProcessing;
   }
 
   isReadyToLogin(): boolean {
     // checkmark
-    return this.isPhotoTaken && this.isFaceValid && !this.isPhotoProcessing;
+    return this.photoTaken && this.isFaceValid && !this.photoProcessing;
   }
 }

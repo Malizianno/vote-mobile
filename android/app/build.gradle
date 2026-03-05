@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    
     namespace "ro.cristiansterie.vote.mobile"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {

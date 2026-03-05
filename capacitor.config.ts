@@ -13,6 +13,10 @@ const config: CapacitorConfig = {
       backgroundColor: 'transparent',
     },
   },
+  server: {
+    androidScheme: 'https',
+    cleartext: true,
+  },
 };
 
 export default config;
