@@ -1,5 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA, Component, NgZone } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  Component,
+  NgZone,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -7,6 +12,7 @@ import {
   CameraPreviewOptions,
 } from '@capacitor-community/camera-preview';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
+import { Platform } from '@ionic/angular';
 import { IonIcon } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
 import * as faceapi from 'face-api.js';
@@ -19,7 +25,7 @@ import {
   home,
   refresh,
 } from 'ionicons/icons';
-import Tesseract from 'tesseract.js';
+import Tesseract, { detect } from 'tesseract.js';
 import {
   UserGender,
   UserNationality,
@@ -28,6 +34,7 @@ import {
 import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
+import { FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
 
 @Component({
   selector: 'app-register',
@@ -37,10 +44,12 @@ import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
   imports: [IonIcon, FormsModule, CommonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   isPhotoTaken = false;
   isIDValid = false;
   isOCRDone = false;
+
+  faceDetector: FaceDetector | null = null;
 
   idImageDataUrl: string | undefined;
   faceImageDataUrl: string | undefined;
@@ -52,7 +61,9 @@ export class RegisterComponent {
     private shared: SharedService,
     private ngZone: NgZone,
     private toast: ToastService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private platform: Platform,
+    private location: Location
   ) {
     addIcons({
       checkmark,
@@ -62,31 +73,57 @@ export class RegisterComponent {
       refresh,
       checkmarkCircleOutline,
     });
+
+    this.platform.ready().then(() => {
+      this.platform.backButton.subscribeWithPriority(10, () => {
+        // console.log('Hardware back button pressed');
+
+        this.goBack();
+      });
+    });
+  }
+
+  async ngOnInit(): Promise<void> {
+    console.log('[ngOnInit]: Initializing FaceDetector...');
+    await this.initFaceDetector();
+    console.log('[ngOnInit]: Loaded FaceDetector...');
   }
 
   async ionViewWillEnter() {
-    await ScreenOrientation.lock({ orientation: 'landscape' });
-    await this.delay(300);
-
-    await this.loadModels();
-    console.log('Loaded face-api models...');
-
-    await this.startCamera();
+    console.log('[ionViewWillEnter] Starting registration process...');
 
     this.isPhotoTaken = false;
     this.isIDValid = false;
     this.isOCRDone = false;
 
-    this.toast.show(this.translate.instant('register.info'), 5000);
+    console.log('[ionViewWillEnter] End: Registration process initialized....');
   }
 
-  async ionViewWillLeave() {
-    await ScreenOrientation.lock({ orientation: 'portrait-primary' });
-    await this.delay(300);
+  async ionViewDidEnter() {
+    console.log('[ionViewDidEnter] Landscape + Starting camera...');
 
-    await this.stopCamera();
+    // toast info about how to position ID
+    console.log('[ionViewDidEnter] Toast shown with instructions.');
+    this.toast.show(this.translate.instant('register.info'), 5000);
+
+    await ScreenOrientation.lock({ orientation: 'landscape' });
+    // await this.delay(300);
+
+    await this.startCamera();
 
     this.cleanDocumentImages();
+
+    console.log('[ionViewDidEnter] Camera started.');
+  }
+
+  async ionViewDidLeave() {
+    console.log(
+      '[ionViewDidLeave] Unlocking orientation and stopping camera...'
+    );
+    await ScreenOrientation.unlock();
+
+    await this.stopCamera();
+    console.log('[ionViewDidLeave] unlocked and stopped.');
   }
 
   shouldRetakePhoto(): boolean {
@@ -99,6 +136,30 @@ export class RegisterComponent {
 
   shouldSavePhoto(): boolean {
     return this.isPhotoTaken && this.isIDValid && this.isOCRDone;
+  }
+
+  async initFaceDetector() {
+    console.log('[initFaceDetector]: Checking Model Face Detector support...');
+    fetch('/assets/mediapipe/blaze_face_short_range.tflite')
+      .then((r) =>
+        console.log('[initFaceDetector]: model fetch status:', r.status)
+      )
+      .catch((e) => console.error('[initFaceDetector]: model fetch error:', e));
+
+    console.log('[initFaceDetector]: Initializing MediaPipe Face Detector...');
+
+    const vision = await FilesetResolver.forVisionTasks(
+      '/assets/mediapipe/wasm'
+    );
+
+    console.log('[initFaceDetector]: Loading MediaPipe Face Detector model...');
+
+    this.faceDetector = await FaceDetector.createFromModelPath(
+      vision,
+      '/assets/mediapipe/blaze_face_short_range.tflite'
+    );
+
+    console.log('MediaPipe Face Detector loaded.');
   }
 
   async startCamera() {
@@ -119,19 +180,13 @@ export class RegisterComponent {
   }
 
   async captureImage() {
-    const result = await CameraPreview.capture({ quality: 90 });
+    const result = await CameraPreview.capture({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      quality: 90,
+    });
     const base64 = result.value;
     this.runOCR(ParseAndFormatUtil.BASE64_PREFIX + base64);
-  }
-
-  async loadModels() {
-    const MODEL_URL = '/assets/models';
-    await Promise.all([
-      faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-    ]);
   }
 
   async runOCR(imageDataUrl: string | null) {
@@ -163,44 +218,47 @@ export class RegisterComponent {
       this.isPhotoTaken = true;
     });
 
-    // console.log('Image created for cropping:', img);
-    // console.log('Image dimensions before load:', { width: img.naturalWidth, height: img.naturalHeight });
+    console.log('Image created for cropping:', img);
+    console.log('Image dimensions before load:', {
+      width: img.naturalWidth,
+      height: img.naturalHeight,
+    });
 
     img.onload = () => {
       // match pixels between displayed image and actual image
       const scaleX = img.naturalWidth / window.innerWidth;
       const scaleY = img.naturalHeight / window.innerHeight;
-      // console.log('Window dimensions:', {
-      //   width: window.innerWidth,
-      //   height: window.innerHeight,
-      // });
-      // console.log('Image dimensions:', {
-      //   width: img.width,
-      //   height: img.height,
-      // });
-      // console.log('Scale factors:', { scaleX, scaleY });
+      console.log('Window dimensions:', {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+      console.log('Image dimensions:', {
+        width: img.width,
+        height: img.height,
+      });
+      console.log('Scale factors:', { scaleX, scaleY });
 
       const cropX = rect.left * scaleX;
       const cropY = rect.top * scaleY;
       const cropWidth = rect.width * scaleX;
       const cropHeight = rect.height * scaleY;
 
-      // console.log('Cropping parameters:', {
-      //   cropX,
-      //   cropY,
-      //   cropWidth,
-      //   cropHeight,
-      // });
+      console.log('Cropping parameters:', {
+        cropX,
+        cropY,
+        cropWidth,
+        cropHeight,
+      });
 
       // Now crop ID using canvas
       const canvas = document.createElement('canvas');
       canvas.width = cropWidth;
       canvas.height = cropHeight;
 
-      // console.log('Canvas created with dimensions:', {
-      //   width: canvas.width,
-      //   height: canvas.height,
-      // });
+      console.log('Canvas created with dimensions:', {
+        width: canvas.width,
+        height: canvas.height,
+      });
 
       const ctx = canvas.getContext('2d');
       ctx!.drawImage(
@@ -225,71 +283,77 @@ export class RegisterComponent {
       faceImg.src = this.idImageDataUrl;
 
       faceImg.onload = async () => {
-        const detection = await faceapi
-          .detectSingleFace(faceImg)
-          .withFaceLandmarks();
-
-        if (detection) {
-          const { box } = detection.detection;
-
-          const canvas = document.createElement('canvas');
-          canvas.width = box.width;
-          canvas.height = box.height;
-
-          const ctx = canvas.getContext('2d');
-          ctx!.drawImage(
-            faceImg,
-            box.x,
-            box.y,
-            box.width,
-            box.height,
-            0,
-            0,
-            box.width,
-            box.height
-          );
-          const faceImageDataUrl = canvas.toDataURL('image/jpeg');
-
-          // log the photo:
-          canvas.toBlob(async (faceBlob) => {
-            const faceCroppedImage = new Image();
-            faceCroppedImage.src = URL.createObjectURL(faceBlob!);
-            faceCroppedImage.id = 'cropped-face-image';
-            document.body.appendChild(faceCroppedImage);
-            console.log('Cropped Face Blob:', faceCroppedImage);
-          });
-
-          // save globally to put it to DTO after OCR
-          this.faceImageDataUrl = faceImageDataUrl;
+        if (!this.faceDetector) {
+          console.error('FaceDetector not initialized');
+          return;
         }
+
+        console.log('[FACE]: before detection');
+        const detections = this.faceDetector.detect(faceImg);
+        console.log('[FACE]: after detection: ', detections);
+
+        const face = detections.detections[0].boundingBox;
+
+        console.log('face from bounding box: ', face);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = face!.width;
+        canvas.height = face!.height;
+
+        const ctx = canvas.getContext('2d');
+        ctx!.drawImage(
+          faceImg,
+          face!.originX,
+          face!.originY,
+          face!.width,
+          face!.height,
+          0,
+          0,
+          face!.width,
+          face!.height
+        );
+        const faceImageDataUrl = canvas.toDataURL('image/jpeg');
+
+        // log the photo:
+        canvas.toBlob(async (faceBlob) => {
+          const faceCroppedImage = new Image();
+          faceCroppedImage.src = URL.createObjectURL(faceBlob!);
+          faceCroppedImage.id = 'cropped-face-image';
+          document.body.appendChild(faceCroppedImage);
+          console.log('Cropped Face Blob:', faceCroppedImage);
+        });
+
+        // save globally to put it to DTO after OCR
+        this.faceImageDataUrl = faceImageDataUrl;
       };
 
       // convert ID to grayscale
-      const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
+      // const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+      // const data = imageData.data;
 
-      for (let i = 0; i < data.length; i += 4) {
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-        data[i] = data[i + 1] = data[i + 2] = avg; // R, G, B = avg
-      }
+      // for (let i = 0; i < data.length; i += 4) {
+      //   const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      //   data[i] = data[i + 1] = data[i + 2] = avg; // R, G, B = avg
+      // }
 
-      ctx!.putImageData(imageData, 0, 0);
+      // ctx!.putImageData(imageData, 0, 0);
 
       // transform cropped canvas back to blob and pass to Tesseract
       canvas.toBlob(
         async (croppedBlob) => {
           //logging
-          const greyscaleIDImage = new Image();
-          greyscaleIDImage.src = URL.createObjectURL(croppedBlob!);
-          greyscaleIDImage.id = 'cropped-greyscale-ocr-image';
-          document.body.appendChild(greyscaleIDImage);
-          console.log('Cropped Blob:', greyscaleIDImage);
+          // const greyscaleIDImage = new Image();
+          // greyscaleIDImage.src = URL.createObjectURL(croppedBlob!);
+          // greyscaleIDImage.id = 'cropped-greyscale-ocr-image';
+          // document.body.appendChild(greyscaleIDImage);
+          // console.log('Cropped Blob:', greyscaleIDImage);
 
           const result = await Tesseract.recognize(croppedBlob!, 'ron', {
-            langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
+            langPath: '/assets/tesseract/ron.traineddata.gz',
             // logger: (m) => console.log(m),
           });
           console.log('OCR result (result.data.text):', result.data.text);
+          console.log('OCR result (full):', result);
           this.extractedText = result.data.text;
 
           this.parseExtractedText(this.extractedText);
@@ -322,41 +386,43 @@ export class RegisterComponent {
       lines = this.trimTrailingShortLines(lines);
 
       const cnp = lines
-        .find((line) => /\b\d{13}\b/.test(line))
+        .find((line) => /^[0-9]\d{13}$/.test(line))
         ?.match(/\d{13}/)?.[0];
+        console.log('Extracted CNP:', cnp);
 
       const nume = lines[lines.length - 2].split('<<')[0].replace('IDROU', '');
+      console.log('Extracted Nume:', nume);
       const prenume = lines[lines.length - 2].split('<<')[1].replace('<', '-');
+      console.log('Extracted Prenume:', prenume);
 
       const serie = lines[lines.length - 1].split('<')[0].substring(0, 2);
       const numar = lines[lines.length - 1].split('<')[0].substring(2, 8);
+
+      console.log('Extracted Serie + Numar:', serie + ' ' + numar);
 
       const validitate = lines[lines.length - 3]
         .split(' ')
         .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
       const validityArray = validitate.split('-');
       const isValid =
-        new Date().getTime() <
-        this.parseDate_ddMMyy(validityArray[1])!.getTime();
+      new Date().getTime() <
+      this.parseDate_ddMMyy(validityArray[1])!.getTime();
+      console.log('Extracted Validity:', validityArray, 'is currently valid:', isValid);
 
       const cetatenie = this.parseCetatenie(lines);
+      console.log('Extracted Cetatenie:', cetatenie);
 
       const matchLine = lines.find((line) => /\/.*\b[MF]\b\s*$/.test(line));
 
       const sexMatch = matchLine?.match(/\/.*\b([MF])\b\s*$/);
       const sex = sexMatch?.[1];
-
-      // const sexLine = lines.find((line) => / \s[FM]\s|\n( |$)/);
-      // const sex = /\sM\s|\n/.test(sexLine!)
-      //   ? 'M'
-      //   : /\sF\s|\n/.test(sexLine!)
-      //   ? 'F'
-      //   : null;
+      console.log('Sex matched: ', sex);
 
       const addressStart = lines.findIndex((line) =>
         /Domiciliu|Adresse|Address/i.test(line)
       );
       const address = lines.slice(addressStart + 1, addressStart + 3).join(' ');
+      console.log('Extracted Address:', address);
 
       this.ngZone.run(() => {
         this.isIDValid =
@@ -536,7 +602,7 @@ export class RegisterComponent {
 
     // cleanup before you go ;)
     await this.stopCamera();
-    await this.delay(300);
+    // await this.delay(300);
 
     this.isPhotoTaken = false;
     this.isIDValid = false;
@@ -562,7 +628,7 @@ export class RegisterComponent {
 
       await ScreenOrientation.lock({ orientation: 'landscape' });
 
-      await this.delay(300); // optional: give hardware time to release
+      // await this.delay(300); // optional: give hardware time to release
       await this.startCamera();
     } catch (err) {
       console.error('Camera restart failed:', err);
@@ -577,5 +643,9 @@ export class RegisterComponent {
 
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  goBack() {
+    this.location.back();
   }
 }

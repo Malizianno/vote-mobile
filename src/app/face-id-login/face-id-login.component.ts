@@ -76,12 +76,11 @@ export class FaceIDLoginComponent implements OnInit {
       });
     });
   }
+  
   async ngOnInit(): Promise<void> {
-    console.log('[ngOnInit]: Initializing FaceIDLoginComponent...');
+    console.log('[ngOnInit]: Initializing FaceDetector...');
     await this.initFaceDetector();
-
-    // await this.loadModels();
-    // console.log('Loaded face-api models...');
+    console.log('[ngOnInit]: FaceDetector initialized');
   }
 
   async ionViewWillEnter() {
@@ -114,17 +113,6 @@ export class FaceIDLoginComponent implements OnInit {
   }
 
   async initFaceDetector() {
-    // console.log(
-    //   '[initFaceDetector]: Checking MediaPipe Face Detector support...'
-    // );
-    // fetch(
-    //   'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm/vision_wasm_internal.wasm'
-    // )
-    //   .then((r) =>
-    //     console.log('[initFaceDetector]: WASM fetch status:', r.status)
-    //   )
-    //   .catch((e) => console.error('[initFaceDetector]: WASM fetch error:', e));
-
     console.log('[initFaceDetector]: Checking Model Face Detector support...');
     fetch('/assets/mediapipe/blaze_face_short_range.tflite')
       .then((r) =>

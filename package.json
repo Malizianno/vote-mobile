@@ -1,14 +1,15 @@
 {
   "name": "vote.e",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "author": "Cristian Sterie",
   "homepage": "https://github.com/Malizianno/vote-mobile",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.js",
-    "serve": "ionic serve --port=8190",
+    "serve": "ionic serve --port=8100",
     "run-on-phone": "npm run prebuild && ionic cap run android --target R5CR502K9JH -l --external",
-    "run-on-andreea": "npm run prebuild && ionic cap run android --target 748cd1ca -l --external",
+    "run-on-andreea": "npm run prebuild && ionic cap run android --target ZY22K7WM9Q -l --external",
+    "run-on-andreea-old": "npm run prebuild && ionic cap run android --target ce041714c48ca90703 -l --external",
     "prebuild": "node gradle-version.conf",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
