@@ -118,9 +118,8 @@ export class RegisterComponent implements OnInit {
 
   async ionViewDidLeave() {
     console.log(
-      '[ionViewDidLeave] Unlocking orientation and stopping camera...'
+      '[ionViewDidLeave] stopping camera...'
     );
-    await ScreenOrientation.unlock();
 
     await this.stopCamera();
     console.log('[ionViewDidLeave] unlocked and stopped.');
@@ -385,44 +384,57 @@ export class RegisterComponent implements OnInit {
 
       lines = this.trimTrailingShortLines(lines);
 
-      const cnp = lines
-        .find((line) => /^[0-9]\d{13}$/.test(line))
-        ?.match(/\d{13}/)?.[0];
-        console.log('Extracted CNP:', cnp);
+      const lastTextLine = lines[lines.length - 1].split('<')[1];
+      var cnp = '';
+
+      if (lastTextLine.length == 27) {
+        const firstPart = lastTextLine.substring(19, 20);
+        const secondPart = lastTextLine.substring(4, 10);
+        const thirdPart = lastTextLine.substring(20, 26);
+
+        cnp = firstPart + secondPart + thirdPart;
+      }
+
+      // console.log('Extracted CNP:', cnp);
 
       const nume = lines[lines.length - 2].split('<<')[0].replace('IDROU', '');
-      console.log('Extracted Nume:', nume);
+      // console.log('Extracted Nume:', nume);
       const prenume = lines[lines.length - 2].split('<<')[1].replace('<', '-');
-      console.log('Extracted Prenume:', prenume);
+      // console.log('Extracted Prenume:', prenume);
 
       const serie = lines[lines.length - 1].split('<')[0].substring(0, 2);
       const numar = lines[lines.length - 1].split('<')[0].substring(2, 8);
 
-      console.log('Extracted Serie + Numar:', serie + ' ' + numar);
+      // console.log('Extracted Serie + Numar:', serie + ' ' + numar);
 
       const validitate = lines[lines.length - 3]
         .split(' ')
         .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
       const validityArray = validitate.split('-');
       const isValid =
-      new Date().getTime() <
-      this.parseDate_ddMMyy(validityArray[1])!.getTime();
-      console.log('Extracted Validity:', validityArray, 'is currently valid:', isValid);
+        new Date().getTime() <
+        this.parseDate_ddMMyy(validityArray[1])!.getTime();
+      console.log(
+        'Extracted Validity:',
+        validityArray,
+        'is currently valid:',
+        isValid
+      );
 
       const cetatenie = this.parseCetatenie(lines);
-      console.log('Extracted Cetatenie:', cetatenie);
+      // console.log('Extracted Cetatenie:', cetatenie);
 
       const matchLine = lines.find((line) => /\/.*\b[MF]\b\s*$/.test(line));
 
       const sexMatch = matchLine?.match(/\/.*\b([MF])\b\s*$/);
       const sex = sexMatch?.[1];
-      console.log('Sex matched: ', sex);
+      // console.log('Sex matched: ', sex);
 
       const addressStart = lines.findIndex((line) =>
         /Domiciliu|Adresse|Address/i.test(line)
       );
       const address = lines.slice(addressStart + 1, addressStart + 3).join(' ');
-      console.log('Extracted Address:', address);
+      // console.log('Extracted Address:', address);
 
       this.ngZone.run(() => {
         this.isIDValid =
@@ -498,12 +510,20 @@ export class RegisterComponent implements OnInit {
     console.log('Validating CNP:', cnp);
     if (!/^\d{13}$/.test(cnp)) return false;
 
-    console.log('isCNP18Plus:', this.isCNP18Plus(cnp));
-    console.log(
-      'isCNPValidAgainstControlDigit:',
-      this.isCNPValidAgainstControlDigit(cnp)
-    );
-    return this.isCNPValidAgainstControlDigit(cnp) && this.isCNP18Plus(cnp);
+    const isValidControlDigit = this.isCNPValidAgainstControlDigit(cnp);
+    const is18Plus = this.isCNP18Plus(cnp);
+
+    if (!isValidControlDigit) {
+      this.toast.show(this.translate.instant('register.invalid-cnp'), 5000);
+    }
+
+    if (isValidControlDigit && !is18Plus) {
+      this.toast.show(this.translate.instant('register.under-18'), 5000);
+    }
+
+    console.log('isCNP18Plus:', is18Plus);
+    console.log('isCNPValidAgainstControlDigit:', isValidControlDigit);
+    return isValidControlDigit && is18Plus;
   }
 
   isCNPValidAgainstControlDigit(cnp: string): boolean {

@@ -10,7 +10,9 @@
     },
     "register": {
         "info": "Actul dumneavoastră de identitate este scanat în siguranță. Nicio informație nu este stocată fără consimțământul dumneavoastră. Vă rugăm să păstrați documentul vizibil și bine iluminat.",
-        "retake-photo": "Scanarea documentului a eșuat. Nu au fost stocate date. Verificați iluminarea și claritatea, apoi încercați din nou."
+        "retake-photo": "Scanarea documentului a eșuat. Nu au fost stocate date. Verificați iluminarea și claritatea, apoi încercați din nou.",
+        "invalid-cnp": "CNP-ul este invalid. Vă rugăm să verificați și să încercați din nou.",
+        "under-18": "Conform CNP-ului introdus, nu îndepliniți vârsta minimă de 18 ani pentru a vota. Vă rugăm să verificați și să încercați din nou."
     },
     "login": {
         "username": "Utilizator",

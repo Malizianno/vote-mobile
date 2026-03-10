@@ -10,7 +10,9 @@
     },
     "register": {
         "info": "Your ID is being scanned securely. No data is stored without your consent. Please keep the document visible and well-lit.",
-        "retake-photo": "ID scan failed. No data was stored. Please check lighting and clarity, then try again."
+        "retake-photo": "ID scan failed. No data was stored. Please check lighting and clarity, then try again.",
+        "invalid-cnp": "The CNP is invalid. Please check and try again.",
+        "under-18": "Based on the entered CNP, you do not meet the minimum age of 18 to vote. Please check and try again."
     },
     "login": {
         "username": "Username",
