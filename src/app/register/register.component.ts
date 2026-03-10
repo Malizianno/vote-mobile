@@ -45,7 +45,6 @@ import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RegisterComponent implements OnInit {
-
   isPhotoTaken = false;
   isIDValid = false;
   isOCRDone = false;
@@ -114,14 +113,20 @@ export class RegisterComponent implements OnInit {
     console.log('[ionViewDidEnter] Camera started.');
   }
 
-  async ionViewDidLeave() {
+  async ionViewWillLeave() {
     console.log('[ionViewDidLeave] stopping camera...');
 
-    await this.stopCamera();
+    await this.stopCamera()
+      .then(async () => {
+        await ScreenOrientation.lock({ orientation: 'portrait-primary' });
+        this.delay(50);
+      })
+      .catch(() => {
+        console.warn(
+          'Camera stop failed, probably because it was not started. Ignoring.'
+        );
+      });
     console.log('[ionViewDidLeave] unlocked and stopped.');
-
-    await ScreenOrientation.lock({ orientation: 'portrait' });
-    this.delay(50);
   }
 
   shouldRetakePhoto(): boolean {
@@ -372,20 +377,36 @@ export class RegisterComponent implements OnInit {
       const secondToLastLine = filteredLength[filteredLength.length - 2]
         .trim()
         .replace(/\s/g, '');
-      const thirdToLastLine = filteredLength[filteredLength.length - 3].trim();
+      const thirdToLastLine = filteredLength[filteredLength.length - 3]
+        .trim()
+        .replace(/\s/g, '');
 
       const lastTextLineRight = lastFilteredLine.split('<')[1];
       var cnp = '';
+      var sex = '';
 
       if (lastTextLineRight.length == 27) {
         const firstPart = lastTextLineRight.substring(19, 20);
         const secondPart = lastTextLineRight.substring(4, 10);
         const thirdPart = lastTextLineRight.substring(20, 26);
 
+        console.log('Extracted parts for CNP:', {
+          firstPart,
+          secondPart,
+          thirdPart,
+        });
+
         cnp = firstPart + secondPart + thirdPart;
+        sex =
+          parseInt(firstPart) > 0
+            ? parseInt(firstPart) % 2 === 1
+              ? 'M'
+              : 'F'
+            : '';
       }
 
-      // console.log('Extracted CNP:', cnp);
+      console.log('Extracted CNP:', cnp);
+      console.log('Sex matched: ', sex);
 
       const nume = secondToLastLine.split('<<')[0].replace('IDROU', '');
       // console.log('Extracted Nume:', nume);
@@ -401,7 +422,7 @@ export class RegisterComponent implements OnInit {
       const validitate = thirdToLastLine
         .split(' ')
         .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
-      const validityArray = validitate.split('-');
+      const validityArray = validitate.match(/\d{2}[.,]\d{2}[.,]\d{2}-\d{2}[.,]\d{2}[\.\,]\d{4}$/)![0].split('-');
       const isValid =
         new Date().getTime() <
         this.parseDate_ddMMyy(validityArray[1])!.getTime();
@@ -414,12 +435,6 @@ export class RegisterComponent implements OnInit {
 
       const cetatenie = this.parseCetatenie(lines);
       // console.log('Extracted Cetatenie:', cetatenie);
-
-      const matchLine = lines.find((line) => /\/.*\b[MF]\b\s*$/.test(line));
-
-      const sexMatch = matchLine?.match(/\/.*\b([MF])\b\s*$/);
-      const sex = sexMatch?.[1];
-      // console.log('Sex matched: ', sex);
 
       const addressStart = lines.findIndex((line) =>
         /Domiciliu|Adresse|Address/i.test(line)
@@ -630,7 +645,10 @@ export class RegisterComponent implements OnInit {
     // (window as any).NativeOrientation?.resetOrientation();
     // this.delay(50);
     // await ScreenOrientation.lock({ orientation: 'portrait' });
-    console.log('register orientation: ', (await ScreenOrientation.orientation()).type);
+    console.log(
+      'register orientation: ',
+      (await ScreenOrientation.orientation()).type
+    );
 
     this.router.navigate(['/profile'], {
       replaceUrl: true,

@@ -136,12 +136,10 @@ export class ProfileComponent implements OnInit {
       (await ScreenOrientation.orientation()).type
     );
 
-    if ((window as any).NativeOrientation?.resetOrientation) {
-      (window as any).NativeOrientation.resetOrientation();
+    if ((await ScreenOrientation.orientation()).type.includes('landscape')) {
+      await ScreenOrientation.lock({ orientation: 'portrait-primary' });
+      this.delay(150);
     }
-
-    this.delay(150);
-    await ScreenOrientation.lock({ orientation: 'portrait' });
 
     // await ScreenOrientation.lock({ orientation: 'portrait' });
     console.log(
