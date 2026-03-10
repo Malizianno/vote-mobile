@@ -3,6 +3,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
   NgZone,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -14,8 +15,8 @@ import {
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Platform } from '@ionic/angular';
 import { IonIcon } from '@ionic/angular/standalone';
+import { FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
 import { TranslateService } from '@ngx-translate/core';
-import * as faceapi from 'face-api.js';
 import { addIcons } from 'ionicons';
 import {
   arrowForward,
@@ -25,7 +26,7 @@ import {
   home,
   refresh,
 } from 'ionicons/icons';
-import Tesseract, { detect } from 'tesseract.js';
+import Tesseract from 'tesseract.js';
 import {
   UserGender,
   UserNationality,
@@ -34,7 +35,6 @@ import {
 import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
-import { FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
 
 @Component({
   selector: 'app-register',
@@ -45,6 +45,7 @@ import { FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RegisterComponent implements OnInit {
+
   isPhotoTaken = false;
   isIDValid = false;
   isOCRDone = false;
@@ -91,7 +92,6 @@ export class RegisterComponent implements OnInit {
 
   async ionViewWillEnter() {
     console.log('[ionViewWillEnter] Starting registration process...');
-
     this.isPhotoTaken = false;
     this.isIDValid = false;
     this.isOCRDone = false;
@@ -100,29 +100,28 @@ export class RegisterComponent implements OnInit {
   }
 
   async ionViewDidEnter() {
-    console.log('[ionViewDidEnter] Landscape + Starting camera...');
+    console.log('[ionViewDidEnter] Landscape...');
+    await ScreenOrientation.lock({ orientation: 'landscape' });
+    await this.delay(300);
 
     // toast info about how to position ID
     console.log('[ionViewDidEnter] Toast shown with instructions.');
     this.toast.show(this.translate.instant('register.info'), 5000);
 
-    await ScreenOrientation.lock({ orientation: 'landscape' });
-    // await this.delay(300);
-
+    console.log('[ionViewDidEnter] Starting camera...');
     await this.startCamera();
-
     this.cleanDocumentImages();
-
     console.log('[ionViewDidEnter] Camera started.');
   }
 
   async ionViewDidLeave() {
-    console.log(
-      '[ionViewDidLeave] stopping camera...'
-    );
+    console.log('[ionViewDidLeave] stopping camera...');
 
     await this.stopCamera();
     console.log('[ionViewDidLeave] unlocked and stopped.');
+
+    await ScreenOrientation.lock({ orientation: 'portrait' });
+    this.delay(50);
   }
 
   shouldRetakePhoto(): boolean {
@@ -326,27 +325,9 @@ export class RegisterComponent implements OnInit {
         this.faceImageDataUrl = faceImageDataUrl;
       };
 
-      // convert ID to grayscale
-      // const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
-      // const data = imageData.data;
-
-      // for (let i = 0; i < data.length; i += 4) {
-      //   const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-      //   data[i] = data[i + 1] = data[i + 2] = avg; // R, G, B = avg
-      // }
-
-      // ctx!.putImageData(imageData, 0, 0);
-
       // transform cropped canvas back to blob and pass to Tesseract
       canvas.toBlob(
         async (croppedBlob) => {
-          //logging
-          // const greyscaleIDImage = new Image();
-          // greyscaleIDImage.src = URL.createObjectURL(croppedBlob!);
-          // greyscaleIDImage.id = 'cropped-greyscale-ocr-image';
-          // document.body.appendChild(greyscaleIDImage);
-          // console.log('Cropped Blob:', greyscaleIDImage);
-
           const result = await Tesseract.recognize(croppedBlob!, 'ron', {
             langPath: '/assets/tesseract/ron.traineddata.gz',
             // logger: (m) => console.log(m),
@@ -384,42 +365,52 @@ export class RegisterComponent implements OnInit {
 
       lines = this.trimTrailingShortLines(lines);
 
-      const lastTextLine = lines[lines.length - 1].split('<')[1];
+      const filteredLength = lines.filter((line) => line.length > 35);
+      const lastFilteredLine = filteredLength[filteredLength.length - 1]
+        .trim()
+        .replace(/\s/g, '');
+      const secondToLastLine = filteredLength[filteredLength.length - 2]
+        .trim()
+        .replace(/\s/g, '');
+      const thirdToLastLine = filteredLength[filteredLength.length - 3].trim();
+
+      const lastTextLineRight = lastFilteredLine.split('<')[1];
       var cnp = '';
 
-      if (lastTextLine.length == 27) {
-        const firstPart = lastTextLine.substring(19, 20);
-        const secondPart = lastTextLine.substring(4, 10);
-        const thirdPart = lastTextLine.substring(20, 26);
+      if (lastTextLineRight.length == 27) {
+        const firstPart = lastTextLineRight.substring(19, 20);
+        const secondPart = lastTextLineRight.substring(4, 10);
+        const thirdPart = lastTextLineRight.substring(20, 26);
 
         cnp = firstPart + secondPart + thirdPart;
       }
 
       // console.log('Extracted CNP:', cnp);
 
-      const nume = lines[lines.length - 2].split('<<')[0].replace('IDROU', '');
+      const nume = secondToLastLine.split('<<')[0].replace('IDROU', '');
       // console.log('Extracted Nume:', nume);
-      const prenume = lines[lines.length - 2].split('<<')[1].replace('<', '-');
+      const prenume = secondToLastLine.split('<<')[1].replace('<', '-');
       // console.log('Extracted Prenume:', prenume);
 
-      const serie = lines[lines.length - 1].split('<')[0].substring(0, 2);
-      const numar = lines[lines.length - 1].split('<')[0].substring(2, 8);
+      const lastTextLineLeft = lastFilteredLine.split('<')[0];
+      const serie = lastTextLineLeft.substring(0, 2);
+      const numar = lastTextLineLeft.substring(2, 8);
 
       // console.log('Extracted Serie + Numar:', serie + ' ' + numar);
 
-      const validitate = lines[lines.length - 3]
+      const validitate = thirdToLastLine
         .split(' ')
         .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
       const validityArray = validitate.split('-');
       const isValid =
         new Date().getTime() <
         this.parseDate_ddMMyy(validityArray[1])!.getTime();
-      console.log(
-        'Extracted Validity:',
-        validityArray,
-        'is currently valid:',
-        isValid
-      );
+      // console.log(
+      //   'Extracted Validity:',
+      //   validityArray,
+      //   'is currently valid:',
+      //   isValid
+      // );
 
       const cetatenie = this.parseCetatenie(lines);
       // console.log('Extracted Cetatenie:', cetatenie);
@@ -436,17 +427,24 @@ export class RegisterComponent implements OnInit {
       const address = lines.slice(addressStart + 1, addressStart + 3).join(' ');
       // console.log('Extracted Address:', address);
 
+      const isCNPValid = this.validateCNP(cnp);
+
       this.ngZone.run(() => {
         this.isIDValid =
           !!nume &&
           !!prenume &&
           !!cnp &&
-          this.validateCNP(cnp) &&
+          !!isCNPValid &&
           !!serie &&
           !!numar &&
           isValid &&
           address.length > 10;
       });
+
+      if (!isCNPValid) {
+        console.log(`CNP is not valid: ${cnp}`);
+        return;
+      }
 
       if (this.isIDValid) {
         console.log(`ID is valid: ${this.isIDValid}\nsex = ${sex}`);
@@ -490,7 +488,7 @@ export class RegisterComponent implements OnInit {
         cetatenie,
         address,
         validitate,
-        validCNP: this.validateCNP(cnp!),
+        validCNP: !!isCNPValid,
         isValid,
         overallValid: this.isIDValid,
       });
@@ -621,12 +619,18 @@ export class RegisterComponent implements OnInit {
     // this.profile.idImage = undefined!; // clear image data before navigation
 
     // cleanup before you go ;)
-    await this.stopCamera();
+    // await this.stopCamera();
     // await this.delay(300);
 
     this.isPhotoTaken = false;
     this.isIDValid = false;
     this.isOCRDone = false;
+
+    // await ScreenOrientation.unlock();
+    // (window as any).NativeOrientation?.resetOrientation();
+    // this.delay(50);
+    // await ScreenOrientation.lock({ orientation: 'portrait' });
+    console.log('register orientation: ', (await ScreenOrientation.orientation()).type);
 
     this.router.navigate(['/profile'], {
       replaceUrl: true,
@@ -646,9 +650,6 @@ export class RegisterComponent implements OnInit {
 
       this.cleanDocumentImages();
 
-      await ScreenOrientation.lock({ orientation: 'landscape' });
-
-      // await this.delay(300); // optional: give hardware time to release
       await this.startCamera();
     } catch (err) {
       console.error('Camera restart failed:', err);

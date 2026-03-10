@@ -4,7 +4,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Platform } from '@ionic/angular';
 import {
   IonButton,
@@ -44,6 +43,7 @@ import { SharedService } from '../@shared/service/shared.service';
 import { ToastService } from '../@shared/service/toast.service';
 import { UserService } from '../@shared/service/user.service';
 import { ParseAndFormatUtil } from '../@shared/util/parse-and-format.util';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 @Component({
   selector: 'app-profile',
@@ -118,15 +118,40 @@ export class ProfileComponent implements OnInit {
     this.init();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    console.log('ProfileComponent initializing orientation + data');
+
     this.shared.imageData$.subscribe((data) => {
       this.sharedImage = data;
     });
   }
 
-  ionViewWillEnter() {
-    ScreenOrientation.lock({ orientation: 'portrait-primary' });
-    this.init();
+  async ionViewWillEnter() {
+    console.log(
+      'ProfileComponent ionViewWillEnter - locking orientation to portrait'
+    );
+
+    console.log(
+      'profile orientation before: ',
+      (await ScreenOrientation.orientation()).type
+    );
+
+    if ((window as any).NativeOrientation?.resetOrientation) {
+      (window as any).NativeOrientation.resetOrientation();
+    }
+
+    this.delay(150);
+    await ScreenOrientation.lock({ orientation: 'portrait' });
+
+    // await ScreenOrientation.lock({ orientation: 'portrait' });
+    console.log(
+      'profile orientation after: ',
+      (await ScreenOrientation.orientation()).type
+    );
+    // await this.delay(50);
+    console.log(
+      'ProfileComponent ionViewWillEnter - orientation locked to portrait'
+    );
   }
 
   init() {
@@ -258,5 +283,9 @@ export class ProfileComponent implements OnInit {
         },
       });
     }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
