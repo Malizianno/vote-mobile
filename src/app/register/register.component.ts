@@ -3,7 +3,6 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
   NgZone,
-  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -367,7 +366,6 @@ export class RegisterComponent implements OnInit {
         .split('\n')
         .map((line) => line.trim())
         .filter((line) => line.length > 0);
-
       lines = this.trimTrailingShortLines(lines);
 
       const filteredLength = lines.filter((line) => line.length > 35);
@@ -375,9 +373,6 @@ export class RegisterComponent implements OnInit {
         .trim()
         .replace(/\s/g, '');
       const secondToLastLine = filteredLength[filteredLength.length - 2]
-        .trim()
-        .replace(/\s/g, '');
-      const thirdToLastLine = filteredLength[filteredLength.length - 3]
         .trim()
         .replace(/\s/g, '');
 
@@ -404,7 +399,6 @@ export class RegisterComponent implements OnInit {
               : 'F'
             : '';
       }
-
       console.log('Extracted CNP:', cnp);
       console.log('Sex matched: ', sex);
 
@@ -419,10 +413,16 @@ export class RegisterComponent implements OnInit {
 
       // console.log('Extracted Serie + Numar:', serie + ' ' + numar);
 
+      const thirdToLastLine = lines[filteredLength.length - 3]
+        .trim()
+        .replace(/\s/g, '');
+
       const validitate = thirdToLastLine
         .split(' ')
         .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
-      const validityArray = validitate.match(/\d{2}[.,]\d{2}[.,]\d{2}-\d{2}[.,]\d{2}[\.\,]\d{4}$/)![0].split('-');
+      const validityArray = validitate
+        .match(/\d{2}[.,]\d{2}[.,]\d{2}-\d{2}[.,]\d{2}[\.\,]\d{4}$/)![0]
+        .split('-');
       const isValid =
         new Date().getTime() <
         this.parseDate_ddMMyy(validityArray[1])!.getTime();
