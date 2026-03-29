@@ -7,7 +7,7 @@ import packageInfo from '../../package.json';
 export const environment = {
   production: false,
   version: packageInfo.version,
-  serverUrl: 'http://localhost:8090/vote',
+  serverUrl: 'http://192.168.1.221:8090/vote',
   defaultLanguage: 'ro-RO',
   supportedLanguages: ['en-US', 'ro-RO'],
 };
