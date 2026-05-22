@@ -413,25 +413,39 @@ export class RegisterComponent implements OnInit {
 
       // console.log('Extracted Serie + Numar:', serie + ' ' + numar);
 
-      const thirdToLastLine = lines[filteredLength.length - 3]
+      const thirdToLastLine = lines[lines.length - 3]
         .trim()
         .replace(/\s/g, '');
 
-      const validitate = thirdToLastLine
-        .split(' ')
-        .find((part) => /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part))!;
-      const validityArray = validitate
-        .match(/\d{2}[.,]\d{2}[.,]\d{2}-\d{2}[.,]\d{2}[\.\,]\d{4}$/)![0]
-        .split('-');
-      const isValid =
-        new Date().getTime() <
-        this.parseDate_ddMMyy(validityArray[1])!.getTime();
-      // console.log(
-      //   'Extracted Validity:',
-      //   validityArray,
-      //   'is currently valid:',
-      //   isValid
-      // );
+      console.log('Third to last line for validity extraction: ', thirdToLastLine);
+
+      let validitate = '';
+      let validityArray: string[] = [];
+      let isValid = false;
+
+      try {
+        validitate = thirdToLastLine
+          .split(' ')
+          .find((part) =>
+            /\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{4}/.test(part)
+          )!;
+        validityArray = validitate
+          .match(/\d{2}[.,]\d{2}[.,]\d{2}-\d{2}[.,]\d{2}[\.\,]\d{4}$/)![0]
+          .split('-');
+        isValid =
+          new Date().getTime() <
+          this.parseDate_ddMMyy(validityArray[1])!.getTime();
+      } catch (e) {
+        console.warn('Validity parsing failed, setting isValid to false.', e);
+      }
+      console.log(
+        'Extracted validitate: ',
+        validitate,
+        '\nExtracted Validity: ',
+        validityArray,
+        '\nis currently valid: ',
+        isValid
+      );
 
       const cetatenie = this.parseCetatenie(lines);
       // console.log('Extracted Cetatenie:', cetatenie);
