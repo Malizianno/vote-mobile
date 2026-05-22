@@ -69,7 +69,11 @@ export class HomePage implements OnInit, OnDestroy {
     this.shared.selectedElection$.subscribe((election) => {
       this.selectedElection = election;
 
-      if (this.selectedElection!.id) {
+      if (!this.selectedElection) {
+        return;
+      }
+
+      if (this.selectedElection.id) {
         this.intervalId = setInterval(() => {
           if (this.newsfeed.length < 1) {
             this.reloadPage();

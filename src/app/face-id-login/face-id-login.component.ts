@@ -311,8 +311,12 @@ export class FaceIDLoginComponent implements OnInit {
       }
     });
 
-    const face = detections.detections[0].boundingBox;
+    
+    if (!detections.detections[0].boundingBox) {
+      return;
+    }
 
+    const face = detections.detections[0].boundingBox;
     console.log('face from bounding box: ', face);
 
     const cropCanvas = document.createElement('canvas');
@@ -333,13 +337,13 @@ export class FaceIDLoginComponent implements OnInit {
     );
 
     this.imageBase64 = cropCanvas.toDataURL('image/jpeg');
-    console.log('this.imageBase64: ', this.imageBase64);
+    console.log('this.imageBase64: ', this.imageBase64.substring(0, 100) + '...');
 
     var croppedImg = new Image();
     croppedImg.src = this.imageBase64;
     croppedImg.id = 'cropped-face-image';
     // document.body.appendChild(croppedImg);
-    console.log('cropped img: ', croppedImg);
+    console.log('cropped img: ', croppedImg.src.substring(0, 100) + '...');
 
     // Afișează poza decupată în <div id="image-preview-layer">
     // const previewLayer = document.getElementById('image-preview-layer');
