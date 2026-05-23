@@ -76,7 +76,7 @@ export class FaceIDLoginComponent implements OnInit {
       });
     });
   }
-  
+
   async ngOnInit(): Promise<void> {
     console.log('[ngOnInit]: Initializing FaceDetector...');
     await this.initFaceDetector();
@@ -306,13 +306,19 @@ export class FaceIDLoginComponent implements OnInit {
       if (!detections || detections.detections.length === 0) {
         this.isFaceValid = false;
         this.photoProcessing = false;
-        this.toast.show('Nu am găsit nicio față.');
+        this.toast.show(
+          'Nu a fost recunoscută nicio față. Vă rugăm să încercați din nou.',
+          4000
+        );
         return;
       }
     });
 
-    
-    if (!detections.detections[0].boundingBox) {
+    if (
+      !detections ||
+      detections.detections.length === 0 ||
+      !detections.detections[0].boundingBox
+    ) {
       return;
     }
 
@@ -337,7 +343,10 @@ export class FaceIDLoginComponent implements OnInit {
     );
 
     this.imageBase64 = cropCanvas.toDataURL('image/jpeg');
-    console.log('this.imageBase64: ', this.imageBase64.substring(0, 100) + '...');
+    console.log(
+      'this.imageBase64: ',
+      this.imageBase64.substring(0, 100) + '...'
+    );
 
     var croppedImg = new Image();
     croppedImg.src = this.imageBase64;

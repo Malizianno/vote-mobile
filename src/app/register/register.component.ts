@@ -294,6 +294,14 @@ export class RegisterComponent implements OnInit {
         const detections = this.faceDetector.detect(faceImg);
         console.log('[FACE]: after detection: ', detections);
 
+        if (
+          !detections ||
+          detections.detections.length === 0 ||
+          !detections.detections[0].boundingBox
+        ) {
+          return;
+        }
+
         const face = detections.detections[0].boundingBox;
 
         console.log('face from bounding box: ', face);
@@ -413,11 +421,12 @@ export class RegisterComponent implements OnInit {
 
       // console.log('Extracted Serie + Numar:', serie + ' ' + numar);
 
-      const thirdToLastLine = lines[lines.length - 3]
-        .trim()
-        .replace(/\s/g, '');
+      const thirdToLastLine = lines[lines.length - 3].trim().replace(/\s/g, '');
 
-      console.log('Third to last line for validity extraction: ', thirdToLastLine);
+      console.log(
+        'Third to last line for validity extraction: ',
+        thirdToLastLine
+      );
 
       let validitate = '';
       let validityArray: string[] = [];
